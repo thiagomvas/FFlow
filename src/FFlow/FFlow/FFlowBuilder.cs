@@ -108,6 +108,44 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, FlowAction action)
+    {
+        if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
+        if (action == null) throw new ArgumentNullException(nameof(action));
+        
+        var step = new ForEachStep(itemsSelector, new DelegateFlowStep(action));
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, FlowAction action) where TItem : class
+    {
+        if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
+        if (action == null) throw new ArgumentNullException(nameof(action));
+        
+        var step = new ForEachStep<TItem>(itemsSelector, new DelegateFlowStep(action));
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector) where TStepIterator : class, IFlowStep
+    {
+        if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
+        
+        var step = new ForEachStep(itemsSelector, GetOrCreateStep<TStepIterator>());
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ForEach<TStepIterator, TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector) where TStepIterator : class, IFlowStep
+    {
+        if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
+        
+        var step = new ForEachStep<TItem>(itemsSelector, GetOrCreateStep<TStepIterator>());
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep
     {
         var step = GetOrCreateStep<TStep>();

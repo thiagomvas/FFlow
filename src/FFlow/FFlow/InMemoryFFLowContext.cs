@@ -45,4 +45,20 @@ public class InMemoryFFLowContext : IFlowContext
 
         _storage[key] = value;
     }
+
+    public bool TryGet<T>(string key, out T value)
+    {
+        if (_storage.TryGetValue(key, out var storedValue))
+        {
+            if (storedValue is T typedValue)
+            {
+                value = typedValue;
+                return true;
+            }
+            value = default;
+            return false; // Type mismatch
+        }
+        value = default;
+        return false; // Key not found
+    }
 }
