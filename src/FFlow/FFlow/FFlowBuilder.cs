@@ -6,9 +6,16 @@ public class FFlowBuilder<TInput> : IWorkflowBuilder<TInput>
 {
     private readonly List<IFlowStep> _steps = new List<IFlowStep>();
     private IFlowStep? _errorHandler;
-    public IWorkflowBuilder<TInput> StartWith<TStep>() where TStep : IFlowStep
+    private readonly IServiceProvider? _serviceProvider;
+    
+    public FFlowBuilder(IServiceProvider? serviceProvider = null)
     {
-        var step = Activator.CreateInstance<TStep>();
+        _serviceProvider = serviceProvider;
+    }
+    
+    public IWorkflowBuilder<TInput> StartWith<TStep>() where TStep : class, IFlowStep
+    {
+        var step = GetOrCreateStep<TStep>();
         _steps.Add(step);
         return this;
     }
@@ -22,9 +29,9 @@ public class FFlowBuilder<TInput> : IWorkflowBuilder<TInput>
         return this;
     }
 
-    public IWorkflowBuilder<TInput> Then<TStep>() where TStep : IFlowStep
+    public IWorkflowBuilder<TInput> Then<TStep>() where TStep : class, IFlowStep
     {
-        var step = Activator.CreateInstance<TStep>();
+        var step = GetOrCreateStep<TStep>();
         _steps.Add(step);
         return this;
     }
@@ -38,9 +45,9 @@ public class FFlowBuilder<TInput> : IWorkflowBuilder<TInput>
         return this;
     }
 
-    public IWorkflowBuilder<TInput> Finally<TStep>() where TStep : IFlowStep
+    public IWorkflowBuilder<TInput> Finally<TStep>() where TStep : class, IFlowStep
     {
-        var step = Activator.CreateInstance<TStep>();
+        var step = GetOrCreateStep<TStep>();
         _steps.Add(step);
         return this;
     }
@@ -54,9 +61,9 @@ public class FFlowBuilder<TInput> : IWorkflowBuilder<TInput>
         return this;
     }
 
-    public IWorkflowBuilder<TInput> OnAnyError<TStep>() where TStep : IFlowStep
+    public IWorkflowBuilder<TInput> OnAnyError<TStep>() where TStep : class, IFlowStep
     {
-        var step = Activator.CreateInstance<TStep>();
+        var step = GetOrCreateStep<TStep>();
         _errorHandler = step ?? throw new InvalidOperationException($"Could not create instance of {typeof(TStep).Name}");
         return this;
     }
@@ -80,5 +87,13 @@ public class FFlowBuilder<TInput> : IWorkflowBuilder<TInput>
         }
         
         return result;
+    }
+    
+    
+    private TStep GetOrCreateStep<TStep>() where TStep : class, IFlowStep
+    {
+        var step = _serviceProvider?.GetService(typeof(TStep)) as TStep
+                   ?? Activator.CreateInstance<TStep>();
+        return step;
     }
 }

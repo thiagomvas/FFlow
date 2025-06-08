@@ -1,10 +1,17 @@
 ﻿using FFlow;
 using FFlow.Demo;
+using Microsoft.Extensions.DependencyInjection;
 
-var flow = new FFlowBuilder<object?>()
-    .StartWith(ctx => Task.Run(() => throw new ArgumentException("Simulated exception")))
-    .OnAnyError<HelloStep>()
+var services = new ServiceCollection();
+services.AddTransient<ServiceA>();
+services.AddTransient<HelloStep>();
+var flow = new FFlowBuilder<object?>(services.BuildServiceProvider())
+    .StartWith<HelloStep>()
     .Build();
 
 await flow.RunAsync(null);
-    
+
+    public class ServiceA
+    {
+        public string Name { get; set; } = "ServiceA";
+    }
