@@ -15,19 +15,21 @@ public class IfStep : IFlowStep
         _falseStep = falseStep;
     }
 
-    public Task RunAsync(IFlowContext context)
+    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         if (context == null) throw new ArgumentNullException(nameof(context));
         if (_condition == null) throw new InvalidOperationException("Condition must be set.");
         if (_trueStep == null) throw new InvalidOperationException("True step must be set.");
 
+        cancellationToken.ThrowIfCancellationRequested();
+        
         if (_condition(context))
         {
-            return _trueStep.RunAsync(context);
+            return _trueStep.RunAsync(context, cancellationToken);
         }
         else
         {
-            return _falseStep?.RunAsync(context) ?? Task.CompletedTask;
+            return _falseStep?.RunAsync(context, cancellationToken) ?? Task.CompletedTask;
         }
     }
 }

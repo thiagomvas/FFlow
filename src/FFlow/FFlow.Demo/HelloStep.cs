@@ -4,9 +4,15 @@ namespace FFlow.Demo;
 
 public class HelloStep : IFlowStep
 {
-    public Task RunAsync(IFlowContext context)
+    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        Console.WriteLine("Hello, World!");
-        return Task.CompletedTask;
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (context == null) throw new ArgumentNullException(nameof(context));
+        
+        return Task.Run(() =>
+        {
+            Console.WriteLine($"Hello, World!");
+        }, cancellationToken);
     }
 }

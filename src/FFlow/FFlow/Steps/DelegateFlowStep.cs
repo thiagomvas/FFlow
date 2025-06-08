@@ -4,15 +4,20 @@ namespace FFlow;
 
 public class DelegateFlowStep : IFlowStep
 {
-    private readonly Func<IFlowContext, Task> _action;
+    private readonly FlowAction _action;
 
-    public DelegateFlowStep(Func<IFlowContext, Task> action)
+    public DelegateFlowStep(FlowAction action)
     {
         _action = action ?? throw new ArgumentNullException(nameof(action));
     }
 
-    public Task RunAsync(IFlowContext context)
+    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        return _action(context);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (_action == null) throw new InvalidOperationException("Action must be set.");
+        
+        return _action(context, cancellationToken);
     }
 }

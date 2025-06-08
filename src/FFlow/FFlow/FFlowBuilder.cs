@@ -20,7 +20,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder StartWith(Func<IFlowContext, Task> setupAction)
+    public IWorkflowBuilder StartWith(FlowAction setupAction)
     {
         if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
         
@@ -36,7 +36,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder Then(Func<IFlowContext, Task> setupAction)
+    public IWorkflowBuilder Then(FlowAction setupAction)
     {
         if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
         
@@ -52,7 +52,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder Finally(Func<IFlowContext, Task> setupAction)
+    public IWorkflowBuilder Finally(FlowAction setupAction)
     {
         if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
         
@@ -61,7 +61,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, Func<IFlowContext, Task> then, Func<IFlowContext, Task>? otherwise = null)
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, FlowAction then, FlowAction? otherwise = null)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         if (then == null) throw new ArgumentNullException(nameof(then));
@@ -79,7 +79,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, Func<IFlowContext, Task>? otherwise = null) where TTrue : class, IFlowStep
+    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, FlowAction? otherwise = null) where TTrue : class, IFlowStep
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         
@@ -115,7 +115,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder OnAnyError(Func<IFlowContext, Task> errorHandlerAction)
+    public IWorkflowBuilder OnAnyError(FlowAction errorHandlerAction)
     {
         if (errorHandlerAction == null) throw new ArgumentNullException(nameof(errorHandlerAction));
         

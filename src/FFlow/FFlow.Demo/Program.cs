@@ -5,8 +5,12 @@ using FFlow.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 var workflow = new FFlowBuilder()
-    .If<HelloStep>(ctx => false,
-        otherwise: ctx => Task.Run(() => Console.WriteLine("false")))
+    .StartWith((ctx, ct) => Task.Delay(1000, ct))
+    .OnAnyError((ctx, ct) => 
+    {
+        Console.WriteLine("An error occurred in the workflow.");
+        return Task.CompletedTask;
+    })
     .Build();
 
-await workflow.RunAsync(null);
+await workflow.RunAsync(null, new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);

@@ -19,14 +19,14 @@ public class Workflow : IWorkflow
         _globalErrorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
-    public async Task RunAsync(object input)
+    public async Task RunAsync(object input, CancellationToken cancellationToken = default)
     {
         try 
         {
             _context.SetInput(input);
             foreach (var step in _steps)
             {
-                await step.RunAsync(_context);
+                await step.RunAsync(_context, cancellationToken);
             }
         }
         catch (Exception ex)
