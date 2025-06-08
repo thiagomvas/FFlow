@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\FFlow.Core\FFlow.Core.csproj" />
+      <ProjectReference Include="..\..\src\FFlow.Core\FFlow.Core.csproj" />
     </ItemGroup>
 
 </Project>

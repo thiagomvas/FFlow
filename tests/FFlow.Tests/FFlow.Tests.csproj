@@ -21,8 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\FFlow.Core\FFlow.Core.csproj" />
-      <ProjectReference Include="..\src\FFlow\FFlow.csproj" />
+      <ProjectReference Include="..\..\src\FFlow\FFlow.csproj" />
       <ProjectReference Include="..\Workflow.Tests.Shared\Workflow.Tests.Shared.csproj" />
     </ItemGroup>
 

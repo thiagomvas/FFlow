@@ -15,9 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow", "src\FFlow\FFlow.cs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{79C76222-F09C-4553-AA14-0F1448C9CC52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Tests", "FFlow.Tests\FFlow.Tests.csproj", "{BEBC264F-AEDC-4746-863F-4B172963F227}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Tests", "tests\FFlow.Tests\FFlow.Tests.csproj", "{BEBC264F-AEDC-4746-863F-4B172963F227}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workflow.Tests.Shared", "Workflow.Tests.Shared\Workflow.Tests.Shared.csproj", "{448D5345-54B4-42A3-8528-EBE371EF0E5A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workflow.Tests.Shared", "tests\Workflow.Tests.Shared\Workflow.Tests.Shared.csproj", "{448D5345-54B4-42A3-8528-EBE371EF0E5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
