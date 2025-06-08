@@ -2,7 +2,7 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class Workflow<TInput> : IWorkflow<TInput>
+public class Workflow : IWorkflow
 {
     private readonly IReadOnlyList<IFlowStep> _steps;
     private readonly IFlowContext _context;
@@ -19,7 +19,7 @@ public class Workflow<TInput> : IWorkflow<TInput>
         _globalErrorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
-    public async Task RunAsync(TInput input)
+    public async Task RunAsync(object input)
     {
         try 
         {

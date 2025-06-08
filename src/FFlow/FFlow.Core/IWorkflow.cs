@@ -1,7 +1,7 @@
 namespace FFlow.Core;
 
-public interface IWorkflow<in TInput>
+public interface IWorkflow
 {
     void SetGlobalErrorHandler(IFlowStep errorHandler);
-    Task RunAsync(TInput input);
+    Task RunAsync(object input);
 }

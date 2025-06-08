@@ -1,6 +1,6 @@
 namespace FFlow.Core;
 
-public interface IWorkflowDefinition<TInput>
+public interface IWorkflowDefinition
 {
-    IWorkflow<TInput> Build();
+    IWorkflow Build();
 }
