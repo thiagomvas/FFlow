@@ -5,8 +5,7 @@ using FFlow.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 var workflow = new FFlowBuilder()
-    .If(ctx => false,
-        then: ctx => Task.Run(() => Console.WriteLine("true")),
+    .If<HelloStep>(ctx => false,
         otherwise: ctx => Task.Run(() => Console.WriteLine("false")))
     .Build();
 

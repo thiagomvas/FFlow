@@ -79,6 +79,35 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, Func<IFlowContext, Task>? otherwise = null) where TTrue : class, IFlowStep
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        
+        var trueStep = GetOrCreateStep<TTrue>();
+        IFlowStep? falseStep = null;
+        
+        if (otherwise != null)
+        {
+            falseStep = new DelegateFlowStep(otherwise);
+        }
+        
+        var ifStep = new IfStep(condition, trueStep, falseStep);
+        _steps.Add(ifStep);
+        return this;
+    }
+
+    public IWorkflowBuilder If<TTrue, TFalse>(Func<IFlowContext, bool> condition) where TTrue : class, IFlowStep where TFalse : class, IFlowStep
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        
+        var trueStep = GetOrCreateStep<TTrue>();
+        var falseStep = GetOrCreateStep<TFalse>();
+        
+        var ifStep = new IfStep(condition, trueStep, falseStep);
+        _steps.Add(ifStep);
+        return this;
+    }
+
     public IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep
     {
         var step = GetOrCreateStep<TStep>();
