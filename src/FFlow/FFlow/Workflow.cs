@@ -21,9 +21,10 @@ public class Workflow : IWorkflow
 
     public async Task RunAsync(object input, CancellationToken cancellationToken = default)
     {
+        if(input is not null)
+            _context.SetInput(input);
         try 
         {
-            _context.SetInput(input);
             foreach (var step in _steps)
             {
                 await step.RunAsync(_context, cancellationToken);

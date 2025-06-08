@@ -108,6 +108,26 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then, Func<IWorkflowBuilder>? otherwise = null)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (then == null) throw new ArgumentNullException(nameof(then));
+        
+        var trueBuilder = then();
+        var trueStep = new BuilderStep(trueBuilder);
+        IFlowStep? falseStep = null;
+        
+        if (otherwise != null)
+        {
+            var falseBuilder = otherwise();
+            falseStep = new BuilderStep(falseBuilder);
+        }
+        
+        var ifStep = new IfStep(condition, trueStep, falseStep);
+        _steps.Add(ifStep);
+        return this;
+    }
+
     public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, FlowAction action)
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
@@ -142,6 +162,28 @@ public class FFlowBuilder : IWorkflowBuilder
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         
         var step = new ForEachStep<TItem>(itemsSelector, GetOrCreateStep<TStepIterator>());
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IWorkflowBuilder> action)
+    {
+        if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
+        if (action == null) throw new ArgumentNullException(nameof(action));
+        
+        var builder = action();
+        var step = new ForEachStep(itemsSelector, new BuilderStep(builder));
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, Func<IWorkflowBuilder> action)
+    {
+        if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
+        if (action == null) throw new ArgumentNullException(nameof(action));
+        
+        var builder = action();
+        var step = new ForEachStep<TItem>(itemsSelector, new BuilderStep(builder));
         _steps.Add(step);
         return this;
     }

@@ -17,7 +17,6 @@ public class InMemoryFFLowContext : IFlowContext
             throw new InvalidCastException($"Stored input is not of type {typeof(TInput).Name}.");
         }
         throw new KeyNotFoundException("Input not found in context.");
-        
     }
 
     public void SetInput<TInput>(TInput input)

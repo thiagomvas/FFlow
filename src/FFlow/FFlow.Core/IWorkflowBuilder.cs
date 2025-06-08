@@ -14,6 +14,8 @@ public interface IWorkflowBuilder
         where TTrue : class, IFlowStep 
         where TFalse : class, IFlowStep;
     
+    IWorkflowBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then, Func<IWorkflowBuilder>? otherwise = null);
+    
     IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, FlowAction action);
     IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, FlowAction action) where TItem : class;
     IWorkflowBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector)
@@ -21,6 +23,13 @@ public interface IWorkflowBuilder
     
     IWorkflowBuilder ForEach<TStepIterator, TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector)
         where TStepIterator : class, IFlowStep;
+    
+    IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IWorkflowBuilder> action);
+
+    IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector,
+        Func<IWorkflowBuilder> action);
+    
+    
     
     
     IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep;
