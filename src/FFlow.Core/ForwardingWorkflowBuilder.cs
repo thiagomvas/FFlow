@@ -83,6 +83,11 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ForEach(itemsSelector, action);
     }
 
+    public IWorkflowBuilder ContinueWith<TWorkflowDefinition>() where TWorkflowDefinition : class, IWorkflowDefinition
+    {
+        return Delegate.ContinueWith<TWorkflowDefinition>();
+    }
+
     public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
     {
         return Delegate.UseContext<TContext>();

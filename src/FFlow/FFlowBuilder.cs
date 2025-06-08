@@ -188,7 +188,21 @@ public class FFlowBuilder : IWorkflowBuilder
         _steps.Add(step);
         return this;
     }
-    
+
+    public IWorkflowBuilder ContinueWith<TWorkflowDefinition>() where TWorkflowDefinition : class, IWorkflowDefinition
+    {
+        var workflowDefinition = _serviceProvider?.GetService(typeof(TWorkflowDefinition)) as TWorkflowDefinition
+                                 ?? Activator.CreateInstance<TWorkflowDefinition>();
+        if (workflowDefinition == null)
+        {
+            throw new InvalidOperationException($"Could not create instance of {typeof(TWorkflowDefinition).Name}");
+        }
+        
+        var step = new WorkflowContinuationStep(workflowDefinition);
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
     {
         _contextType = typeof(TContext);

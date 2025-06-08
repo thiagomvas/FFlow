@@ -29,6 +29,8 @@ public interface IWorkflowBuilder
     IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector,
         Func<IWorkflowBuilder> action);
 
+    IWorkflowBuilder ContinueWith<TWorkflowDefinition>() where TWorkflowDefinition : class, IWorkflowDefinition;
+
     IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext;
     
     
