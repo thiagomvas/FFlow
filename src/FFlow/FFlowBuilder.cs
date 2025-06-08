@@ -7,6 +7,7 @@ public class FFlowBuilder : IWorkflowBuilder
     private readonly List<IFlowStep> _steps = new List<IFlowStep>();
     private IFlowStep? _errorHandler;
     private readonly IServiceProvider? _serviceProvider;
+    private Type? _contextType = typeof(InMemoryFFLowContext);
     
     public FFlowBuilder(IServiceProvider? serviceProvider = null)
     {
@@ -187,6 +188,14 @@ public class FFlowBuilder : IWorkflowBuilder
         _steps.Add(step);
         return this;
     }
+    
+    public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
+    {
+        _contextType = typeof(TContext);
+        return this;
+    }
+
+
 
     public IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep
     {
@@ -205,8 +214,9 @@ public class FFlowBuilder : IWorkflowBuilder
 
     public IWorkflow Build()
     {
-        var context = new InMemoryFFLowContext();
-        var result = new Workflow(_steps, context);
+        var context = _serviceProvider?.GetService(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext
+                      ?? Activator.CreateInstance(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext;
+        var result = new Workflow(_steps, context!);
         
         if (_errorHandler != null)
         {
