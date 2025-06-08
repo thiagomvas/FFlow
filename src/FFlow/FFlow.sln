@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Core", "FFlow.Core\FFlow.Core.csproj", "{F141B5F1-5A3E-40C8-940E-862C1CF82AA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow", "FFlow\FFlow.csproj", "{F09C7628-CFB8-4B8E-A99C-F1E72B4147B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Demo", "FFlow.Demo\FFlow.Demo.csproj", "{39675AA1-8982-4827-96A1-3302D0A0A892}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F141B5F1-5A3E-40C8-940E-862C1CF82AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F141B5F1-5A3E-40C8-940E-862C1CF82AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F141B5F1-5A3E-40C8-940E-862C1CF82AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F141B5F1-5A3E-40C8-940E-862C1CF82AA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F09C7628-CFB8-4B8E-A99C-F1E72B4147B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F09C7628-CFB8-4B8E-A99C-F1E72B4147B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F09C7628-CFB8-4B8E-A99C-F1E72B4147B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F09C7628-CFB8-4B8E-A99C-F1E72B4147B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39675AA1-8982-4827-96A1-3302D0A0A892}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39675AA1-8982-4827-96A1-3302D0A0A892}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39675AA1-8982-4827-96A1-3302D0A0A892}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39675AA1-8982-4827-96A1-3302D0A0A892}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
