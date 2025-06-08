@@ -16,7 +16,7 @@ public class InMemoryFFLowContext : IFlowContext
             }
             throw new InvalidCastException($"Stored input is not of type {typeof(TInput).Name}.");
         }
-        throw new KeyNotFoundException("Input not found in context.");
+        return default; // Return default value if input is not set
     }
 
     public void SetInput<TInput>(TInput input)
@@ -34,7 +34,8 @@ public class InMemoryFFLowContext : IFlowContext
             }
             throw new InvalidCastException($"Stored value for key '{key}' is not of type {typeof(T).Name}.");
         }
-        throw new KeyNotFoundException($"Key '{key}' not found in context.");
+
+        return default;
     }
 
     public void Set<T>(string key, T value)

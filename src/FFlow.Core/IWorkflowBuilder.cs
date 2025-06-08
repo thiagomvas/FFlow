@@ -28,8 +28,8 @@ public interface IWorkflowBuilder
 
     IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector,
         Func<IWorkflowBuilder> action);
-    
-    
+
+    IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext;
     
     
     IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep;

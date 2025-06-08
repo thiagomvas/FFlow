@@ -2,6 +2,7 @@ namespace FFlow.Core;
 
 public interface IWorkflow
 {
-    void SetGlobalErrorHandler(IFlowStep errorHandler);
-    Task RunAsync(object input, CancellationToken cancellationToken = default);
+    IWorkflow SetGlobalErrorHandler(IFlowStep errorHandler);
+    IWorkflow SetContext(IFlowContext context);
+    Task<IFlowContext> RunAsync(object input, CancellationToken cancellationToken = default);
 }

@@ -5,7 +5,7 @@ namespace FFlow;
 public class Workflow : IWorkflow
 {
     private readonly IReadOnlyList<IFlowStep> _steps;
-    private readonly IFlowContext _context;
+    private IFlowContext _context;
     private IFlowStep _globalErrorHandler;
     
     public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context)
@@ -14,12 +14,19 @@ public class Workflow : IWorkflow
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
     
-    public void SetGlobalErrorHandler(IFlowStep errorHandler)
+    public IWorkflow SetGlobalErrorHandler(IFlowStep errorHandler)
     {
         _globalErrorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+        return this;
     }
 
-    public async Task RunAsync(object input, CancellationToken cancellationToken = default)
+    public IWorkflow SetContext(IFlowContext context)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        return this;
+    }
+
+    public async Task<IFlowContext> RunAsync(object input, CancellationToken cancellationToken = default)
     {
         if(input is not null)
             _context.SetInput(input);
@@ -42,5 +49,7 @@ public class Workflow : IWorkflow
                 throw;
             }
         }
+
+        return _context;
     }
 }

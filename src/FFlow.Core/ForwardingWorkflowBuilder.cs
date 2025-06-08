@@ -83,6 +83,11 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ForEach(itemsSelector, action);
     }
 
+    public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
+    {
+        return Delegate.UseContext<TContext>();
+    }
+
     public IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep
     {
         return Delegate.OnAnyError<TStep>();
