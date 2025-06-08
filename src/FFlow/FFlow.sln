@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow", "FFlow\FFlow.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Demo", "FFlow.Demo\FFlow.Demo.csproj", "{39675AA1-8982-4827-96A1-3302D0A0A892}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Extensions.Microsoft.DependencyInjection", "FFlow.Extensions.Microsoft.DependencyInjection\FFlow.Extensions.Microsoft.DependencyInjection.csproj", "{227EB407-324D-440E-976B-C3BB0C4FDC5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{39675AA1-8982-4827-96A1-3302D0A0A892}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39675AA1-8982-4827-96A1-3302D0A0A892}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39675AA1-8982-4827-96A1-3302D0A0A892}.Release|Any CPU.Build.0 = Release|Any CPU
+		{227EB407-324D-440E-976B-C3BB0C4FDC5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{227EB407-324D-440E-976B-C3BB0C4FDC5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{227EB407-324D-440E-976B-C3BB0C4FDC5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{227EB407-324D-440E-976B-C3BB0C4FDC5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
