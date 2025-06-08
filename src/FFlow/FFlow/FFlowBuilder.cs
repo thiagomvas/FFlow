@@ -5,6 +5,7 @@ namespace FFlow;
 public class FFlowBuilder<TInput> : IWorkflowBuilder<TInput>
 {
     private readonly List<IFlowStep> _steps = new List<IFlowStep>();
+    private IFlowStep? _errorHandler;
     public IWorkflowBuilder<TInput> StartWith<TStep>() where TStep : IFlowStep
     {
         var step = Activator.CreateInstance<TStep>();
@@ -53,9 +54,31 @@ public class FFlowBuilder<TInput> : IWorkflowBuilder<TInput>
         return this;
     }
 
+    public IWorkflowBuilder<TInput> OnAnyError<TStep>() where TStep : IFlowStep
+    {
+        var step = Activator.CreateInstance<TStep>();
+        _errorHandler = step ?? throw new InvalidOperationException($"Could not create instance of {typeof(TStep).Name}");
+        return this;
+    }
+
+    public IWorkflowBuilder<TInput> OnAnyError(Func<IFlowContext, Task> errorHandlerAction)
+    {
+        if (errorHandlerAction == null) throw new ArgumentNullException(nameof(errorHandlerAction));
+        
+        _errorHandler = new DelegateFlowStep(errorHandlerAction);
+        return this;
+    }
+
     public IWorkflow<TInput> Build()
     {
         var context = new InMemoryFFLowContext();
-        return new Workflow<TInput>(_steps, context);
+        var result = new Workflow<TInput>(_steps, context);
+        
+        if (_errorHandler != null)
+        {
+            result.SetGlobalErrorHandler(_errorHandler);
+        }
+        
+        return result;
     }
 }

@@ -5,7 +5,26 @@ namespace FFlow;
 public class InMemoryFFLowContext : IFlowContext
 {
     private readonly Dictionary<string, object> _storage = new();
-    
+
+    public TInput GetInput<TInput>()
+    {
+        if (_storage.TryGetValue(Internals.FFlowContextInputKey, out var value))
+        {
+            if (value is TInput typedValue)
+            {
+                return typedValue;
+            }
+            throw new InvalidCastException($"Stored input is not of type {typeof(TInput).Name}.");
+        }
+        throw new KeyNotFoundException("Input not found in context.");
+        
+    }
+
+    public void SetInput<TInput>(TInput input)
+    {
+        _storage[Internals.FFlowContextInputKey] = input;
+    }
+
     public T Get<T>(string key)
     {
         if (_storage.TryGetValue(key, out var value))
