@@ -8,6 +8,7 @@ public interface IWorkflowBuilder
     IWorkflowBuilder Then(Func<IFlowContext, Task> setupAction);
     IWorkflowBuilder Finally<TStep>() where TStep : class, IFlowStep;
     IWorkflowBuilder Finally(Func<IFlowContext, Task> setupAction);
+    IWorkflowBuilder If(Func<IFlowContext, bool> condition, Func<IFlowContext, Task> then, Func<IFlowContext, Task>? otherwise = null);
     
     IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep;
     IWorkflowBuilder OnAnyError(Func<IFlowContext, Task> errorHandlerAction);

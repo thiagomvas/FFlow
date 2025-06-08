@@ -4,9 +4,10 @@ using FFlow.Demo;
 using FFlow.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-var services = new ServiceCollection();
-services.AddFFlow(typeof(HelloStep).Assembly);
+var workflow = new FFlowBuilder()
+    .If(ctx => false,
+        then: ctx => Task.Run(() => Console.WriteLine("true")),
+        otherwise: ctx => Task.Run(() => Console.WriteLine("false")))
+    .Build();
 
-var serviceProvider = services.BuildServiceProvider();
-var workflow = serviceProvider.GetRequiredService<HelloWorkflow>();
-await workflow.Build().RunAsync(null);
+await workflow.RunAsync(null);

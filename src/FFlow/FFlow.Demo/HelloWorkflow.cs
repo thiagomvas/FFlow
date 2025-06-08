@@ -6,7 +6,7 @@ public class HelloWorkflow : IWorkflowDefinition
 {
     public IWorkflow Build()
     {
-        return new FFlowBuilder<object?>()
+        return new FFlowBuilder()
             .StartWith<HelloStep>()
             .Build();
     }

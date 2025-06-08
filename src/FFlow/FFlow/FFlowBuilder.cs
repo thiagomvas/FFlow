@@ -2,7 +2,7 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class FFlowBuilder<TInput> : IWorkflowBuilder
+public class FFlowBuilder : IWorkflowBuilder
 {
     private readonly List<IFlowStep> _steps = new List<IFlowStep>();
     private IFlowStep? _errorHandler;
@@ -58,6 +58,24 @@ public class FFlowBuilder<TInput> : IWorkflowBuilder
         
         var step = new DelegateFlowStep(setupAction);
         _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, Func<IFlowContext, Task> then, Func<IFlowContext, Task>? otherwise = null)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (then == null) throw new ArgumentNullException(nameof(then));
+        
+        var trueStep = new DelegateFlowStep(then);
+        IFlowStep? falseStep = null;
+        
+        if (otherwise != null)
+        {
+            falseStep = new DelegateFlowStep(otherwise);
+        }
+        
+        var ifStep = new IfStep(condition, trueStep, falseStep);
+        _steps.Add(ifStep);
         return this;
     }
 
