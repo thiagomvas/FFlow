@@ -6,10 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 var workflow = new FFlowBuilder()
     .StartWith<HelloStep>()
-    .ForEach(ctx => ctx.GetInput<Person>().Friends, () =>
-    {
-        return new FFlowBuilder().StartWith<HelloStep>();
-    })
     .Finally<GoodByeStep>()
     .Build();
 

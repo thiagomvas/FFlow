@@ -6,8 +6,9 @@ public class FFlowBuilder : IWorkflowBuilder
 {
     private readonly List<IFlowStep> _steps = new List<IFlowStep>();
     private IFlowStep? _errorHandler;
-    private readonly IServiceProvider? _serviceProvider;
+    private IServiceProvider? _serviceProvider;
     private Type? _contextType = typeof(InMemoryFFLowContext);
+    private IFlowContext? _contextInstance = null;
     
     public FFlowBuilder(IServiceProvider? serviceProvider = null)
     {
@@ -16,7 +17,7 @@ public class FFlowBuilder : IWorkflowBuilder
     
     public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
-        var step = GetOrCreateStep<TStep>();
+        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
         _steps.Add(step);
         return this;
     }
@@ -32,7 +33,7 @@ public class FFlowBuilder : IWorkflowBuilder
 
     public IWorkflowBuilder Then<TStep>() where TStep : class, IFlowStep
     {
-        var step = GetOrCreateStep<TStep>();
+        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
         _steps.Add(step);
         return this;
     }
@@ -48,7 +49,7 @@ public class FFlowBuilder : IWorkflowBuilder
 
     public IWorkflowBuilder Finally<TStep>() where TStep : class, IFlowStep
     {
-        var step = GetOrCreateStep<TStep>();
+        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
         _steps.Add(step);
         return this;
     }
@@ -84,7 +85,7 @@ public class FFlowBuilder : IWorkflowBuilder
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         
-        var trueStep = GetOrCreateStep<TTrue>();
+        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);;
         IFlowStep? falseStep = null;
         
         if (otherwise != null)
@@ -101,8 +102,8 @@ public class FFlowBuilder : IWorkflowBuilder
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         
-        var trueStep = GetOrCreateStep<TTrue>();
-        var falseStep = GetOrCreateStep<TFalse>();
+        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);;
+        var falseStep = Internals.GetOrCreateStep<TFalse>(_serviceProvider);;
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
@@ -153,7 +154,7 @@ public class FFlowBuilder : IWorkflowBuilder
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         
-        var step = new ForEachStep(itemsSelector, GetOrCreateStep<TStepIterator>());
+        var step = new ForEachStep(itemsSelector, Internals.GetOrCreateStep<TStepIterator>(_serviceProvider));
         _steps.Add(step);
         return this;
     }
@@ -162,7 +163,7 @@ public class FFlowBuilder : IWorkflowBuilder
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         
-        var step = new ForEachStep<TItem>(itemsSelector, GetOrCreateStep<TStepIterator>());
+        var step = new ForEachStep<TItem>(itemsSelector, Internals.GetOrCreateStep<TStepIterator>(_serviceProvider));
         _steps.Add(step);
         return this;
     }
@@ -203,17 +204,41 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder Switch(Action<ISwitchCaseBuilder> caseBuilder)
+    {
+        if (caseBuilder == null) throw new ArgumentNullException(nameof(caseBuilder));
+        
+        var switchCaseBuilder = new SwitchCaseBuilder { _serviceProvider = _serviceProvider };
+        caseBuilder(switchCaseBuilder);
+        
+        var step = switchCaseBuilder.Build();
+        
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
     {
         _contextType = typeof(TContext);
         return this;
     }
 
+    public IWorkflowBuilder UseContext(IFlowContext context)
+    {
+        _contextInstance = context;
+        return this;
+    }
+
+    public IWorkflowBuilder SetProvider(IServiceProvider provider)
+    {
+        _serviceProvider = provider;
+        return this;
+    }
 
 
     public IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep
     {
-        var step = GetOrCreateStep<TStep>();
+        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
         _errorHandler = step ?? throw new InvalidOperationException($"Could not create instance of {typeof(TStep).Name}");
         return this;
     }
@@ -228,7 +253,8 @@ public class FFlowBuilder : IWorkflowBuilder
 
     public IWorkflow Build()
     {
-        var context = _serviceProvider?.GetService(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext
+        var context = _contextInstance
+                      ?? _serviceProvider?.GetService(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext
                       ?? Activator.CreateInstance(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext;
         var result = new Workflow(_steps, context!);
         
@@ -241,10 +267,4 @@ public class FFlowBuilder : IWorkflowBuilder
     }
     
     
-    private TStep GetOrCreateStep<TStep>() where TStep : class, IFlowStep
-    {
-        var step = _serviceProvider?.GetService(typeof(TStep)) as TStep
-                   ?? Activator.CreateInstance<TStep>();
-        return step;
-    }
 }

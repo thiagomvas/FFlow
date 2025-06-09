@@ -133,6 +133,22 @@ public class WorkflowTests
     }
 
     [Test]
+    public async Task Workflow_ShouldHandleSwitch()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith<TestStep>()
+            .Switch(builder =>
+            {
+                builder.Case(_ => 1 == 1).Then<TestStep>();
+                builder.Case(_ => 1 == 1).Then<ExceptionStep>();
+                builder.Case(_ => 1 == 4).Then<ExceptionStep>();
+            })
+            .Build();
+
+        await workflow.RunAsync(null);
+    }
+
+    [Test]
     public void Then_ShouldInjectDependencies()
     {
         var serviceCollection = new ServiceCollection();

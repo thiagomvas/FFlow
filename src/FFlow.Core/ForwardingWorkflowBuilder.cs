@@ -88,9 +88,24 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ContinueWith<TWorkflowDefinition>();
     }
 
+    public IWorkflowBuilder Switch(Action<ISwitchCaseBuilder> caseBuilder)
+    {
+        return Delegate.Switch(caseBuilder);
+    }
+
     public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
     {
         return Delegate.UseContext<TContext>();
+    }
+
+    public IWorkflowBuilder UseContext(IFlowContext context)
+    {
+        return Delegate.UseContext(context);
+    }
+
+    public IWorkflowBuilder SetProvider(IServiceProvider provider)
+    {
+        return Delegate.SetProvider(provider);
     }
 
     public IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep

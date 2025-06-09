@@ -31,7 +31,12 @@ public interface IWorkflowBuilder
 
     IWorkflowBuilder ContinueWith<TWorkflowDefinition>() where TWorkflowDefinition : class, IWorkflowDefinition;
 
+    IWorkflowBuilder Switch(Action<ISwitchCaseBuilder> caseBuilder);
+    
     IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext;
+    IWorkflowBuilder UseContext(IFlowContext context);
+
+    IWorkflowBuilder SetProvider(IServiceProvider provider);
     
     
     IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep;
