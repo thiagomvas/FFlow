@@ -4,25 +4,13 @@ namespace FFlow.Steps.DotNet;
 
 public static class FlowContextExtensions
 {
-    
-    public static void SetTargetSolution(this IFlowContext context, string solutionPath)
+    public static void SetDotnetConfiguration(this IFlowContext context, DotnetFlowConfiguration configuration)
     {
-        context.Set($"{Internals.BaseNamespace}.{Internals.TargetSolutionKey}", solutionPath);
-    }
-    
-    public static string GetTargetSolution(this IFlowContext context)
-    {
-        return context.Get<string>($"{Internals.BaseNamespace}.{Internals.TargetSolutionKey}");
-    }
-    
-    public static void SetTargetProject(this IFlowContext context, string projectPath)
-    {
-        context.Set($"{Internals.BaseNamespace}.{Internals.TargetProjectKey}", projectPath);
-    }
-    
-    public static string GetTargetProject(this IFlowContext context)
-    {
-        return context.Get<string>($"{Internals.BaseNamespace}.{Internals.TargetProjectKey}");
+        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+        context.Set($"{Internals.BaseNamespace}.Configuration", configuration);
+        
     }
     
     

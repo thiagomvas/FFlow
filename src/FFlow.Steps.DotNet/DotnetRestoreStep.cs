@@ -5,47 +5,31 @@ namespace FFlow.Steps.DotNet;
 
 public class DotnetRestoreStep : IFlowStep
 {
-    /// <inheritdoc />
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        var solutionPath = context.GetTargetSolution();
-        var projectPath = context.GetTargetProject();
+        var config = context.Get<DotnetFlowConfiguration>(Internals.BaseNamespace + ".Configuration");
 
-        if (string.IsNullOrEmpty(solutionPath) && string.IsNullOrEmpty(projectPath))
+        if (string.IsNullOrEmpty(config.TargetSolution) && string.IsNullOrEmpty(config.TargetProject))
         {
             throw new InvalidOperationException("Either a solution or a project must be specified for the restore step.");
         }
 
-        var command = string.IsNullOrEmpty(solutionPath) 
-            ? $"restore \"{projectPath}\"" 
-            : $"restore \"{solutionPath}\"";
+        var target = !string.IsNullOrEmpty(config.TargetSolution) 
+            ? $"\"{config.TargetSolution}\"" 
+            : $"\"{config.TargetProject}\"";
 
-        var process = new Process
+        var command = $"restore {target} {config.ToRestoreArgs()}".Trim();
+
+        var (output, error, exitCode) = await Internals.RunDotnetCommandAsync(command, cancellationToken);
+
+        if (exitCode != 0)
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = "dotnet",
-                Arguments = command,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            }
-        };
-        
-        process.Start();
-        var output = await process.StandardOutput.ReadToEndAsync();
-        var error = await process.StandardError.ReadToEndAsync();
-        process.WaitForExit();
-        
-        if (process.ExitCode != 0)
-        {
-            throw new InvalidOperationException($"Dotnet restore failed with exit code {process.ExitCode}.\nOutput: {output}\nError: {error}");
+            throw new InvalidOperationException($"Dotnet restore failed with exit code {exitCode}.\nOutput: {output}\nError: {error}");
         }
-        
+
         context.Set("DotnetRestoreOutput", output);
         context.Set("DotnetRestoreError", error);
-        context.Set("DotnetRestoreExitCode", process.ExitCode);
+        context.Set("DotnetRestoreExitCode", exitCode);
     }
     
 }
