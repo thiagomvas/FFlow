@@ -107,6 +107,38 @@ public class DotnetFlowConfiguration
         return string.Join(" ", args);
     }
 
+    public string ToTestArgs()
+    {
+        var args = new List<string>();
+
+        if (NoRestore)
+            args.Add("--no-restore");
+
+        if (NoBuild)
+            args.Add("--no-build");
+
+        if (!string.IsNullOrEmpty(Configuration))
+            args.Add($"--configuration {Configuration}");
+
+        if (!string.IsNullOrWhiteSpace(Framework))
+            args.Add($"--framework {Framework}");
+
+        if (!string.IsNullOrWhiteSpace(Runtime))
+            args.Add($"--runtime {Runtime}");
+
+        if (!string.IsNullOrWhiteSpace(OutputDirectory))
+            args.Add($"--results-directory \"{OutputDirectory}\"");
+
+        if (Verbose)
+            args.Add("-v diag");
+
+        if (!string.IsNullOrWhiteSpace(AdditionalArgs))
+            args.Add(AdditionalArgs);
+
+        return string.Join(" ", args);
+    }
+
+
 
 }
 

@@ -6,23 +6,19 @@ var workflow = new FFlowBuilder()
     {
         ctx.SetDotnetConfiguration(new DotnetFlowConfiguration
         {
-            TargetSolution = @"/home/thiagomv/Src/DesignPatterns/DesignPatterns.sln",
-            Configuration = "Debug",
-            NoDependencies = false,
-            NoRestore = false,
-            OutputDirectory = @"/home/thiagomv/build/output",
+            TargetProject = @"/home/thiagomv/Src/FFlow/tests/FFlow.Tests/FFlow.Tests.csproj",
         });
         return Task.CompletedTask;
     })
     .Then<DotnetRestoreStep>()
     .Then<DotnetBuildStep>()
+    .Then<DotnetTestStep>()
     .Then((ctx, ct) =>
     {
-        var output = ctx.Get<string>("DotnetBuildOutput");
-        var error = ctx.Get<string>("DotnetBuildError");
-        var exitCode = ctx.Get<int>("DotnetBuildExitCode");
+        var output = ctx.Get<string>("DotnetTestOutput");
+        var error = ctx.Get<string>("DotnetTestError");
+        var exitCode = ctx.Get<int>("DotnetTestExitCode");
 
-        Console.Clear();
         Console.WriteLine("Build completed:");
         Console.WriteLine($"Exit Code: {exitCode}");
         Console.WriteLine($"Output: {output}");
