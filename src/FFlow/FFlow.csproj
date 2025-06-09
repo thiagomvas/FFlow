@@ -5,9 +5,19 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>FFlow</PackageId>
+        <Description>Fluent workflow engine for orchestrating conditional logic, parallelism, and automation in .NET.</Description>
         <Authors>thiagomvas</Authors>
         <Version>1.0.0-alpha.0</Version>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn>
+        <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(OutputPath)$(AssemblyName).xml" pack="true" packagePath="\" />
+    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
