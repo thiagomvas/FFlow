@@ -1,7 +1,13 @@
 namespace FFlow.Core;
 
+/// <summary>
+/// Represents a base class for workflow builders that forwards calls to another <see cref="IWorkflowBuilder"/> instance.
+/// </summary>
 public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
 {
+    /// <summary>
+    /// The underlying workflow builder that this class forwards calls to.
+    /// </summary>
     protected abstract IWorkflowBuilder Delegate { get; }
     public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {

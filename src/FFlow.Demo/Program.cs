@@ -1,15 +1,21 @@
 ﻿using FFlow;
-using FFlow.Core;
-using FFlow.Demo;
-using FFlow.Extensions.Microsoft.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
+using FFlow.Steps.DotNet;
 
 var workflow = new FFlowBuilder()
-    .StartWith<HelloStep>()
-    .Finally<GoodByeStep>()
+    .StartWith((ctx, ct) =>
+    {
+        ctx.SetDotnetPublishConfig(new()
+        {
+            ProjectOrSolution = @"/home/thiagomv/Src/FFlow/src/FFlow.Demo/FFlow.Demo.csproj",
+        });
+        return Task.CompletedTask;
+    })
+    .Then<DotnetPublishStep>()
+    .Then((ctx, _) =>
+    {
+        Console.WriteLine(ctx.GetInput<DotnetPublishResult>());
+        return Task.CompletedTask;
+    })
     .Build();
 
-var person = new Person(1, [1,2,3,4,5]);
-await workflow.RunAsync(person, new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
-
-record Person(int Id, int[] Friends);
+await workflow.RunAsync(null, CancellationToken.None);

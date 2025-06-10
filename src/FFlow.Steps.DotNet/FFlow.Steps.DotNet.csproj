@@ -5,9 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Description>Core abstractions and execution engine for FFlow workflows, including IFlowStep, IFlowContext, and flow orchestration primitives.</Description>
-        <PackageId>FFlow.Core</PackageId>
-        <AssemblyName>FFlow.Core</AssemblyName>
+        <PackageId>FFlow.Steps.DotNet</PackageId>
+        <Description>
+            Provides steps and configuration methods for interacting with the .NET CLI within FFlow workflows. Supports dotnet run, build, test, etc.
+        </Description>
         <Authors>thiagomvas</Authors>
         <Version>1.0.0-alpha.0</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -19,4 +20,9 @@
     <ItemGroup>
         <None Include="$(OutputPath)$(AssemblyName).xml" pack="true" packagePath="\" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
+    </ItemGroup>
+
 </Project>
