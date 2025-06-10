@@ -23,8 +23,6 @@ public class DotnetBuildStep : IFlowStep
             throw new InvalidOperationException($"Dotnet build failed with exit code {exitCode}.\nOutput: {output}\nError: {error}");
         }
 
-        context.Set("DotnetBuildOutput", output);
-        context.Set("DotnetBuildError", error);
-        context.Set("DotnetBuildExitCode", exitCode);
+        context.SetInput(new DotnetBuildResult(exitCode, output, error));
     }
 }

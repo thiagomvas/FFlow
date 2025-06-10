@@ -22,10 +22,9 @@ public class DotnetRestoreStep : IFlowStep
         {
             throw new InvalidOperationException($"Dotnet restore failed with exit code {exitCode}.\nOutput: {output}\nError: {error}");
         }
-
-        context.Set("DotnetRestoreOutput", output);
-        context.Set("DotnetRestoreError", error);
-        context.Set("DotnetRestoreExitCode", exitCode);
+        
+        
+        context.SetInput(new DotnetRestoreResult(exitCode, output, error));
     }
     
 }
