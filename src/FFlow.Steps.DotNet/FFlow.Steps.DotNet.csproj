@@ -6,7 +6,9 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>FFlow.Steps.DotNet</PackageId>
-        <Description>Fluent workflow engine for orchestrating conditional logic, parallelism, and automation in .NET.</Description>
+        <Description>
+            Provides steps and configuration methods for interacting with the .NET CLI within FFlow workflows. Supports dotnet run, build, test, etc.
+        </Description>
         <Authors>thiagomvas</Authors>
         <Version>1.0.0-alpha.0</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
