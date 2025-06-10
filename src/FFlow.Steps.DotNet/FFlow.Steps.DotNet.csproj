@@ -5,8 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>FFlow.Extensions.Microsoft.DependencyInjection</PackageId>
-        <Description>Integration package for FFlow with Microsoft.Extensions.DependencyInjection, enabling automatic resolution of workflow steps via DI.</Description>
+        <PackageId>FFlow.Steps.DotNet</PackageId>
+        <Description>
+            Provides steps and configuration methods for interacting with the .NET CLI within FFlow workflows. Supports dotnet run, build, test, etc.
+        </Description>
         <Authors>thiagomvas</Authors>
         <Version>1.0.0-alpha.0</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -18,11 +20,7 @@
     <ItemGroup>
         <None Include="$(OutputPath)$(AssemblyName).xml" pack="true" packagePath="\" />
     </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
-    </ItemGroup>
-
+    
     <ItemGroup>
       <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
     </ItemGroup>

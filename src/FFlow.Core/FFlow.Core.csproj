@@ -7,6 +7,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Description>Core abstractions and execution engine for FFlow workflows, including IFlowStep, IFlowContext, and flow orchestration primitives.</Description>
         <PackageId>FFlow.Core</PackageId>
+        <AssemblyName>FFlow.Core</AssemblyName>
         <Authors>thiagomvas</Authors>
         <Version>1.0.0-alpha.0</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
