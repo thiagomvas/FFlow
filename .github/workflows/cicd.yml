@@ -1,37 +1,18 @@
-name: CI/CD
+name: Publish
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: ["Testing"]
+    types:
+      - completed
+    branches:
+      - master
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    outputs:
-      test_passed: ${{ steps.test.outcome == 'success' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore
-
-      - name: Run tests
-        id: test
-        run: dotnet test --no-build --verbosity normal
-
   publish:
-    needs: test
-    if: needs.test.result == 'success'
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
