@@ -152,7 +152,17 @@ namespace FFlow.Core;
         /// <param name="caseBuilder">The action to configure the switch cases.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
         IWorkflowBuilder Switch(Action<ISwitchCaseBuilder> caseBuilder);
-    
+
+        /// <summary>
+        /// Bifurcates the main workflow into separate subflows that run in parallel.
+        /// </summary>
+        /// <param name="forks">The builders for each subflow to be ran in parallel.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        /// <remarks>
+        /// This creates <b>separate</b> flow contexts using <see cref="IFlowContext.Fork"/>, which means they won't share state.
+        /// </remarks>
+        public IWorkflowBuilder Fork(ForkStrategy strategy, params Func<IWorkflowBuilder>[] forks);
+        
         /// <summary>
         /// Sets the context type for the workflow.
         /// </summary>

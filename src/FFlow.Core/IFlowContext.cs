@@ -43,4 +43,12 @@ namespace FFlow.Core;
         /// <param name="value">When this method returns, contains the value associated with the key, if found; otherwise, the default value for the type of the value parameter.</param>
         /// <returns><c>true</c> if the value was found; otherwise, <c>false</c>.</returns>
         bool TryGet<T>(string key, out T value);
+
+        /// <summary>
+        /// Clones the data in the context for use in different threads or flows.
+        /// </summary>
+        /// <returns>
+        /// An instance of <see cref="IFlowContext"/> with the same data as the original.
+        /// </returns>
+        IFlowContext Fork();
     }

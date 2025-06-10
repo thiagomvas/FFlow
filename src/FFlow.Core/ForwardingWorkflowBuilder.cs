@@ -99,6 +99,11 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.Switch(caseBuilder);
     }
 
+    public IWorkflowBuilder Fork(ForkStrategy strategy, params Func<IWorkflowBuilder>[] forks)
+    {
+        return Delegate.Fork(strategy, forks);
+    }
+
     public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
     {
         return Delegate.UseContext<TContext>();
@@ -124,7 +129,7 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.OnAnyError(errorHandlerAction);
     }
 
-    public IWorkflow Build()
+    public virtual IWorkflow Build()
     {
         return Delegate.Build();
     }

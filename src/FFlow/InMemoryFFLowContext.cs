@@ -6,6 +6,16 @@ public class InMemoryFFLowContext : IFlowContext
 {
     private readonly Dictionary<string, object> _storage = new();
 
+    public InMemoryFFLowContext()
+    {
+        
+    }
+
+    public InMemoryFFLowContext(Dictionary<string, object> storage)
+    {
+        _storage = storage;
+    }
+    
     public TInput GetInput<TInput>()
     {
         if (_storage.TryGetValue(Internals.FFlowContextInputKey, out var value))
@@ -60,5 +70,10 @@ public class InMemoryFFLowContext : IFlowContext
         }
         value = default;
         return false; // Key not found
+    }
+
+    public IFlowContext Fork()
+    {
+        return new InMemoryFFLowContext(_storage.ToDictionary());
     }
 }

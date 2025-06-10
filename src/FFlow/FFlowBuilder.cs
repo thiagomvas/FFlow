@@ -217,6 +217,13 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder Fork(ForkStrategy strategy, params Func<IWorkflowBuilder>[] forks)
+    {
+        var step = new ForkStep(strategy, forks);
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
     {
         _contextType = typeof(TContext);
