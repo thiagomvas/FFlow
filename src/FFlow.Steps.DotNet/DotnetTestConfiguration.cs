@@ -3,7 +3,9 @@ namespace FFlow.Steps.DotNet;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+/// <summary>
+/// Configuration options for the <c>dotnet test</c> command.
+/// </summary>
 public class DotnetTestConfiguration
 {
     /// <summary>The project, solution, directory, DLL, or EXE to test.</summary>

@@ -1,7 +1,9 @@
 using System.Text;
 
 namespace FFlow.Steps.DotNet;
-
+/// <summary>
+/// Configuration options for the <c>dotnet restore</c> command.
+/// </summary>
 public class DotnetRestoreConfiguration
 {
     /// <summary>The project or solution to restore dependencies for.</summary>

@@ -2,6 +2,10 @@ using FFlow.Core;
 
 namespace FFlow.Steps.DotNet;
 
+/// <summary>
+/// A workflow step that executes the `dotnet pack` command to generate NuGet packages
+/// from a specified .NET project or solution.
+/// </summary>
 public class DotnetPackStep : IFlowStep
 {
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)

@@ -3,6 +3,9 @@ namespace FFlow.Steps.DotNet;
 using System.Collections.Generic;
 using System.Text;
 
+/// <summary>
+/// Configuration options for the <c>dotnet run</c> command.
+/// </summary>
 public class DotnetRunConfiguration
 {
     /// <summary>Target architecture (e.g., x64, x86, arm).</summary>

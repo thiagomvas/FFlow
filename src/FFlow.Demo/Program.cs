@@ -4,16 +4,16 @@ using FFlow.Steps.DotNet;
 var workflow = new FFlowBuilder()
     .StartWith((ctx, ct) =>
     {
-        ctx.SetDotnetRunConfig(new()
+        ctx.SetDotnetPublishConfig(new()
         {
-            Project = @"/home/thiagomv/Src/DesignPatterns/DesignPatterns/DesignPatterns.csproj",
+            ProjectOrSolution = @"/home/thiagomv/Src/FFlow/src/FFlow.Demo/FFlow.Demo.csproj",
         });
         return Task.CompletedTask;
     })
-    .Then<DotnetRunStep>()
+    .Then<DotnetPublishStep>()
     .Then((ctx, _) =>
     {
-        Console.WriteLine(ctx.GetInput<DotnetRunResult>());
+        Console.WriteLine(ctx.GetInput<DotnetPublishResult>());
         return Task.CompletedTask;
     })
     .Build();

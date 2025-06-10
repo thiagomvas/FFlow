@@ -2,6 +2,10 @@ using FFlow.Core;
 
 namespace FFlow.Steps.DotNet;
 
+/// <summary>
+/// Executes the <c>dotnet run</c> command for a specified project or solution.
+/// Throws if no project or solution is specified or if the run fails.
+/// </summary>
 public class DotnetRunStep : IFlowStep
 {
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)

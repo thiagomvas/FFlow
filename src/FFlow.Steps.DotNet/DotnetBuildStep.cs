@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow.Steps.DotNet;
 
+/// <summary>
+/// A workflow step that executes the <c>dotnet build</c> command to build a .NET project or solution.
+/// </summary>
 public class DotnetBuildStep : IFlowStep
 {
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)

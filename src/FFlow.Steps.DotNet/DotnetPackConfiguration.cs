@@ -2,6 +2,9 @@ namespace FFlow.Steps.DotNet;
 
 using System.Text;
 
+/// <summary>
+/// Configuration options for the <c>dotnet pack</c> command.
+/// </summary>
 public class DotnetPackConfiguration
 {
     /// <summary>The project or solution file to pack.</summary>

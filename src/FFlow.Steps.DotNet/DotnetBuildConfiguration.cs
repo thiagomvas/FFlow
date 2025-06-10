@@ -2,6 +2,10 @@ namespace FFlow.Steps.DotNet;
 
 using System.Text;
 
+
+/// <summary>
+/// Configuration options for the <c>dotnet build</c> command.
+/// </summary>
 public class DotnetBuildConfiguration
 {
     /// <summary>The project or solution file to build.</summary>
