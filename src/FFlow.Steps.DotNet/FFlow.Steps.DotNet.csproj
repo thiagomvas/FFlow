@@ -18,6 +18,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="$(OutputPath)$(AssemblyName).xml" pack="true" packagePath="\" />
+    </ItemGroup>
+    
+    <ItemGroup>
       <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
     </ItemGroup>
 
