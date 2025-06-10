@@ -73,5 +73,20 @@ public static class FlowContextExtensions
         return context.Get<DotnetPackConfiguration>(Internals.DotnetPackConfigKey);
     }
     
+    public static void SetDotnetRunConfig(this IFlowContext context, DotnetRunConfiguration config) 
+    {
+        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (config == null) throw new ArgumentNullException(nameof(config));
+
+        context.Set(Internals.DotnetRunConfigKey, config);
+    }
+    
+    public static DotnetRunConfiguration GetDotnetRunConfig(this IFlowContext context)
+    {
+        if (context == null) throw new ArgumentNullException(nameof(context));
+
+        return context.Get<DotnetRunConfiguration>(Internals.DotnetRunConfigKey);
+    }
+    
     
 }
