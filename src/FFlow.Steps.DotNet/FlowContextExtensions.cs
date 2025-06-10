@@ -79,5 +79,18 @@ public static class FlowContextExtensions
         return context.Get<DotnetRunConfiguration>(Internals.DotnetRunConfigKey);
     }
     
+    public static void SetDotnetPublishConfig(this IFlowContext context, DotnetPublishConfiguration config) 
+    {
+        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (config == null) throw new ArgumentNullException(nameof(config));
+
+        context.Set(Internals.DotnetPublishConfigKey, config);
+    }
     
+    public static DotnetPublishConfiguration GetDotnetPublishConfig(this IFlowContext context)
+    {
+        if (context == null) throw new ArgumentNullException(nameof(context));
+
+        return context.Get<DotnetPublishConfiguration>(Internals.DotnetPublishConfigKey);
+    }
 }
