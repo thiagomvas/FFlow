@@ -4,9 +4,9 @@ namespace FFlow;
 
 public class DelegateFlowStep : IFlowStep
 {
-    private readonly FlowAction _action;
+    private readonly AsyncFlowAction _action;
 
-    public DelegateFlowStep(FlowAction action)
+    public DelegateFlowStep(AsyncFlowAction action)
     {
         _action = action ?? throw new ArgumentNullException(nameof(action));
     }

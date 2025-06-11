@@ -17,8 +17,15 @@ namespace FFlow.Core;
         /// </summary>
         /// <param name="setupAction">The action to configure the starting step.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder StartWith(FlowAction setupAction);
-    
+        IWorkflowBuilder StartWith(AsyncFlowAction setupAction);
+
+        /// <summary>
+        /// Starts the workflow with a synchronous setup action.
+        /// </summary>
+        /// <param name="setupAction">The action to configure the starting step.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder StartWith(SyncFlowAction setupAction);
+        
         /// <summary>
         /// Adds a step to the workflow.
         /// </summary>
@@ -31,7 +38,14 @@ namespace FFlow.Core;
         /// </summary>
         /// <param name="setupAction">The action to configure the step.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder Then(FlowAction setupAction);
+        IWorkflowBuilder Then(AsyncFlowAction setupAction);
+        
+        /// <summary>
+        /// Adds a step to the workflow with a synchronous setup action.
+        /// </summary>
+        /// <param name="setupAction">The action to configure the step.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder Then(SyncFlowAction setupAction);
     
         /// <summary>
         /// Adds a final step to the workflow.
@@ -45,7 +59,14 @@ namespace FFlow.Core;
         /// </summary>
         /// <param name="setupAction">The action to configure the final step.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder Finally(FlowAction setupAction);
+        IWorkflowBuilder Finally(AsyncFlowAction setupAction);
+        
+        /// <summary>
+        /// Adds a final step to the workflow with a synchronous setup action.
+        /// </summary>
+        /// <param name="setupAction">The action to configure the step.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder Finally(SyncFlowAction setupAction);
     
         /// <summary>
         /// Adds a conditional step to the workflow.
@@ -54,7 +75,7 @@ namespace FFlow.Core;
         /// <param name="then">The action to execute if the condition is true.</param>
         /// <param name="otherwise">The optional action to execute if the condition is false.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder If(Func<IFlowContext, bool> condition, FlowAction then, FlowAction? otherwise = null);
+        IWorkflowBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then, AsyncFlowAction? otherwise = null);
     
         /// <summary>
         /// Adds a conditional step to the workflow with a specific step type for the true branch.
@@ -63,8 +84,26 @@ namespace FFlow.Core;
         /// <param name="condition">The condition to evaluate.</param>
         /// <param name="otherwise">The optional action to execute if the condition is false.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, FlowAction? otherwise = null) where TTrue : class, IFlowStep;
+        IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null) where TTrue : class, IFlowStep;
     
+        /// <summary>
+        /// Adds a conditional step to the workflow.
+        /// </summary>
+        /// <param name="condition">The condition to evaluate.</param>
+        /// <param name="then">The synchronous action to execute if the condition is true.</param>
+        /// <param name="otherwise">The optional synchronous action to execute if the condition is false.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then, SyncFlowAction? otherwise = null);
+
+        /// <summary>
+        /// Adds a conditional step to the workflow with a specific step type for the true branch.
+        /// </summary>
+        /// <typeparam name="TTrue">The type of the step for the true branch.</typeparam>
+        /// <param name="condition">The condition to evaluate.</param>
+        /// <param name="otherwise">The optional synchronous action to execute if the condition is false.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null) where TTrue : class, IFlowStep;
+
         /// <summary>
         /// Adds a conditional step to the workflow with specific step types for both true and false branches.
         /// </summary>
@@ -91,7 +130,7 @@ namespace FFlow.Core;
         /// <param name="itemsSelector">The function to select the collection of items.</param>
         /// <param name="action">The action to execute for each item.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, FlowAction action);
+        IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, AsyncFlowAction action);
     
         /// <summary>
         /// Adds a loop to the workflow that iterates over a collection of items of a specific type.
@@ -100,8 +139,26 @@ namespace FFlow.Core;
         /// <param name="itemsSelector">The function to select the collection of items.</param>
         /// <param name="action">The action to execute for each item.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, FlowAction action) where TItem : class;
+        IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action) where TItem : class;
     
+        /// <summary>
+        /// Adds a loop to the workflow that iterates over a collection of items.
+        /// </summary>
+        /// <param name="itemsSelector">The function to select the collection of items.</param>
+        /// <param name="action">The synchronous action to execute for each item.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, SyncFlowAction action);
+
+        /// <summary>
+        /// Adds a loop to the workflow that iterates over a collection of items of a specific type.
+        /// </summary>
+        /// <typeparam name="TItem">The type of the items in the collection.</typeparam>
+        /// <param name="itemsSelector">The function to select the collection of items.</param>
+        /// <param name="action">The synchronous action to execute for each item.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action) where TItem : class;
+
+        
         /// <summary>
         /// Adds a loop to the workflow that iterates over a collection of items with a specific step iterator type.
         /// </summary>
@@ -196,7 +253,7 @@ namespace FFlow.Core;
         /// </summary>
         /// <param name="errorHandlerAction">The action to handle errors.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder OnAnyError(FlowAction errorHandlerAction);
+        IWorkflowBuilder OnAnyError(AsyncFlowAction errorHandlerAction);
     
         /// <summary>
         /// Builds and returns the constructed workflow.

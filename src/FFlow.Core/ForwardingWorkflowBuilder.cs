@@ -14,9 +14,20 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.StartWith<TStep>();
     }
 
-    public IWorkflowBuilder StartWith(FlowAction setupAction)
+    public IWorkflowBuilder StartWith(AsyncFlowAction setupAction)
     {
         return Delegate.StartWith(setupAction);
+    }
+
+    public IWorkflowBuilder StartWith(SyncFlowAction setupAction)
+    {
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            setupAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        return Delegate.StartWith(asyncAction);
     }
 
     public IWorkflowBuilder Then<TStep>() where TStep : class, IFlowStep
@@ -24,9 +35,20 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.Then<TStep>();
     }
 
-    public IWorkflowBuilder Then(FlowAction setupAction)
+    public IWorkflowBuilder Then(AsyncFlowAction setupAction)
     {
         return Delegate.Then(setupAction);
+    }
+
+    public IWorkflowBuilder Then(SyncFlowAction setupAction)
+    {
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            setupAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        return Delegate.Then(asyncAction);
     }
 
     public IWorkflowBuilder Finally<TStep>() where TStep : class, IFlowStep
@@ -34,19 +56,57 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.Finally<TStep>();
     }
 
-    public IWorkflowBuilder Finally(FlowAction setupAction)
+    public IWorkflowBuilder Finally(AsyncFlowAction setupAction)
     {
         return Delegate.Finally(setupAction);
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, FlowAction then, FlowAction? otherwise = null)
+    public IWorkflowBuilder Finally(SyncFlowAction setupAction)
+    {
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            setupAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        return Delegate.Finally(asyncAction);
+    }
+
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then, AsyncFlowAction? otherwise = null)
     {
         return Delegate.If(condition, then, otherwise);
     }
 
-    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, FlowAction? otherwise = null) where TTrue : class, IFlowStep
+    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
     {
         return Delegate.If<TTrue>(condition, otherwise);
+    }
+
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then, SyncFlowAction? otherwise = null)
+    {
+        var asyncThen = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            then(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+
+        var asyncOtherwise = otherwise != null ? new AsyncFlowAction((context, cancellationToken) =>
+        {
+            otherwise(context, cancellationToken);
+            return Task.CompletedTask;
+        }) : null;
+
+        return Delegate.If(condition, asyncThen, asyncOtherwise);
+    }
+
+    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
+    {
+        var asyncOtherwise = otherwise != null ? new AsyncFlowAction((context, cancellationToken) =>
+        {
+            otherwise(context, cancellationToken);
+            return Task.CompletedTask;
+        }) : null;
+
+        return Delegate.If<TTrue>(condition, asyncOtherwise);
     }
 
     public IWorkflowBuilder If<TTrue, TFalse>(Func<IFlowContext, bool> condition) where TTrue : class, IFlowStep where TFalse : class, IFlowStep
@@ -59,14 +119,36 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.If(condition, then, otherwise);
     }
 
-    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, FlowAction action)
+    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, AsyncFlowAction action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, FlowAction action) where TItem : class
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action) where TItem : class
     {
         return Delegate.ForEach(itemsSelector, action);
+    }
+
+    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, SyncFlowAction action)
+    {
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            action(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        return Delegate.ForEach(itemsSelector, asyncAction);
+    }
+
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action) where TItem : class
+    {
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            action(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        return Delegate.ForEach(itemsSelector, asyncAction);
     }
 
     public IWorkflowBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector) where TStepIterator : class, IFlowStep
@@ -124,7 +206,7 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.OnAnyError<TStep>();
     }
 
-    public IWorkflowBuilder OnAnyError(FlowAction errorHandlerAction)
+    public IWorkflowBuilder OnAnyError(AsyncFlowAction errorHandlerAction)
     {
         return Delegate.OnAnyError(errorHandlerAction);
     }
