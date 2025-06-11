@@ -254,6 +254,8 @@ namespace FFlow.Core;
         /// <param name="errorHandlerAction">The action to handle errors.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
         IWorkflowBuilder OnAnyError(AsyncFlowAction errorHandlerAction);
+
+        IWorkflowBuilder OnAnyError(SyncFlowAction errorHandlerAction);
     
         /// <summary>
         /// Builds and returns the constructed workflow.

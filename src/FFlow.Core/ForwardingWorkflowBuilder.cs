@@ -211,6 +211,17 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.OnAnyError(errorHandlerAction);
     }
 
+    public IWorkflowBuilder OnAnyError(SyncFlowAction errorHandlerAction)
+    {
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            errorHandlerAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        return Delegate.OnAnyError(asyncAction);
+    }
+
     public virtual IWorkflow Build()
     {
         return Delegate.Build();

@@ -383,6 +383,20 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder OnAnyError(SyncFlowAction errorHandlerAction)
+    {
+        if (errorHandlerAction == null) throw new ArgumentNullException(nameof(errorHandlerAction));
+        
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            errorHandlerAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        _errorHandler = new DelegateFlowStep(asyncAction);
+        return this;
+    }
+
     public IWorkflow Build()
     {
         var context = _contextInstance
