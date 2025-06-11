@@ -275,7 +275,12 @@ namespace FFlow.Core;
         /// <param name="delay">The time span to delay the next step for.</param>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
         IWorkflowBuilder Delay(TimeSpan delay);
-    
+
+        IWorkflowBuilder Throw(string message);
+        IWorkflowBuilder Throw<TException>(string message) where TException : Exception, new();
+        IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message);
+        IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new();
+        
         /// <summary>
         /// Builds and returns the constructed workflow.
         /// </summary>

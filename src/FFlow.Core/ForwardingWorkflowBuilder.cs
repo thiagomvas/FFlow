@@ -180,6 +180,26 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.Delay(delay);
     }
 
+    public IWorkflowBuilder Throw(string message)
+    {
+        return Delegate.Throw(message);
+    }
+
+    public IWorkflowBuilder Throw<TException>(string message) where TException : Exception, new()
+    {
+        return Delegate.Throw<TException>(message);
+    }
+
+    public IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message)
+    {
+        return Delegate.ThrowIf(condition, message);
+    }
+
+    public IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new()
+    {
+        return Delegate.ThrowIf<TException>(condition, message);
+    }
+
     public virtual IWorkflow Build()
     {
         return Delegate.Build();

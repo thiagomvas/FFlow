@@ -9,7 +9,7 @@ var workflow = new FFlowBuilder()
         .Then((_, _) => Console.WriteLine("Task 1")),
         () => new FFlowBuilder()
             .Delay(1000)
-            .Then((_, _) => Console.WriteLine("Task 2")),
+            .Throw<AccessViolationException>("Simulated access violation exception"),
         () => new FFlowBuilder()
             .Then((_, _) => Console.WriteLine("Task 3")))
     .Then<HelloStep>()

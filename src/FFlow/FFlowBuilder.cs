@@ -415,6 +415,52 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder Throw(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be null or empty.", nameof(message));
+        
+        var step = new ThrowExceptionStep(message);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder Throw<TException>(string message) where TException : Exception, new()
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message cannot be null or empty.", nameof(message));
+
+        var exception = (TException)Activator.CreateInstance(typeof(TException), message)
+                        ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
+
+        var step = new ThrowExceptionStep(exception);
+        _steps.Add(step);
+        return this;
+    }
+
+
+    public IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be null or empty.", nameof(message));
+        
+        var step = new ThrowExceptionIfStep(condition, message);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new()
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be null or empty.", nameof(message));
+        
+        var exception = (TException)Activator.CreateInstance(typeof(TException), message)
+                        ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
+        
+        var step = new ThrowExceptionIfStep(condition, exception);
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflow Build()
     {
         var context = _contextInstance
