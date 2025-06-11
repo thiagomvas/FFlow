@@ -36,10 +36,9 @@ internal class ParallelStepTracker
     {
         if (_parallelTasks.TryRemove(parentId, out var tasks))
         {
+            var allTasks = Task.WhenAll(tasks);
             try
             {
-                var allTasks = Task.WhenAll(tasks);
-
                 using (cancellationToken.Register(() => throw new OperationCanceledException(cancellationToken)))
                 {
                     await allTasks;
@@ -49,10 +48,13 @@ internal class ParallelStepTracker
             {
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new AggregateException($"Error while awaiting tasks for {parentId}", ex);
+                if (allTasks.Exception != null)
+                    throw new AggregateException($"Error while awaiting tasks for {parentId}", allTasks.Exception.InnerExceptions);
+                throw;
             }
+
         }
     }
 
