@@ -4,6 +4,7 @@ namespace FFlow;
 
 public class Workflow : IWorkflow
 {
+    public readonly Guid Id = Guid.NewGuid();
     private readonly IReadOnlyList<IFlowStep> _steps;
     private IFlowContext _context;
     private IFlowStep _globalErrorHandler;
@@ -28,14 +29,19 @@ public class Workflow : IWorkflow
 
     public async Task<IFlowContext> RunAsync(object input, CancellationToken cancellationToken = default)
     {
+        _context.SetId(Id);
         if(input is not null)
             _context.SetInput(input);
         try 
         {
+            ParallelStepTracker.Instance.Initialize(Id);
+            
             foreach (var step in _steps)
             {
                 await step.RunAsync(_context, cancellationToken);
             }
+
+            await ParallelStepTracker.Instance.WaitForAllTasksAsync(Id);
         }
         catch (Exception ex)
         {

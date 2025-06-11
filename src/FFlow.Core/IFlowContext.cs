@@ -5,6 +5,7 @@ namespace FFlow.Core;
     /// </summary>
     public interface IFlowContext
     {
+        Guid Id { get; }
         /// <summary>
         /// Retrieves the input of the specified type from the context.
         /// </summary>
@@ -51,4 +52,6 @@ namespace FFlow.Core;
         /// An instance of <see cref="IFlowContext"/> with the same data as the original.
         /// </returns>
         IFlowContext Fork();
+
+        IFlowContext SetId(Guid id);
     }
