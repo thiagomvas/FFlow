@@ -87,6 +87,7 @@ public class WorkflowTests
         }
     }
     
+    
     [Test]
     public async Task Workflow_ShouldHandleForEach()
     {
@@ -146,6 +147,53 @@ public class WorkflowTests
             .Build();
 
         await workflow.RunAsync(null);
+    }
+
+    [Test]
+    public async Task Fork_WhenWaitForAll_ShouldWaitBeforeContinuing()
+    {
+        var messages = new List<string>();
+        var workflow = new FFlowBuilder()
+            .StartWith((_, _) => messages.Add("Starting"))
+            .Fork(ForkStrategy.WaitForAll, 
+                () => new FFlowBuilder()
+                    .Then((_, _) => messages.Add("1")),
+                () => new FFlowBuilder()
+                    .Then((_, _) => messages.Add("2")))
+            .Then((_, _) => messages.Add("All"))
+            .Build();
+        
+        await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        // Check if 1 and 2 are present before "All"
+        Assert.That(messages, Does.Contain("1"), "Message '1' should be present in the messages.");
+        Assert.That(messages, Does.Contain("2"), "Message '2' should be present in the messages.");
+        Assert.Multiple(() =>
+        {
+            Assert.That(messages.IndexOf("1"), Is.LessThan(messages.IndexOf("All")), "Message '1' should appear before 'All'.");
+            Assert.That(messages.IndexOf("2"), Is.LessThan(messages.IndexOf("All")), "Message '2' should appear before 'All'.");
+            Assert.That(messages, Does.Contain("All"), "Message 'All' should be present in the messages.");
+        });
+    }
+    
+    [Test]
+    public async Task Fork_WhenFireAndForget_ShouldNotWaitBeforeContinuing()
+    {
+        var messages = new List<string>();
+        var workflow = new FFlowBuilder()
+            .StartWith((_, _) => messages.Add("Starting"))
+            .Fork(ForkStrategy.FireAndForget, 
+                () => new FFlowBuilder()
+                    .Then((_, _) => messages.Add("1")),
+                () => new FFlowBuilder()
+                    .Then((_, _) => messages.Add("2")))
+            .Then((_, _) => messages.Add("All"))
+            .Build();
+        
+        await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        
+        Assert.That(messages, Does.Contain("1"), "Message '1' should be present in the messages.");
+        Assert.That(messages, Does.Contain("2"), "Message '2' should be present in the messages.");
+        Assert.That(messages, Does.Contain("All"), "Message 'All' should be present in the messages.");
     }
 
     [Test]
@@ -218,7 +266,7 @@ public class WorkflowTests
             .Build(), "If<TTrue,TFalse> should inject the services");
         
         Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .If<DiStep>(ctx => true)
+            .If<DiStep>(ctx => true, null)
             .Build(), "If<TTrue> should inject the services");
         
         
@@ -246,5 +294,92 @@ public class WorkflowTests
         
         Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
             .ForEach<int>(_ => [1, 2, 3], () => new FFlowBuilder(serviceProvider).StartWith<DiStep>()));
+    }
+    
+    [Test]
+    public void Fork_ShouldInjectDependencies()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
+        
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        
+        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
+            .Fork(ForkStrategy.FireAndForget, () => new FFlowBuilder(serviceProvider).StartWith<DiStep>()));
+        
+        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
+            .Fork(ForkStrategy.FireAndForget, () => new FFlowBuilder(serviceProvider).StartWith<DiStep>(),
+                () => new FFlowBuilder(serviceProvider).StartWith<DiStep>()));
+    }
+
+    [Test]
+    public async Task Fork_WhenThrowingSingle_ShouldHandle()
+    {
+
+
+        var workflow = new FFlowBuilder()
+            .StartWith((_, _) => Task.Run(() => Console.WriteLine("Starting")))
+            .Fork(ForkStrategy.FireAndForget, () => new FFlowBuilder()
+                    .Then((_, _) => Console.WriteLine("Task 1")),
+                () => new FFlowBuilder()
+                    .Then((_, _) => throw new Exception("Task 2 threw an exception"))
+                    .Then((_, _) => Console.WriteLine("Task 2")),
+                () => new FFlowBuilder()
+                    .Then((_, _) => Console.WriteLine("Task 3")))
+            .OnAnyError((ctx, ct) =>
+            {
+                var ex = ctx.Get<Exception>("Exception");
+                Assert.That(ex, Is.Not.Null);
+                Assert.That(ex, Is.InstanceOf<AggregateException>());
+                
+                // Check the inners
+                var aggregateException = ex as AggregateException;
+                Assert.That(aggregateException?.InnerExceptions, Has.Count.EqualTo(1));
+                Assert.That(aggregateException?.InnerExceptions[0], Is.InstanceOf<Exception>());
+                Assert.That(aggregateException?.InnerExceptions[0].Message, Is.EqualTo("Task 2 threw an exception"));
+                
+                return Task.CompletedTask;
+            })
+            .Build();
+        
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Workflow should execute without throwing an exception when handling a single forked step that throws an exception.");
+    }
+    
+    [Test]
+    public async Task Fork_WhenThrowingMultiple_ShouldHandle()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((_, _) => Task.Run(() => Console.WriteLine("Starting")))
+            .Fork(ForkStrategy.FireAndForget, () => new FFlowBuilder()
+                    .Then((_, _) => Console.WriteLine("Task 1")),
+                () => new FFlowBuilder()
+                    .Then((_, _) => throw new Exception("Task 2 threw an exception"))
+                    .Then((_, _) => Console.WriteLine("Task 2")),
+                () => new FFlowBuilder()
+                    .Then((_, _) => throw new Exception("Task 3 threw an exception"))
+                    .Then((_, _) => Console.WriteLine("Task 3")))
+            .OnAnyError((ctx, ct) =>
+            {
+                var ex = ctx.Get<Exception>("Exception");
+                Assert.That(ex, Is.Not.Null);
+                Assert.That(ex, Is.InstanceOf<AggregateException>());
+                
+                // Check the inners
+                var aggregateException = ex as AggregateException;
+                Assert.That(aggregateException?.InnerExceptions, Has.Count.EqualTo(2));
+                Assert.That(aggregateException?.InnerExceptions[0], Is.InstanceOf<Exception>());
+                Assert.That(aggregateException?.InnerExceptions[1], Is.InstanceOf<Exception>());
+                
+                return Task.CompletedTask;
+            })
+            .Build();
+        
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Workflow should execute without throwing an exception when handling multiple forked steps that throw exceptions.");
     }
 }
