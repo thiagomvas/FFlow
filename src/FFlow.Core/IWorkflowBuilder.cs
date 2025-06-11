@@ -255,7 +255,26 @@ namespace FFlow.Core;
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
         IWorkflowBuilder OnAnyError(AsyncFlowAction errorHandlerAction);
 
+        /// <summary>
+        /// Adds a synchronous error handler action to the workflow that executes on any error.
+        /// </summary>
+        /// <param name="errorHandlerAction">The action to handle errors.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
         IWorkflowBuilder OnAnyError(SyncFlowAction errorHandlerAction);
+        
+        /// <summary>
+        /// Adds a delay to the workflow execution.
+        /// </summary>
+        /// <param name="milliseconds">The number of milliseconds to delay the next step for.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder Delay(int milliseconds);
+        
+        /// <summary>
+        /// Adds a delay to the workflow execution.
+        /// </summary>
+        /// <param name="delay">The time span to delay the next step for.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder Delay(TimeSpan delay);
     
         /// <summary>
         /// Builds and returns the constructed workflow.

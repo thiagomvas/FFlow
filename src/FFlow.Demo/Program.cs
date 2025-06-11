@@ -8,7 +8,7 @@ var workflow = new FFlowBuilder()
     .Fork(ForkStrategy.FireAndForget, () => new FFlowBuilder()
         .Then((_, _) => Console.WriteLine("Task 1")),
         () => new FFlowBuilder()
-            .Then((_, _) => Task.Delay(1000))
+            .Delay(1000)
             .Then((_, _) => Console.WriteLine("Task 2")),
         () => new FFlowBuilder()
             .Then((_, _) => Console.WriteLine("Task 3")))
@@ -27,7 +27,6 @@ var workflow = new FFlowBuilder()
         }
         
         return Task.CompletedTask;
-        
     })
     .Build();
 

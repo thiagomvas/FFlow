@@ -397,6 +397,24 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder Delay(int milliseconds)
+    {
+        if (milliseconds < 0) throw new ArgumentOutOfRangeException(nameof(milliseconds), "Delay must be a non-negative value.");
+        
+        var step = new DelayStep(milliseconds);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder Delay(TimeSpan delay)
+    {
+        if (delay < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(delay), "Delay must be a non-negative value.");
+        
+        var step = new DelayStep(delay);
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflow Build()
     {
         var context = _contextInstance
