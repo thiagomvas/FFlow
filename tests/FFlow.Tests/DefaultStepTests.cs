@@ -184,4 +184,56 @@ public class DefaultStepTests
             await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
         }, "Workflow should execute without throwing an exception when handling multiple forked steps that throw exceptions.");
     }
+    
+    [Test]
+    public async Task Throw_ShouldAlwaysThrowException()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((_, _) => Task.Run(() => Console.WriteLine("Starting")))
+            .Throw<InvalidOperationException>("This is a test exception")
+            .Build();
+        
+        try
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            Assert.Fail("Expected InvalidOperationException to be thrown.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            Assert.That(ex.Message, Is.EqualTo("This is a test exception"), "The exception message should match the expected message.");
+        }
+    }
+
+    [Test]
+    public async Task ThrowIf_ShouldOnlyThrow_WhenTrue()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((_, _) => Task.Run(() => Console.WriteLine("Starting")))
+            .ThrowIf<InvalidOperationException>(ctx => true, "This is a test exception")
+            .Build();
+        
+        try
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            Assert.Fail("Expected InvalidOperationException to be thrown.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            Assert.That(ex.Message, Is.EqualTo("This is a test exception"), "The exception message should match the expected message.");
+        }
+    }
+    
+    [Test]
+    public async Task ThrowIf_ShouldNotThrow_WhenFalse()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((_, _) => Task.Run(() => Console.WriteLine("Starting")))
+            .ThrowIf<InvalidOperationException>(ctx => false, "This should not throw")
+            .Build();
+        
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Workflow should execute without throwing an exception when ThrowIf condition is false.");
+    }
 }
