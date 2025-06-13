@@ -2,8 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class FFlowBuilder : IWorkflowBuilder
+public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
 {
+    private WorkflowOptions? _options { get; set;}
     private readonly List<IFlowStep> _steps = new List<IFlowStep>();
     private IFlowStep? _errorHandler;
     private IServiceProvider? _serviceProvider;
@@ -466,7 +467,7 @@ public class FFlowBuilder : IWorkflowBuilder
         var context = _contextInstance
                       ?? _serviceProvider?.GetService(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext
                       ?? Activator.CreateInstance(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext;
-        var result = new Workflow(_steps, context!);
+        var result = new Workflow(_steps, context!, _options);
         
         if (_errorHandler != null)
         {
@@ -475,6 +476,14 @@ public class FFlowBuilder : IWorkflowBuilder
         
         return result;
     }
-    
-    
+
+
+    public IWorkflowBuilder WithOptions(Action<WorkflowOptions> configure)
+    {
+        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        
+        _options ??= new WorkflowOptions();
+        configure(_options);
+        return this;
+    }
 }

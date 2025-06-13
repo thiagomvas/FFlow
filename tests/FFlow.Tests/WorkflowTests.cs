@@ -87,6 +87,45 @@ public class WorkflowTests
         }
     }
     
+    [Test]
+    public async Task Workflow_ShouldTimeout_AfterGlobalTimeout()
+    {
+        var workflow = new FFlowBuilder()
+            .WithOptions(options => options.GlobalTimeout = TimeSpan.FromMilliseconds(200))
+            .Delay(120)
+            .Delay(120)
+            .Then((_, _) => Assert.Fail())
+            .Build();
+        
+        try
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            Assert.Fail("Expected operation to timeout.");
+        }
+        catch (OperationCanceledException)
+        {
+            Assert.Pass("Workflow execution timed out as expected.");
+        }
+    }
     
+    [Test]
+    public async Task Workflow_ShouldTimeout_AfterStepTimeout()
+    {
+        var workflow = new FFlowBuilder()
+            .WithOptions(options => options.StepTimeout = TimeSpan.FromMilliseconds(200))
+            .Delay(300)
+            .Then((_, _) => Assert.Fail())
+            .Build();
+        
+        try
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            Assert.Fail("Expected operation to timeout.");
+        }
+        catch (OperationCanceledException)
+        {
+            Assert.Pass("Workflow execution timed out as expected.");
+        }
+    }
     
 }

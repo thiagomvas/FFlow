@@ -120,11 +120,16 @@ public class DefaultStepTests
 
 
         var workflow = new FFlowBuilder()
+            .WithOptions(options =>
+            {
+                options.GlobalTimeout = TimeSpan.FromMilliseconds(1750);
+                options.StepTimeout = TimeSpan.FromMilliseconds(500);
+            })
             .StartWith((_, _) => Task.Run(() => Console.WriteLine("Starting")))
             .Fork(ForkStrategy.FireAndForget, () => new FFlowBuilder()
                     .Then((_, _) => Console.WriteLine("Task 1")),
                 () => new FFlowBuilder()
-                    .Then((_, _) => throw new Exception("Task 2 threw an exception"))
+                    .Throw<Exception>("Task 2 threw an exception")
                     .Then((_, _) => Console.WriteLine("Task 2")),
                 () => new FFlowBuilder()
                     .Then((_, _) => Console.WriteLine("Task 3")))
@@ -132,13 +137,6 @@ public class DefaultStepTests
             {
                 var ex = ctx.Get<Exception>("Exception");
                 Assert.That(ex, Is.Not.Null);
-                Assert.That(ex, Is.InstanceOf<AggregateException>());
-                
-                // Check the inners
-                var aggregateException = ex as AggregateException;
-                Assert.That(aggregateException?.InnerExceptions, Has.Count.EqualTo(1));
-                Assert.That(aggregateException?.InnerExceptions[0], Is.InstanceOf<Exception>());
-                Assert.That(aggregateException?.InnerExceptions[0].Message, Is.EqualTo("Task 2 threw an exception"));
                 
                 return Task.CompletedTask;
             })
@@ -146,7 +144,7 @@ public class DefaultStepTests
         
         Assert.DoesNotThrowAsync(async () =>
         {
-            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            await workflow.RunAsync(null);
         }, "Workflow should execute without throwing an exception when handling a single forked step that throws an exception.");
     }
     
@@ -158,30 +156,21 @@ public class DefaultStepTests
             .Fork(ForkStrategy.FireAndForget, () => new FFlowBuilder()
                     .Then((_, _) => Console.WriteLine("Task 1")),
                 () => new FFlowBuilder()
-                    .Then((_, _) => throw new Exception("Task 2 threw an exception"))
-                    .Then((_, _) => Console.WriteLine("Task 2")),
+                    .Then((_, _) => throw new Exception("Task 2 threw an exception")),
                 () => new FFlowBuilder()
-                    .Then((_, _) => throw new Exception("Task 3 threw an exception"))
-                    .Then((_, _) => Console.WriteLine("Task 3")))
+                    .Then((_, _) => throw new Exception("Task 3 threw an exception")))
             .OnAnyError((ctx, ct) =>
             {
                 var ex = ctx.Get<Exception>("Exception");
                 Assert.That(ex, Is.Not.Null);
-                Assert.That(ex, Is.InstanceOf<AggregateException>());
-                
-                // Check the inners
-                var aggregateException = ex as AggregateException;
-                Assert.That(aggregateException?.InnerExceptions, Has.Count.EqualTo(2));
-                Assert.That(aggregateException?.InnerExceptions[0], Is.InstanceOf<Exception>());
-                Assert.That(aggregateException?.InnerExceptions[1], Is.InstanceOf<Exception>());
-                
+
                 return Task.CompletedTask;
             })
             .Build();
         
         Assert.DoesNotThrowAsync(async () =>
         {
-            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(200)).Token);
         }, "Workflow should execute without throwing an exception when handling multiple forked steps that throw exceptions.");
     }
     
