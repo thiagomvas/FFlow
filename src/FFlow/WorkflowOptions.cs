@@ -24,6 +24,11 @@ using FFlow.Core;
         /// If <c>null</c>, no decoration is applied to steps.
         /// </summary>
         public Func<IFlowStep, IFlowStep>? StepDecoratorFactory { get; set; } = null;
+        
+        /// <summary>
+        /// Gets or sets the event listener for workflow events.
+        /// </summary>
+        public IFlowEventListener? EventListener { get; set; } = null;
     
         /// <summary>
         /// Adds a decorator to the workflow steps.
@@ -41,6 +46,32 @@ using FFlow.Core;
     
             var currentDecorator = StepDecoratorFactory;
             StepDecoratorFactory = step => decorator(currentDecorator(step));
+            return this;
+        }
+        
+        /// <summary>
+        /// Registers an event listener for workflow events.
+        /// </summary>
+        /// <param name="listener">The event listener to register</param>
+        /// <returns>The updated <see cref="WorkflowOptions"/> instance.</returns>
+        /// <remarks>
+        /// If an event listener is already registered, the new listener is added to a composite listener.
+        /// There is no limit to the number of listeners that can be registered.
+        /// </remarks>
+        public WorkflowOptions WithEventListener(IFlowEventListener listener)
+        {
+            if (EventListener is null)
+            {
+                EventListener = listener;
+            }
+            else if (EventListener is CompositeFlowEventListener composite)
+            {
+                composite.AddListener(listener);
+            }
+            else
+            {
+                EventListener = new CompositeFlowEventListener(new[] { EventListener, listener });
+            }
             return this;
         }
     }

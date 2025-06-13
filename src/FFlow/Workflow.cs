@@ -9,7 +9,7 @@ public class Workflow : IWorkflow
     private IFlowContext _context;
     private IFlowStep _globalErrorHandler;
     private readonly WorkflowOptions? _options;
-    
+
     public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null)
     {
         _steps = steps ?? throw new ArgumentNullException(nameof(steps));
@@ -22,10 +22,11 @@ public class Workflow : IWorkflow
             {
                 decoratedSteps.Add(options.StepDecoratorFactory(step));
             }
+
             _steps = decoratedSteps.AsReadOnly();
         }
     }
-    
+
     public IWorkflow SetGlobalErrorHandler(IFlowStep errorHandler)
     {
         _globalErrorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
@@ -44,6 +45,10 @@ public class Workflow : IWorkflow
         if (input is not null)
             _context.SetInput(input);
 
+
+        var eventListener = _options?.EventListener;
+        eventListener?.OnWorkflowStarted(this);
+        IFlowStep? current = null;
         try
         {
             ParallelStepTracker.Instance.Initialize(Id);
@@ -59,6 +64,8 @@ public class Workflow : IWorkflow
 
             foreach (var step in _steps)
             {
+                eventListener?.OnStepStarted(step, _context);
+                current = step;
                 if (_options?.StepTimeout is not null)
                 {
                     using var stepCts = CancellationTokenSource.CreateLinkedTokenSource(effectiveToken);
@@ -69,6 +76,8 @@ public class Workflow : IWorkflow
                 {
                     await step.RunAsync(_context, effectiveToken);
                 }
+
+                eventListener?.OnStepCompleted(step, _context);
             }
 
             if (_options?.StepTimeout is not null)
@@ -81,10 +90,13 @@ public class Workflow : IWorkflow
             {
                 await ParallelStepTracker.Instance.WaitForAllTasksAsync(Id, effectiveToken);
             }
-
         }
         catch (Exception ex)
         {
+            if (current is not null)
+                eventListener?.OnStepFailed(current, _context, ex);
+
+            eventListener?.OnWorkflowFailed(this, ex);
             if (_globalErrorHandler != null)
             {
                 _context.Set("Exception", ex);
@@ -96,7 +108,7 @@ public class Workflow : IWorkflow
             }
         }
 
+        eventListener?.OnWorkflowCompleted(this);
         return _context;
     }
-
 }
