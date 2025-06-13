@@ -1,25 +1,46 @@
 using FFlow.Core;
-
-namespace FFlow;
-
-public class WorkflowOptions
-{
-    public TimeSpan? StepTimeout { get; set; } = null;
-    public TimeSpan? GlobalTimeout { get; set; } = null;
     
+    namespace FFlow;
     
-    public Func<IFlowStep, IFlowStep>? StepDecoratorFactory { get; set; } = null;
-
-    public WorkflowOptions AddStepDecorator(Func<IFlowStep, IFlowStep> decorator)
+    /// <summary>
+    /// Represents configuration options for a workflow, including timeouts and step decorators.
+    /// </summary>
+    public class WorkflowOptions
     {
-        if (StepDecoratorFactory is null)
+        /// <summary>
+        /// Gets or sets the timeout for individual steps in the workflow.
+        /// If <c>null</c>, no timeout is applied to steps.
+        /// </summary>
+        public TimeSpan? StepTimeout { get; set; } = null;
+    
+        /// <summary>
+        /// Gets or sets the global timeout for the entire workflow.
+        /// If <c>null</c>, no global timeout is applied.
+        /// </summary>
+        public TimeSpan? GlobalTimeout { get; set; } = null;
+    
+        /// <summary>
+        /// Gets or sets the factory function used to decorate workflow steps.
+        /// If <c>null</c>, no decoration is applied to steps.
+        /// </summary>
+        public Func<IFlowStep, IFlowStep>? StepDecoratorFactory { get; set; } = null;
+    
+        /// <summary>
+        /// Adds a decorator to the workflow steps.
+        /// If a decorator already exists, the new decorator is composed with the existing one.
+        /// </summary>
+        /// <param name="decorator">The function to decorate workflow steps.</param>
+        /// <returns>The updated <see cref="WorkflowOptions"/> instance.</returns>
+        public WorkflowOptions AddStepDecorator(Func<IFlowStep, IFlowStep> decorator)
         {
-            StepDecoratorFactory = decorator;
+            if (StepDecoratorFactory is null)
+            {
+                StepDecoratorFactory = decorator;
+                return this;
+            }
+    
+            var currentDecorator = StepDecoratorFactory;
+            StepDecoratorFactory = step => decorator(currentDecorator(step));
             return this;
         }
-
-        var currentDecorator = StepDecoratorFactory;
-        StepDecoratorFactory = step => decorator(currentDecorator(step));
-        return this;
     }
-}
