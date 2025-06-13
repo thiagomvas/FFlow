@@ -127,5 +127,18 @@ public class WorkflowTests
             Assert.Pass("Workflow execution timed out as expected.");
         }
     }
-    
+
+    [Test]
+    public async Task Workflow_ShouldUseDecorators()
+    {
+        var workflow = new FFlowBuilder()
+            .WithOptions(options => options.StepDecoratorFactory = step => new TestStepDecorator(step))
+            .StartWith<TestStep>()
+            .Build();
+
+        var ctx = await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        
+        var decoratedCounter = ctx.Get<int>("decorated_counter");
+        Assert.That(decoratedCounter, Is.EqualTo(1), "The step decorator should have incremented the counter.");
+    }
 }
