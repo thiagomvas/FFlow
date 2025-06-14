@@ -141,4 +141,43 @@ public class WorkflowTests
         var decoratedCounter = ctx.Get<int>("decorated_counter");
         Assert.That(decoratedCounter, Is.EqualTo(1), "The step decorator should have incremented the counter.");
     }
+    
+    [Test]
+    public async Task WorkflowListener_ShouldBeInvoked()
+    {
+        var listener = new TestFlowEventListener();
+        var workflow = new FFlowBuilder()
+            .WithOptions(options => options.EventListener = listener)
+            .StartWith<TestStep>()
+            .Then<TestStep>()
+            .Build();
+
+        await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        
+        Assert.That(listener.WorkflowStartedCount, Is.EqualTo(1), "Workflow started event should be invoked.");
+        Assert.That(listener.StepStartedCount, Is.EqualTo(2), "Step started event should be invoked.");
+        Assert.That(listener.WorkflowCompletedCount, Is.EqualTo(1), "Workflow completed event should be invoked.");
+        Assert.That(listener.StepCompletedCount, Is.EqualTo(2), "Step completed event should be invoked.");
+    }
+
+    [Test]
+    public async Task WorkflowListener_ShouldCountWithErrorsCorrectly()
+    {
+        var listener = new TestFlowEventListener();
+        var workflow = new FFlowBuilder()
+            .WithOptions(options => options.EventListener = listener)
+            .StartWith<TestStep>()
+            .Throw<InvalidOperationException>("Simulated error")
+            .Then<TestStep>()
+            .OnAnyError((_, _) => Task.CompletedTask)
+            .Build();
+
+        await workflow.RunAsync(null);
+        Assert.That(listener.WorkflowStartedCount, Is.EqualTo(1), "Workflow started event should be invoked.");
+        Assert.That(listener.StepStartedCount, Is.EqualTo(2), "Step started event should be invoked.");
+        Assert.That(listener.WorkflowCompletedCount, Is.EqualTo(1), "Workflow completed event should not be invoked.");
+        Assert.That(listener.StepCompletedCount, Is.EqualTo(1), "Step completed event should be invoked for the first step only.");
+        Assert.That(listener.StepFailedCount, Is.EqualTo(1), "Step errored event should be invoked for the step that threw an exception.");
+        Assert.That(listener.WorkflowFailedCount, Is.EqualTo(1), "Workflow errored event should be invoked since we handled the error.");
+    }
 }
