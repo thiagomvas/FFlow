@@ -1,4 +1,5 @@
 using FFlow.Core;
+using FFlow.Exceptions;
 
 namespace FFlow;
 
@@ -22,9 +23,7 @@ internal class Internals
             return Activator.CreateInstance<TStep>();
         }
 
-        throw new InvalidOperationException(
-            $"Cannot create instance of {typeof(TStep).FullName}. " +
-            "No service registered and no public parameterless constructor found.");
+        throw new StepCreationException(typeof(TStep));
     }
 
     

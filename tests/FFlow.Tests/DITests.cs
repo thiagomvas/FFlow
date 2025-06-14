@@ -1,4 +1,5 @@
 using FFlow.Core;
+using FFlow.Exceptions;
 using FFlow.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Workflow.Tests.Shared;
@@ -7,6 +8,17 @@ namespace FFlow.Tests;
 
 public class DITests
 {
+    [Test]
+    public void StepCreation_ShouldThrow_WhenNoDiResolutionOrParameterlessConstructor()
+    {
+        var serviceCollection = new ServiceCollection();
+        
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        
+        Assert.Throws<StepCreationException>(() => new FFlowBuilder(serviceProvider)
+            .StartWith<DiStep>()
+            .Build(), "Should throw StepCreationException when no DI resolution or parameterless constructor is available.");
+    }
     
     [Test]
     public void Then_ShouldInjectDependencies()
