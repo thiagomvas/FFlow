@@ -29,10 +29,11 @@ using System.Reflection;
             {
                 // Register all types implementing IFlowStep
                 var stepTypes = assembly.GetTypes()
-                    .Where(t => typeof(IFlowStep).IsAssignableFrom(t) && !t.IsAbstract && t.IsClass);
+                    .Where(t => typeof(IFlowStep).IsAssignableFrom(t) && !t.IsAbstract && t.IsClass && !typeof(BaseStepDecorator).IsAssignableFrom(t));
     
                 foreach (var stepType in stepTypes)
                 {
+                    services.AddTransient(stepType);
                     services.AddTransient(typeof(IFlowStep), stepType);
                 }
     
