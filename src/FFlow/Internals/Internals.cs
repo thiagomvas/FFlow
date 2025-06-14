@@ -8,9 +8,24 @@ internal class Internals
 
     internal static TStep GetOrCreateStep<TStep>(IServiceProvider? serviceProvider) where TStep : class, IFlowStep
     {
-        var step = serviceProvider?.GetService(typeof(TStep)) as TStep
-                   ?? Activator.CreateInstance<TStep>();
-        return step;
+        if (serviceProvider != null)
+        {
+            var step = (TStep) serviceProvider.GetService(typeof(TStep));
+            if (step != null)
+                return step;
+        }
+
+        // Fallback only if TStep has a public parameterless constructor
+        var constructor = typeof(TStep).GetConstructor(Type.EmptyTypes);
+        if (constructor != null)
+        {
+            return Activator.CreateInstance<TStep>();
+        }
+
+        throw new InvalidOperationException(
+            $"Cannot create instance of {typeof(TStep).FullName}. " +
+            "No service registered and no public parameterless constructor found.");
     }
+
     
 }
