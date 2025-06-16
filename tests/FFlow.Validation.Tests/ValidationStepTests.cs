@@ -57,4 +57,32 @@ public class ValidationStepTests
             await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
         }, "Should not throw when the value matches the regex pattern.");
     }
+    
+    [Test]
+    public async Task NotNullStep_ShouldThrow_IfValueIsNull()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((ctx, ct) => ctx.Set<object?>("test_key", null))
+            .RequireNotNull("test_key")
+            .Build();
+
+        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Should throw ArgumentNullException when the value is null.");
+    }
+    
+    [Test]
+    public async Task NotNullStep_ShouldNotThrow_IfValueIsNotNull()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((ctx, ct) => ctx.Set("test_key", "value"))
+            .RequireNotNull("test_key")
+            .Build();
+
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Should not throw when the value is not null.");
+    }
 }
