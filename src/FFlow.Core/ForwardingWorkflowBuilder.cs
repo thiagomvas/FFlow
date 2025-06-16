@@ -200,6 +200,11 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ThrowIf<TException>(condition, message);
     }
 
+    public IWorkflowBuilder CheckForKey(string key)
+    {
+        return Delegate.CheckForKey(key);
+    }
+
     public virtual IWorkflow Build()
     {
         return Delegate.Build();

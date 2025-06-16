@@ -280,6 +280,13 @@ namespace FFlow.Core;
         IWorkflowBuilder Throw<TException>(string message) where TException : Exception, new();
         IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message);
         IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new();
+
+        /// <summary>
+        /// Checks if a specific key exists in the workflow context.
+        /// </summary>
+        /// <param name="key">The key to check for.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder CheckForKey(string key);
         
         /// <summary>
         /// Builds and returns the constructed workflow.
