@@ -29,6 +29,7 @@ public class ValidationTests
         }, "Should not throw when the key exists in the context.");
     }
     
+    [Test]
     public async Task RegexPatternStep_ShouldThrow_IfValueDoesNotMatchPattern()
     {
         var workflow = new FFlowBuilder()
