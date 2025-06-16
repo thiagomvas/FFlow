@@ -464,9 +464,19 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
 
     public IWorkflowBuilder RequireKey(string key)
     {
-        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
+        return RequireKeys(key);
+    }
+
+    public IWorkflowBuilder RequireKeys(params string[] keys)
+    {
+        if (keys == null || keys.Length == 0) throw new ArgumentException("Keys cannot be null or empty.", nameof(keys));
         
-        var step = new HasKeyStep(key);
+        foreach (var key in keys)
+        {
+            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(keys));
+        }
+        
+        var step = new HasKeyStep(keys);
         _steps.Add(step);
         return this;
     }

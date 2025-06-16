@@ -289,6 +289,13 @@ namespace FFlow.Core;
         IWorkflowBuilder RequireKey(string key);
         
         /// <summary>
+        /// Checks if multiple specific keys exist in the workflow context.
+        /// </summary>
+        /// <param name="keys">The keys to check for.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder RequireKeys(params string[] keys);
+        
+        /// <summary>
         /// Checks if a specific key exists in the workflow context and matches a given pattern.
         /// </summary>
         /// <param name="key">The key to check for.</param>
