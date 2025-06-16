@@ -200,14 +200,14 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ThrowIf<TException>(condition, message);
     }
 
-    public IWorkflowBuilder CheckForKey(string key)
+    public IWorkflowBuilder RequireKey(string key)
     {
-        return Delegate.CheckForKey(key);
+        return Delegate.RequireKey(key);
     }
 
-    public IWorkflowBuilder CheckForRegexPattern(string key, string pattern)
+    public IWorkflowBuilder RequireRegex(string key, string pattern)
     {
-        return Delegate.CheckForRegexPattern(key, pattern);
+        return Delegate.RequireRegex(key, pattern);
     }
 
     public virtual IWorkflow Build()

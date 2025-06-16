@@ -462,7 +462,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder CheckForKey(string key)
+    public IWorkflowBuilder RequireKey(string key)
     {
         if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
         
@@ -471,7 +471,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder CheckForRegexPattern(string key, string pattern)
+    public IWorkflowBuilder RequireRegex(string key, string pattern)
     {
         if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
         if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentException("Pattern cannot be null or empty.", nameof(pattern));

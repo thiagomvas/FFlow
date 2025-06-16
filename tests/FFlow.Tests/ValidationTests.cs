@@ -6,7 +6,7 @@ public class ValidationTests
     public async Task CheckForKeyStep_ShouldThrow_IfKeyNotFound()
     {
         var workflow = new FFlowBuilder()
-            .CheckForKey("non_existent_key")
+            .RequireKey("non_existent_key")
             .Build();
 
         Assert.ThrowsAsync<KeyNotFoundException>(async () =>
@@ -20,7 +20,7 @@ public class ValidationTests
     {
         var workflow = new FFlowBuilder()
             .StartWith((ctx, ct) => ctx.Set("existing_key", "value"))
-            .CheckForKey("existing_key")
+            .RequireKey("existing_key")
             .Build();
 
         Assert.DoesNotThrowAsync(async () =>
@@ -34,7 +34,7 @@ public class ValidationTests
     {
         var workflow = new FFlowBuilder()
             .StartWith((ctx, ct) => ctx.Set("test_key", "invalid_value"))
-            .CheckForRegexPattern("test_key", @"^\d{3}-\d{2}-\d{4}$") // Example pattern: 123-45-6789
+            .RequireRegex("test_key", @"^\d{3}-\d{2}-\d{4}$") // Example pattern: 123-45-6789
             .Build();
 
         Assert.ThrowsAsync<FormatException>(async () =>
@@ -48,7 +48,7 @@ public class ValidationTests
     {
         var workflow = new FFlowBuilder()
             .StartWith((ctx, ct) => ctx.Set("test_key", "123-45-6789")) // Example pattern: 123-45-6789
-            .CheckForRegexPattern("test_key", @"^\d{3}-\d{2}-\d{4}$")
+            .RequireRegex("test_key", @"^\d{3}-\d{2}-\d{4}$")
             .Build();
 
         Assert.DoesNotThrowAsync(async () =>
