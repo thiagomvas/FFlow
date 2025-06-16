@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using FFlow.Core;
 
-namespace FFlow;
+namespace FFlow.Validation;
 
 public class RegexPatternStep : IFlowStep
 {

@@ -1,7 +1,8 @@
-namespace FFlow.Tests;
+namespace FFlow.Validation.Tests;
 
-public class ValidationTests
+public class ValidationStepTests
 {
+    
     [Test]
     public async Task CheckForKeyStep_ShouldThrow_IfKeyNotFound()
     {

@@ -1,6 +1,6 @@
 using FFlow.Core;
 
-namespace FFlow;
+namespace FFlow.Validation;
 
 public class HasKeyStep : IFlowStep
 {

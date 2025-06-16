@@ -1,6 +1,5 @@
 using FFlow.Core;
-
-namespace FFlow;
+namespace FFlow.Validation;
 
 public static class ValidationExtensions
 {
