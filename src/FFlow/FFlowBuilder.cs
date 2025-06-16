@@ -471,6 +471,16 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder CheckForRegexPattern(string key, string pattern)
+    {
+        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
+        if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentException("Pattern cannot be null or empty.", nameof(pattern));
+        
+        var step = new RegexPatternStep(key, pattern);
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflow Build()
     {
         var context = _contextInstance

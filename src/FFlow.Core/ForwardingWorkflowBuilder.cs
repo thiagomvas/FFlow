@@ -205,6 +205,11 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.CheckForKey(key);
     }
 
+    public IWorkflowBuilder CheckForRegexPattern(string key, string pattern)
+    {
+        return Delegate.CheckForRegexPattern(key, pattern);
+    }
+
     public virtual IWorkflow Build()
     {
         return Delegate.Build();

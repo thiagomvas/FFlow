@@ -289,6 +289,14 @@ namespace FFlow.Core;
         IWorkflowBuilder CheckForKey(string key);
         
         /// <summary>
+        /// Checks if a specific key exists in the workflow context and matches a given pattern.
+        /// </summary>
+        /// <param name="key">The key to check for.</param>
+        /// <param name="pattern">The regex pattern to check for.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        IWorkflowBuilder CheckForRegexPattern(string key, string pattern);
+        
+        /// <summary>
         /// Builds and returns the constructed workflow.
         /// </summary>
         /// <returns>An instance of <see cref="IWorkflow"/> representing the built workflow.</returns>
