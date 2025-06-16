@@ -5,6 +5,19 @@ namespace FFlow.Core;
     /// </summary>
     public interface IWorkflowBuilder
     {
+
+        /// <summary>
+        /// Adds a step to the workflow.
+        /// </summary>
+        /// <param name="step">The step instance to add to the workflow.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        /// <remarks>
+        /// Adding a step directly means skipping the type resolution and configuration that would normally occur.
+        /// Only use this method if you have a pre-configured step instance that you want to include in the workflow.
+        /// The same instance will be used each time the step is executed, so ensure it is stateless or properly managed.
+        /// </remarks>
+        IWorkflowBuilder AddStep(IFlowStep step);
+        
         /// <summary>
         /// Starts the workflow with the specified step type.
         /// </summary>
@@ -280,28 +293,6 @@ namespace FFlow.Core;
         IWorkflowBuilder Throw<TException>(string message) where TException : Exception, new();
         IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message);
         IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new();
-
-        /// <summary>
-        /// Checks if a specific key exists in the workflow context.
-        /// </summary>
-        /// <param name="key">The key to check for.</param>
-        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder RequireKey(string key);
-        
-        /// <summary>
-        /// Checks if multiple specific keys exist in the workflow context.
-        /// </summary>
-        /// <param name="keys">The keys to check for.</param>
-        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder RequireKeys(params string[] keys);
-        
-        /// <summary>
-        /// Checks if a specific key exists in the workflow context and matches a given pattern.
-        /// </summary>
-        /// <param name="key">The key to check for.</param>
-        /// <param name="pattern">The regex pattern to check for.</param>
-        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder RequireRegex(string key, string pattern);
         
         /// <summary>
         /// Builds and returns the constructed workflow.

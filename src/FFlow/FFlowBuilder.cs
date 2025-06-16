@@ -15,7 +15,15 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
     {
         _serviceProvider = serviceProvider;
     }
-    
+
+    public IWorkflowBuilder AddStep(IFlowStep step)
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
@@ -458,35 +466,6 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
                         ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
         
         var step = new ThrowExceptionIfStep(condition, exception);
-        _steps.Add(step);
-        return this;
-    }
-
-    public IWorkflowBuilder RequireKey(string key)
-    {
-        return RequireKeys(key);
-    }
-
-    public IWorkflowBuilder RequireKeys(params string[] keys)
-    {
-        if (keys == null || keys.Length == 0) throw new ArgumentException("Keys cannot be null or empty.", nameof(keys));
-        
-        foreach (var key in keys)
-        {
-            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(keys));
-        }
-        
-        var step = new HasKeyStep(keys);
-        _steps.Add(step);
-        return this;
-    }
-
-    public IWorkflowBuilder RequireRegex(string key, string pattern)
-    {
-        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
-        if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentException("Pattern cannot be null or empty.", nameof(pattern));
-        
-        var step = new RegexPatternStep(key, pattern);
         _steps.Add(step);
         return this;
     }

@@ -10,6 +10,11 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
     /// </summary>
     protected abstract IWorkflowBuilder Delegate { get; }
 
+    public IWorkflowBuilder AddStep(IFlowStep step)
+    {
+        return Delegate.AddStep(step);
+    }
+
     public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
         return Delegate.StartWith<TStep>();
@@ -211,21 +216,6 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         where TException : Exception, new()
     {
         return Delegate.ThrowIf<TException>(condition, message);
-    }
-
-    public IWorkflowBuilder RequireKey(string key)
-    {
-        return Delegate.RequireKey(key);
-    }
-
-    public IWorkflowBuilder RequireKeys(params string[] keys)
-    {
-        return Delegate.RequireKeys(keys);
-    }
-
-    public IWorkflowBuilder RequireRegex(string key, string pattern)
-    {
-        return Delegate.RequireRegex(key, pattern);
     }
 
     public virtual IWorkflow Build()
