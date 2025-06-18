@@ -4,7 +4,7 @@ using FFlow.Core;
 namespace FFlow.Validation;
 
 
-public class NotEmptyStep : IFlowStep
+internal class NotEmptyStep : IFlowStep
 {
     private readonly string[] _keys;
     

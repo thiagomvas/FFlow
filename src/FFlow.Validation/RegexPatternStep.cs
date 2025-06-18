@@ -6,7 +6,7 @@ namespace FFlow.Validation;
 /// <summary>
 /// Checks if the value associated with the specified key in the flow context matches a given regular expression pattern.
 /// </summary>
-public class RegexPatternStep : IFlowStep
+internal class RegexPatternStep : IFlowStep
 {
     private readonly string _key;
     private readonly string _pattern;

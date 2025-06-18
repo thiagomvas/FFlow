@@ -5,7 +5,7 @@ namespace FFlow.Validation;
 /// <summary>
 /// Checks if the specified keys exist in the flow context.
 /// </summary>
-public class NotNullStep : IFlowStep
+internal class NotNullStep : IFlowStep
 {
     private readonly string[] _keys;
     
