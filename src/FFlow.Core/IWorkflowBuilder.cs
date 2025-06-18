@@ -294,6 +294,7 @@ namespace FFlow.Core;
         IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message);
         IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new();
         
+        IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator;
         /// <summary>
         /// Builds and returns the constructed workflow.
         /// </summary>

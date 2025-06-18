@@ -218,6 +218,11 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ThrowIf<TException>(condition, message);
     }
 
+    public IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator
+    {
+        return Delegate.WithDecorator(decoratorFactory);
+    }
+
     public virtual IWorkflow Build()
     {
         return Delegate.Build();

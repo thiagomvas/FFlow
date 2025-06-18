@@ -3,7 +3,11 @@ namespace FFlow.Validation;
 
 public static class ValidationExtensions
 {
-    
+    public static IWorkflowBuilder UseValidators(this IWorkflowBuilder builder)
+    {
+        builder.WithDecorator(step => new ValidatorDecorator(step));
+        return builder;
+    }
     /// <summary>
     /// Checks if a specific key exists in the workflow context.
     /// </summary>
