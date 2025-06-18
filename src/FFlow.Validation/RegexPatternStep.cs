@@ -21,12 +21,12 @@ public class RegexPatternStep : IFlowStep
 
         if (!context.TryGet<string>(_key, out var value))
         {
-            throw new KeyNotFoundException($"Key '{_key}' not found in the context.");
+            throw new FlowValidationException($"Key '{_key}' not found in the context.");
         }
 
         if (!Regex.IsMatch(value, _pattern))
         {
-            throw new FormatException($"Value '{value}' does not match the pattern '{_pattern}'.");
+            throw new FlowValidationException($"Value '{value}' does not match the pattern '{_pattern}'.");
         }
 
         return Task.CompletedTask;

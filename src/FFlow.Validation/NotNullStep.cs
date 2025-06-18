@@ -25,12 +25,12 @@ public class NotNullStep : IFlowStep
         {
             if (!context.TryGet<object>(key, out var obj))
             {
-                throw new KeyNotFoundException($"Key '{key}' not found in the context.");
+                throw new FlowValidationException($"Key '{key}' not found in the context.");
             }
             
             if (obj == null)
             {
-                throw new ArgumentNullException($"Value for key '{key}' cannot be null.");
+                throw new FlowValidationException($"Value for key '{key}' cannot be null.");
             }
         }
 

@@ -20,7 +20,7 @@ public class HasKeyStep : IFlowStep
         {
             if (!context.TryGet<object>(key, out _))
             {
-                throw new KeyNotFoundException($"Key '{key}' not found in the context.");
+                throw new FlowValidationException($"Key '{key}' not found in the context.");
             }
         }
 
