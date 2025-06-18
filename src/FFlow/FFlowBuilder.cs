@@ -14,8 +14,17 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
     public FFlowBuilder(IServiceProvider? serviceProvider = null)
     {
         _serviceProvider = serviceProvider;
+        _options = new();
     }
-    
+
+    public IWorkflowBuilder AddStep(IFlowStep step)
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
@@ -459,6 +468,15 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ThrowExceptionIfStep(condition, exception);
         _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator
+    {
+        if (decoratorFactory == null) throw new ArgumentNullException(nameof(decoratorFactory));
+
+        _options?.AddStepDecorator(decoratorFactory);
+        
         return this;
     }
 

@@ -9,6 +9,12 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
     /// The underlying workflow builder that this class forwards calls to.
     /// </summary>
     protected abstract IWorkflowBuilder Delegate { get; }
+
+    public IWorkflowBuilder AddStep(IFlowStep step)
+    {
+        return Delegate.AddStep(step);
+    }
+
     public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
         return Delegate.StartWith<TStep>();
@@ -54,33 +60,38 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.Finally(setupAction);
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then, AsyncFlowAction? otherwise = null)
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then,
+        AsyncFlowAction? otherwise = null)
     {
         return Delegate.If(condition, then, otherwise);
     }
 
-    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
+    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null)
+        where TTrue : class, IFlowStep
     {
         return Delegate.If<TTrue>(condition, otherwise);
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then, SyncFlowAction? otherwise = null)
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then,
+        SyncFlowAction? otherwise = null)
     {
-
         return Delegate.If(condition, then, otherwise);
     }
 
-    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
+    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null)
+        where TTrue : class, IFlowStep
     {
         return Delegate.If<TTrue>(condition, otherwise);
     }
 
-    public IWorkflowBuilder If<TTrue, TFalse>(Func<IFlowContext, bool> condition) where TTrue : class, IFlowStep where TFalse : class, IFlowStep
+    public IWorkflowBuilder If<TTrue, TFalse>(Func<IFlowContext, bool> condition)
+        where TTrue : class, IFlowStep where TFalse : class, IFlowStep
     {
         return Delegate.If<TTrue, TFalse>(condition);
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then, Func<IWorkflowBuilder>? otherwise = null)
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then,
+        Func<IWorkflowBuilder>? otherwise = null)
     {
         return Delegate.If(condition, then, otherwise);
     }
@@ -90,7 +101,8 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action) where TItem : class
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action)
+        where TItem : class
     {
         return Delegate.ForEach(itemsSelector, action);
     }
@@ -100,27 +112,32 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action) where TItem : class
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action)
+        where TItem : class
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector) where TStepIterator : class, IFlowStep
+    public IWorkflowBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector)
+        where TStepIterator : class, IFlowStep
     {
         return Delegate.ForEach<TStepIterator>(itemsSelector);
     }
 
-    public IWorkflowBuilder ForEach<TStepIterator, TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector) where TStepIterator : class, IFlowStep
+    public IWorkflowBuilder ForEach<TStepIterator, TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector)
+        where TStepIterator : class, IFlowStep
     {
         return Delegate.ForEach<TStepIterator, TItem>(itemsSelector);
     }
 
-    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IWorkflowBuilder> action)
+    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector,
+        Func<IWorkflowBuilder> action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, Func<IWorkflowBuilder> action)
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector,
+        Func<IWorkflowBuilder> action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }
@@ -195,9 +212,15 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.ThrowIf(condition, message);
     }
 
-    public IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new()
+    public IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message)
+        where TException : Exception, new()
     {
         return Delegate.ThrowIf<TException>(condition, message);
+    }
+
+    public IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator
+    {
+        return Delegate.WithDecorator(decoratorFactory);
     }
 
     public virtual IWorkflow Build()

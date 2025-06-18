@@ -5,6 +5,19 @@ namespace FFlow.Core;
     /// </summary>
     public interface IWorkflowBuilder
     {
+
+        /// <summary>
+        /// Adds a step to the workflow.
+        /// </summary>
+        /// <param name="step">The step instance to add to the workflow.</param>
+        /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+        /// <remarks>
+        /// Adding a step directly means skipping the type resolution and configuration that would normally occur.
+        /// Only use this method if you have a pre-configured step instance that you want to include in the workflow.
+        /// The same instance will be used each time the step is executed, so ensure it is stateless or properly managed.
+        /// </remarks>
+        IWorkflowBuilder AddStep(IFlowStep step);
+        
         /// <summary>
         /// Starts the workflow with the specified step type.
         /// </summary>
@@ -281,6 +294,7 @@ namespace FFlow.Core;
         IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message);
         IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new();
         
+        IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator;
         /// <summary>
         /// Builds and returns the constructed workflow.
         /// </summary>
