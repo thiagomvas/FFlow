@@ -1,21 +1,14 @@
 ﻿using FFlow;
+using FFlow.Core;
+using FFlow.Demo;
 using FFlow.Steps.DotNet;
+using FFlow.Validation;
 
 var workflow = new FFlowBuilder()
-    .StartWith((ctx, ct) =>
-    {
-        ctx.SetDotnetPublishConfig(new()
-        {
-            ProjectOrSolution = @"/home/thiagomv/Src/FFlow/src/FFlow.Demo/FFlow.Demo.csproj",
-        });
-        return Task.CompletedTask;
-    })
-    .Then<DotnetPublishStep>()
-    .Then((ctx, _) =>
-    {
-        Console.WriteLine(ctx.GetInput<DotnetPublishResult>());
-        return Task.CompletedTask;
-    })
+    .UseValidators()
+    .StartWith((ctx, _) => ctx.Set("name", "John Doe"))
+    .Then<HelloStep>()
+    .Then<GoodByeStep>()
     .Build();
 
-await workflow.RunAsync(null, CancellationToken.None);
+await workflow.RunAsync("input", new CancellationTokenSource(2000).Token);

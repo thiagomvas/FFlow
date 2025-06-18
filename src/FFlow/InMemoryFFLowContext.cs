@@ -4,7 +4,24 @@ namespace FFlow;
 
 public class InMemoryFFLowContext : IFlowContext
 {
+
     private readonly Dictionary<string, object> _storage = new();
+    public Guid Id { get; private set; } = Guid.NewGuid();
+
+    public InMemoryFFLowContext()
+    {
+        
+    }
+    public InMemoryFFLowContext(Dictionary<string, object> storage)
+    {
+        _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+    }
+
+    public InMemoryFFLowContext(Dictionary<string, object> storage, Guid Id)
+    {
+        _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+        this.Id = Id;
+    }
 
     public TInput GetInput<TInput>()
     {
@@ -60,5 +77,16 @@ public class InMemoryFFLowContext : IFlowContext
         }
         value = default;
         return false; // Key not found
+    }
+
+    public IFlowContext Fork()
+    {
+        return new InMemoryFFLowContext(_storage.ToDictionary(), Id);
+    }
+
+    public IFlowContext SetId(Guid id)
+    {
+        Id = id;
+        return this;
     }
 }

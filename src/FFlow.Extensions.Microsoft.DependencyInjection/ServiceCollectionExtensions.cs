@@ -19,16 +19,22 @@ using System.Reflection;
         public static IServiceCollection AddFFlow(this IServiceCollection services, params Assembly[] assemblies)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
+            
+            if (assemblies == null || assemblies.Length == 0)
+            {
+                throw new ArgumentException("At least one assembly must be provided.", nameof(assemblies));
+            }
     
             foreach (var assembly in assemblies)
             {
                 // Register all types implementing IFlowStep
                 var stepTypes = assembly.GetTypes()
-                    .Where(t => typeof(IFlowStep).IsAssignableFrom(t) && !t.IsAbstract && t.IsClass);
+                    .Where(t => typeof(IFlowStep).IsAssignableFrom(t) && !t.IsAbstract && t.IsClass && !typeof(BaseStepDecorator).IsAssignableFrom(t));
     
                 foreach (var stepType in stepTypes)
                 {
                     services.AddTransient(stepType);
+                    services.AddTransient(typeof(IFlowStep), stepType);
                 }
     
                 // Register all types implementing IWorkflowDefinition
@@ -36,7 +42,7 @@ using System.Reflection;
                     .Where(t => typeof(IWorkflowDefinition).IsAssignableFrom(t) && !t.IsAbstract && t.IsClass);
                 foreach (var workflowType in workflowTypes)
                 {
-                    services.AddTransient(workflowType);
+                    services.AddTransient(typeof(IWorkflowDefinition), workflowType);
                     services.AddTransient(provider =>
                     {
                         var workflowDefinition = (IWorkflowDefinition)provider.GetRequiredService(workflowType);

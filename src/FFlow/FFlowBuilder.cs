@@ -2,8 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class FFlowBuilder : IWorkflowBuilder
+public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
 {
+    private WorkflowOptions? _options { get; set;}
     private readonly List<IFlowStep> _steps = new List<IFlowStep>();
     private IFlowStep? _errorHandler;
     private IServiceProvider? _serviceProvider;
@@ -13,8 +14,17 @@ public class FFlowBuilder : IWorkflowBuilder
     public FFlowBuilder(IServiceProvider? serviceProvider = null)
     {
         _serviceProvider = serviceProvider;
+        _options = new();
     }
-    
+
+    public IWorkflowBuilder AddStep(IFlowStep step)
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
@@ -22,11 +32,26 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder StartWith(FlowAction setupAction)
+    public IWorkflowBuilder StartWith(AsyncFlowAction setupAction)
     {
         if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
         
         var step = new DelegateFlowStep(setupAction);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder StartWith(SyncFlowAction setupAction)
+    {
+        if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+        
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            setupAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        var step = new DelegateFlowStep(asyncAction);
         _steps.Add(step);
         return this;
     }
@@ -38,11 +63,26 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder Then(FlowAction setupAction)
+    public IWorkflowBuilder Then(AsyncFlowAction setupAction)
     {
         if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
         
         var step = new DelegateFlowStep(setupAction);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder Then(SyncFlowAction setupAction)
+    {
+        if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+        
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            setupAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        var step = new DelegateFlowStep(asyncAction);
         _steps.Add(step);
         return this;
     }
@@ -54,7 +94,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder Finally(FlowAction setupAction)
+    public IWorkflowBuilder Finally(AsyncFlowAction setupAction)
     {
         if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
         
@@ -63,7 +103,22 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, FlowAction then, FlowAction? otherwise = null)
+    public IWorkflowBuilder Finally(SyncFlowAction setupAction)
+    {
+        if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+        
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            setupAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        var step = new DelegateFlowStep(asyncAction);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then, AsyncFlowAction? otherwise = null)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         if (then == null) throw new ArgumentNullException(nameof(then));
@@ -81,7 +136,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, FlowAction? otherwise = null) where TTrue : class, IFlowStep
+    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         
@@ -91,6 +146,54 @@ public class FFlowBuilder : IWorkflowBuilder
         if (otherwise != null)
         {
             falseStep = new DelegateFlowStep(otherwise);
+        }
+        
+        var ifStep = new IfStep(condition, trueStep, falseStep);
+        _steps.Add(ifStep);
+        return this;
+    }
+
+    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then, SyncFlowAction? otherwise = null)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (then == null) throw new ArgumentNullException(nameof(then));
+        
+        var trueStep = new DelegateFlowStep(new AsyncFlowAction((context, cancellationToken) =>
+        {
+            then(context, cancellationToken);
+            return Task.CompletedTask;
+        }));
+        
+        IFlowStep? falseStep = null;
+        
+        if (otherwise != null)
+        {
+            falseStep = new DelegateFlowStep(new AsyncFlowAction((context, cancellationToken) =>
+            {
+                otherwise(context, cancellationToken);
+                return Task.CompletedTask;
+            }));
+        }
+        
+        var ifStep = new IfStep(condition, trueStep, falseStep);
+        _steps.Add(ifStep);
+        return this;
+    }
+
+    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        
+        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);;
+        IFlowStep? falseStep = null;
+        
+        if (otherwise != null)
+        {
+            falseStep = new DelegateFlowStep(new AsyncFlowAction((context, cancellationToken) =>
+            {
+                otherwise(context, cancellationToken);
+                return Task.CompletedTask;
+            }));
         }
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
@@ -130,7 +233,7 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, FlowAction action)
+    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, AsyncFlowAction action)
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         if (action == null) throw new ArgumentNullException(nameof(action));
@@ -140,12 +243,44 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, FlowAction action) where TItem : class
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action) where TItem : class
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         if (action == null) throw new ArgumentNullException(nameof(action));
         
         var step = new ForEachStep<TItem>(itemsSelector, new DelegateFlowStep(action));
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, SyncFlowAction action)
+    {
+        if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
+        if (action == null) throw new ArgumentNullException(nameof(action));
+        
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            action(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        var step = new ForEachStep(itemsSelector, new DelegateFlowStep(asyncAction));
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action) where TItem : class
+    {
+        if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
+        if (action == null) throw new ArgumentNullException(nameof(action));
+        
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            action(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        var step = new ForEachStep<TItem>(itemsSelector, new DelegateFlowStep(asyncAction));
         _steps.Add(step);
         return this;
     }
@@ -217,6 +352,13 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
+    public IWorkflowBuilder Fork(ForkStrategy strategy, params Func<IWorkflowBuilder>[] forks)
+    {
+        var step = new ForkStep(strategy, forks);
+        _steps.Add(step);
+        return this;
+    }
+
     public IWorkflowBuilder UseContext<TContext>() where TContext : class, IFlowContext
     {
         _contextType = typeof(TContext);
@@ -243,11 +385,98 @@ public class FFlowBuilder : IWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder OnAnyError(FlowAction errorHandlerAction)
+    public IWorkflowBuilder OnAnyError(AsyncFlowAction errorHandlerAction)
     {
         if (errorHandlerAction == null) throw new ArgumentNullException(nameof(errorHandlerAction));
         
         _errorHandler = new DelegateFlowStep(errorHandlerAction);
+        return this;
+    }
+
+    public IWorkflowBuilder OnAnyError(SyncFlowAction errorHandlerAction)
+    {
+        if (errorHandlerAction == null) throw new ArgumentNullException(nameof(errorHandlerAction));
+        
+        var asyncAction = new AsyncFlowAction((context, cancellationToken) =>
+        {
+            errorHandlerAction(context, cancellationToken);
+            return Task.CompletedTask;
+        });
+        
+        _errorHandler = new DelegateFlowStep(asyncAction);
+        return this;
+    }
+
+    public IWorkflowBuilder Delay(int milliseconds)
+    {
+        if (milliseconds < 0) throw new ArgumentOutOfRangeException(nameof(milliseconds), "Delay must be a non-negative value.");
+        
+        var step = new DelayStep(milliseconds);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder Delay(TimeSpan delay)
+    {
+        if (delay < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(delay), "Delay must be a non-negative value.");
+        
+        var step = new DelayStep(delay);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder Throw(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be null or empty.", nameof(message));
+        
+        var step = new ThrowExceptionStep(message);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder Throw<TException>(string message) where TException : Exception, new()
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message cannot be null or empty.", nameof(message));
+
+        var exception = (TException)Activator.CreateInstance(typeof(TException), message)
+                        ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
+
+        var step = new ThrowExceptionStep(exception);
+        _steps.Add(step);
+        return this;
+    }
+
+
+    public IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be null or empty.", nameof(message));
+        
+        var step = new ThrowExceptionIfStep(condition, message);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new()
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be null or empty.", nameof(message));
+        
+        var exception = (TException)Activator.CreateInstance(typeof(TException), message)
+                        ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
+        
+        var step = new ThrowExceptionIfStep(condition, exception);
+        _steps.Add(step);
+        return this;
+    }
+
+    public IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator
+    {
+        if (decoratorFactory == null) throw new ArgumentNullException(nameof(decoratorFactory));
+
+        _options?.AddStepDecorator(decoratorFactory);
+        
         return this;
     }
 
@@ -256,7 +485,7 @@ public class FFlowBuilder : IWorkflowBuilder
         var context = _contextInstance
                       ?? _serviceProvider?.GetService(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext
                       ?? Activator.CreateInstance(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext;
-        var result = new Workflow(_steps, context!);
+        var result = new Workflow(_steps, context!, _options);
         
         if (_errorHandler != null)
         {
@@ -265,6 +494,14 @@ public class FFlowBuilder : IWorkflowBuilder
         
         return result;
     }
-    
-    
+
+
+    public IWorkflowBuilder WithOptions(Action<WorkflowOptions> configure)
+    {
+        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        
+        _options ??= new WorkflowOptions();
+        configure(_options);
+        return this;
+    }
 }

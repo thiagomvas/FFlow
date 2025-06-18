@@ -4,16 +4,29 @@ namespace FFlow;
 
 public class Workflow : IWorkflow
 {
+    public readonly Guid Id = Guid.NewGuid();
     private readonly IReadOnlyList<IFlowStep> _steps;
     private IFlowContext _context;
     private IFlowStep _globalErrorHandler;
-    
-    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context)
+    private readonly WorkflowOptions? _options;
+
+    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null)
     {
         _steps = steps ?? throw new ArgumentNullException(nameof(steps));
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _options = options;
+        if (options?.StepDecoratorFactory is not null)
+        {
+            var decoratedSteps = new List<IFlowStep>();
+            foreach (var step in _steps)
+            {
+                decoratedSteps.Add(options.StepDecoratorFactory(step));
+            }
+
+            _steps = decoratedSteps.AsReadOnly();
+        }
     }
-    
+
     public IWorkflow SetGlobalErrorHandler(IFlowStep errorHandler)
     {
         _globalErrorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
@@ -28,17 +41,62 @@ public class Workflow : IWorkflow
 
     public async Task<IFlowContext> RunAsync(object input, CancellationToken cancellationToken = default)
     {
-        if(input is not null)
+        _context.SetId(Id);
+        if (input is not null)
             _context.SetInput(input);
-        try 
+
+
+        var eventListener = _options?.EventListener;
+        eventListener?.OnWorkflowStarted(this);
+        IFlowStep? current = null;
+        try
         {
+            ParallelStepTracker.Instance.Initialize(Id);
+
+            using var globalCts = _options?.GlobalTimeout is { } timeout
+                ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
+                : null;
+
+            if (_options?.GlobalTimeout is not null)
+                globalCts.CancelAfter(_options.GlobalTimeout.Value);
+
+            var effectiveToken = globalCts?.Token ?? cancellationToken;
+
             foreach (var step in _steps)
             {
-                await step.RunAsync(_context, cancellationToken);
+                eventListener?.OnStepStarted(step, _context);
+                current = step;
+                if (_options?.StepTimeout is not null)
+                {
+                    using var stepCts = CancellationTokenSource.CreateLinkedTokenSource(effectiveToken);
+                    stepCts.CancelAfter(_options.StepTimeout.Value);
+                    await step.RunAsync(_context, stepCts.Token);
+                }
+                else
+                {
+                    await step.RunAsync(_context, effectiveToken);
+                }
+
+                eventListener?.OnStepCompleted(step, _context);
+            }
+
+            if (_options?.StepTimeout is not null)
+            {
+                using var stepCts = CancellationTokenSource.CreateLinkedTokenSource(effectiveToken);
+                stepCts.CancelAfter(_options.StepTimeout.Value);
+                await ParallelStepTracker.Instance.WaitForAllTasksAsync(Id, stepCts.Token);
+            }
+            else
+            {
+                await ParallelStepTracker.Instance.WaitForAllTasksAsync(Id, effectiveToken);
             }
         }
         catch (Exception ex)
         {
+            if (current is not null)
+                eventListener?.OnStepFailed(current, _context, ex);
+
+            eventListener?.OnWorkflowFailed(this, ex);
             if (_globalErrorHandler != null)
             {
                 _context.Set("Exception", ex);
@@ -50,6 +108,7 @@ public class Workflow : IWorkflow
             }
         }
 
+        eventListener?.OnWorkflowCompleted(this);
         return _context;
     }
 }

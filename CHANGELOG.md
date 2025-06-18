@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.0-alpha.1"></a>
+## [1.0.0-alpha.1](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0-alpha.1) (2025-06-14)
+
+### Features
+
+* Add Forking for parallel processing ([0172fc3](https://www.github.com/thiagomvas/FFlow/commit/0172fc3632446542ae6b11b752cadd8f6fcf3d61))
+* Add IWorkflowBuilder.Delay ([6c7c5cd](https://www.github.com/thiagomvas/FFlow/commit/6c7c5cd2e59fce758f98aa1eb7416200f4ccfeb5))
+* Add Observer Pattern support with IFlowEventListeners ([7c32747](https://www.github.com/thiagomvas/FFlow/commit/7c327470909da7c582d96a176c9d42e3ce9be39f))
+* Add Options container ([0c15760](https://www.github.com/thiagomvas/FFlow/commit/0c1576051d46dfd00b580f8c0213bc2e3dee965e))
+* Add steps for throwing exceptions with and without condition ([170ccf0](https://www.github.com/thiagomvas/FFlow/commit/170ccf0b837f89034ccd8c92fc75bb0894eb0980))
+* Add support for a sync error handler ([30aa189](https://www.github.com/thiagomvas/FFlow/commit/30aa189f57753352ae3ec983fff8e76952e2654f))
+* Add syncronous overloads to IWorkflowBuilder by wrapping the actions in a Task ([3024363](https://www.github.com/thiagomvas/FFlow/commit/30243636e7fe16f35c1b19ec2a9993ed27f45419))
+* Improve exception message for when a step can't be created due to not being registered in DI or having a parameterless constructor ([4b31735](https://www.github.com/thiagomvas/FFlow/commit/4b31735b615773efc654af89a7fd54dda49c6f0b))
+* Throw StepCreationException when creating steps fails ([e561668](https://www.github.com/thiagomvas/FFlow/commit/e5616683fb0620b37fa6ce6787d321410b5729dd))
+
+### Bug Fixes
+
+* FireAndForget fork strategy no longer causes subthreads to be killed when the main one is done. It now waits for all to finish before finishing the workflow ([88caaa0](https://www.github.com/thiagomvas/FFlow/commit/88caaa0920eb8070452a5ad9595a2fe6fe2393e9))
+* Register base IWorkflowDefinition and IFlowStep interfaces as well in DI container ([be81217](https://www.github.com/thiagomvas/FFlow/commit/be812173bf1178a82f19d5e86a22108f82bd4fdb))
+* Register step types by themselves as well as by the interface ([c421861](https://www.github.com/thiagomvas/FFlow/commit/c421861d0c75a72ce81ac9f933789367183d062c))
+* Throw all task exceptions when awaiting forked steps rather than only the first one that throws. ([0ece32e](https://www.github.com/thiagomvas/FFlow/commit/0ece32ea067c059b1d0cb78062198aa557c9573d))
+
 <a name="1.0.0-alpha.0"></a>
 ## [1.0.0-alpha.0](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0-alpha.0) (2025-06-10)
 

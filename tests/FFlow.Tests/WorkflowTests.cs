@@ -88,163 +88,96 @@ public class WorkflowTests
     }
     
     [Test]
-    public async Task Workflow_ShouldHandleForEach()
-    {
-        int[] items = { 1, 2, 3 };
-        var workflow = new FFlowBuilder()
-            .StartWith((ctx, ct) =>
-            {
-                ctx.SetInput(items);
-                return Task.CompletedTask;
-            })
-            .ForEach(ctx => ctx.GetInput<IEnumerable<int>>(), () =>
-            {
-                return new FFlowBuilder().StartWith<TestStep>();
-            })
-            .Build();
-        
-        var ctx = await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
-        int counter = ctx.Get<int>("counter");
-        Assert.That(counter, Is.EqualTo(items.Length), $"ForEach should iterate over all items, instead iterated over {counter}.");
-    }
-
-    [Test]
-    public async Task Workflow_ShouldHandleIfStep_WhenTrue()
+    public async Task Workflow_ShouldTimeout_AfterGlobalTimeout()
     {
         var workflow = new FFlowBuilder()
-            .StartWith<TestStep>()
-            .If<TestStep, ExceptionStep>(ctx => true)
+            .WithOptions(options => options.GlobalTimeout = TimeSpan.FromMilliseconds(200))
+            .Delay(120)
+            .Delay(120)
+            .Then((_, _) => Assert.Fail())
             .Build();
         
-        await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
-        Assert.Pass("Workflow executed If step successfully.");
+        try
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            Assert.Fail("Expected operation to timeout.");
+        }
+        catch (OperationCanceledException)
+        {
+            Assert.Pass("Workflow execution timed out as expected.");
+        }
     }
     
     [Test]
-    public async Task Workflow_ShouldHandleIfStep_WhenFalse()
+    public async Task Workflow_ShouldTimeout_AfterStepTimeout()
     {
         var workflow = new FFlowBuilder()
-            .StartWith<TestStep>()
-            .If<ExceptionStep, TestStep>(ctx => false)
+            .WithOptions(options => options.StepTimeout = TimeSpan.FromMilliseconds(200))
+            .Delay(300)
+            .Then((_, _) => Assert.Fail())
             .Build();
         
-        await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
-        Assert.Pass("Workflow executed If step successfully executing the false branch.");
+        try
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            Assert.Fail("Expected operation to timeout.");
+        }
+        catch (OperationCanceledException)
+        {
+            Assert.Pass("Workflow execution timed out as expected.");
+        }
     }
 
     [Test]
-    public async Task Workflow_ShouldHandleSwitch()
+    public async Task Workflow_ShouldUseDecorators()
     {
         var workflow = new FFlowBuilder()
+            .WithOptions(options => options.StepDecoratorFactory = step => new TestStepDecorator(step))
             .StartWith<TestStep>()
-            .Switch(builder =>
-            {
-                builder.Case(_ => 1 == 1).Then<TestStep>();
-                builder.Case(_ => 1 == 1).Then<ExceptionStep>();
-                builder.Case(_ => 1 == 4).Then<ExceptionStep>();
-            })
+            .Build();
+
+        var ctx = await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        
+        var decoratedCounter = ctx.Get<int>("decorated_counter");
+        Assert.That(decoratedCounter, Is.EqualTo(1), "The step decorator should have incremented the counter.");
+    }
+    
+    [Test]
+    public async Task WorkflowListener_ShouldBeInvoked()
+    {
+        var listener = new TestFlowEventListener();
+        var workflow = new FFlowBuilder()
+            .WithOptions(options => options.EventListener = listener)
+            .StartWith<TestStep>()
+            .Then<TestStep>()
+            .Build();
+
+        await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        
+        Assert.That(listener.WorkflowStartedCount, Is.EqualTo(1), "Workflow started event should be invoked.");
+        Assert.That(listener.StepStartedCount, Is.EqualTo(2), "Step started event should be invoked.");
+        Assert.That(listener.WorkflowCompletedCount, Is.EqualTo(1), "Workflow completed event should be invoked.");
+        Assert.That(listener.StepCompletedCount, Is.EqualTo(2), "Step completed event should be invoked.");
+    }
+
+    [Test]
+    public async Task WorkflowListener_ShouldCountWithErrorsCorrectly()
+    {
+        var listener = new TestFlowEventListener();
+        var workflow = new FFlowBuilder()
+            .WithOptions(options => options.EventListener = listener)
+            .StartWith<TestStep>()
+            .Throw<InvalidOperationException>("Simulated error")
+            .Then<TestStep>()
+            .OnAnyError((_, _) => Task.CompletedTask)
             .Build();
 
         await workflow.RunAsync(null);
-    }
-
-    [Test]
-    public void Then_ShouldInjectDependencies()
-    {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
-        
-        
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        
-        var workflow = new FFlowBuilder(serviceProvider)
-            .Then<DiStep>()
-            .Build();
-        
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
-        }, "Workflow should execute without throwing an exception when dependencies are injected.");
-    }
-
-    [Test]
-    public void StartWith_ShouldInjectDependencies()
-    {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
-        
-        
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        
-        var workflow = new FFlowBuilder(serviceProvider)
-            .StartWith<DiStep>()
-            .Build();
-        
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
-        }, "Workflow should execute without throwing an exception when dependencies are injected.");
-    }
-    
-    [Test]
-    public void Finally_ShouldInjectDependencies()
-    {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
-        
-        
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        
-        var workflow = new FFlowBuilder(serviceProvider)
-            .Finally<DiStep>()
-            .Build();
-        
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
-        }, "Workflow should execute without throwing an exception when dependencies are injected.");
-    }
-
-    [Test]
-    public void If_ShouldInjectDependencies()
-    {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
-        
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        
-        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .If<DiStep, DiStep>(ctx => true)
-            .Build(), "If<TTrue,TFalse> should inject the services");
-        
-        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .If<DiStep>(ctx => true)
-            .Build(), "If<TTrue> should inject the services");
-        
-        
-        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .If(ctx => true, () => new FFlowBuilder(serviceProvider).StartWith<DiStep>(), () => new FFlowBuilder(serviceProvider).StartWith<DiStep>())
-            .Build(), "If(Builder) should inject the services");
-    }
-
-    [Test]
-    public void ForEach_ShouldInjectDependencies()
-    {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
-        
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        
-        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .ForEach<DiStep>(_ => []));
-        
-        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .ForEach<DiStep, int>(_ => [1, 2, 3]));
-        
-        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .ForEach(_ => [], () => new FFlowBuilder(serviceProvider).StartWith<DiStep>()));
-        
-        Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .ForEach<int>(_ => [1, 2, 3], () => new FFlowBuilder(serviceProvider).StartWith<DiStep>()));
+        Assert.That(listener.WorkflowStartedCount, Is.EqualTo(1), "Workflow started event should be invoked.");
+        Assert.That(listener.StepStartedCount, Is.EqualTo(2), "Step started event should be invoked.");
+        Assert.That(listener.WorkflowCompletedCount, Is.EqualTo(1), "Workflow completed event should not be invoked.");
+        Assert.That(listener.StepCompletedCount, Is.EqualTo(1), "Step completed event should be invoked for the first step only.");
+        Assert.That(listener.StepFailedCount, Is.EqualTo(1), "Step errored event should be invoked for the step that threw an exception.");
+        Assert.That(listener.WorkflowFailedCount, Is.EqualTo(1), "Workflow errored event should be invoked since we handled the error.");
     }
 }
