@@ -85,4 +85,52 @@ public class ValidationStepTests
             await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
         }, "Should not throw when the value is not null.");
     }
+    
+    [Test]
+    public async Task NotEmptyStep_ShouldThrow_IfValueIsEmpty()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((ctx, ct) => ctx.Set("test_key", string.Empty))
+            .RequireNotEmpty("test_key")
+            .Build();
+
+        Assert.ThrowsAsync<FlowValidationException>(async () =>
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Should throw ArgumentNullException when the value is empty.");
+        
+        var workflowWithCollection = new FFlowBuilder()
+            .StartWith((ctx, ct) => ctx.Set("test_collection", new List<string>()))
+            .RequireNotEmpty("test_collection")
+            .Build();
+        
+        Assert.ThrowsAsync<FlowValidationException>(async () =>
+        {
+            await workflowWithCollection.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Should throw ArgumentNullException when the collection is empty.");
+    }
+    
+    [Test]
+    public async Task NotEmptyStep_ShouldNotThrow_IfValueIsNotEmpty()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((ctx, ct) => ctx.Set("test_key", "value"))
+            .RequireNotEmpty("test_key")
+            .Build();
+
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Should not throw when the value is not empty.");
+        
+        var workflowWithCollection = new FFlowBuilder()
+            .StartWith((ctx, ct) => ctx.Set("test_collection", new List<string> { "item1" }))
+            .RequireNotEmpty("test_collection")
+            .Build();
+        
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            await workflowWithCollection.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+        }, "Should not throw when the collection is not empty.");
+    }
 }
