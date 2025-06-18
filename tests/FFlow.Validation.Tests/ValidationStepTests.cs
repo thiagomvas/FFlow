@@ -10,7 +10,7 @@ public class ValidationStepTests
             .RequireKey("non_existent_key")
             .Build();
 
-        Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+        Assert.ThrowsAsync<FlowValidationException>(async () =>
         {
             await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
         }, "Should throw KeyNotFoundException when the key does not exist in the context.");
@@ -38,7 +38,7 @@ public class ValidationStepTests
             .RequireRegex("test_key", @"^\d{3}-\d{2}-\d{4}$") // Example pattern: 123-45-6789
             .Build();
 
-        Assert.ThrowsAsync<FormatException>(async () =>
+        Assert.ThrowsAsync<FlowValidationException>(async () =>
         {
             await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
         }, "Should throw FormatException when the value does not match the regex pattern.");
