@@ -3,7 +3,7 @@ using FFlow.Core;
 namespace FFlow.Validation.Annotations;
 
 /// <summary>
-/// Checks if 
+/// Checks if a given key in the flow context matches a specified regular expression pattern.
 /// </summary>
 public class RequireRegexAttribute : BaseFlowValidationAttribute
 {
