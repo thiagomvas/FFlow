@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow.Validation.Annotations;
 
+/// <summary>
+/// Checks if 
+/// </summary>
 public class RequireRegexAttribute : BaseFlowValidationAttribute
 {
     public string Key { get; }

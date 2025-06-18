@@ -5,6 +5,12 @@ using FFlow.Validation.Annotations;
 
 namespace FFlow.Validation;
 
+/// <summary>
+/// Decorator that applies validation steps to a workflow step.
+/// </summary>
+/// <remarks>
+/// The validators are applied through attributes on the step class.
+/// </remarks>
 public class ValidatorDecorator : BaseStepDecorator
 {
     private static readonly ConcurrentDictionary<Type, List<Func<IFlowStep>>> _validatorsCache = new();

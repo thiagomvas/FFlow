@@ -3,6 +3,11 @@ namespace FFlow.Validation;
 
 public static class ValidationExtensions
 {
+    /// <summary>
+    /// Registers the validation decorators in the workflow builder.
+    /// </summary>
+    /// <param name="builder">The builder responsible for creating the steps</param>
+    /// <returns>The same <see cref="IWorkflowBuilder"/> instance.</returns>
     public static IWorkflowBuilder UseValidators(this IWorkflowBuilder builder)
     {
         builder.WithDecorator(step => new ValidatorDecorator(step));

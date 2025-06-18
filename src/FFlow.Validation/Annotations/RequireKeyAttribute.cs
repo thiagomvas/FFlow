@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow.Validation.Annotations;
 
+/// <summary>
+/// Checks if the specified keys exist in the flow context.
+/// </summary>
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public class RequireKeyAttribute : BaseFlowValidationAttribute
 {
