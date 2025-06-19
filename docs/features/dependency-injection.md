@@ -7,14 +7,18 @@ description: Learn how to inject services into FFlow steps using property and co
 
 FFlow supports multiple ways to inject dependencies into your workflows and steps using standard .NET dependency injection (DI). This allows you to fully integrate application services like logging, configuration, database access, and more into your automation flows.
 
-> [!NOTE]
-> To properly use dependency injection in FFlow, use the `FFlow.Extensions.Microsoft.DependencyInjection` package, which provides the necessary extensions to register and resolve services from the built-in .NET DI container.
+## Microsoft.Extensions.DependencyInjection
+Support for configuring and using the standard service collection from Microsoft is provided through the `FFlow.Extensions.Microsoft.DependencyInjection` package. This package allows you to register your services and inject them into your workflow steps.
 
-Consider the following service definition:
+```bash
+dotnet add package FFlow.Extensions.Microsoft.DependencyInjection
+```
 
 ---
 
 ## Sample Service
+Consider the following service definition:
+
 
 ```csharp
 public interface IMessageService

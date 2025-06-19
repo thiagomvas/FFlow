@@ -9,3 +9,5 @@ items:
     items:
       - name: Dependency Injection
         href: features/dependency-injection.md
+      - name: Validation
+        href: features/validation.md
