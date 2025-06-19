@@ -7,7 +7,6 @@ namespace FFlow;
 public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuilder
 {
     protected override IWorkflowBuilder Delegate { get; }
-    public IWorkflowBuilder Builder => Delegate;
     private readonly IFlowStep _step;
     private IFlowStep? _inputSetterStep;
     private IFlowStep? _outputSetterStep;
@@ -19,6 +18,59 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
     {
         Delegate = workflowBuilder;
         _step = step ?? throw new ArgumentNullException(nameof(step));
+    }
+
+    public IConfigurableStepBuilder Input<TStep>(Action<TStep> setValues) where TStep : class, IFlowStep
+    {
+        if (setValues is null)
+        {
+            throw new ArgumentNullException(nameof(setValues));
+        }
+
+        _inputSetters.Add(context =>
+        {
+            var step = (TStep)_step;
+            setValues(step);
+            foreach (var prop in typeof(TStep).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var key = Internals.BuildInputKey(step, prop.Name);
+                context.Set(key, prop.GetValue(step)!);
+            }
+        });
+
+        if (_inputSetterStep is null)
+        {
+            _inputSetterStep = new InputSetterStep(_inputSetters);
+            InsertStepAt(GetStepCount() - 1, _inputSetterStep);
+        }
+
+        return this;
+    }
+
+    public IConfigurableStepBuilder Input<TStep, TValue>(Expression<Func<TStep, TValue>> stepProp, TValue value) where TStep : class, IFlowStep
+    {
+        if (value is null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        var setter = GetPropertySetter(stepProp);
+
+        _inputSetters.Add(context =>
+        {
+            var name = GetPropertyName(stepProp);
+            var key = Internals.BuildInputKey(_step, name);
+            setter((TStep)_step, value);
+            context.Set(key, value);
+        });
+
+        if (_inputSetterStep is null)
+        {
+            _inputSetterStep = new InputSetterStep(_inputSetters);
+            InsertStepAt(GetStepCount() - 1, _inputSetterStep);
+        }
+
+        return this;
     }
 
     public IConfigurableStepBuilder Input<TStep, TValue>(

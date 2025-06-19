@@ -4,7 +4,13 @@ namespace FFlow.Core;
 
 public interface IConfigurableStepBuilder : IWorkflowBuilder
 {
-    public IWorkflowBuilder Builder { get; }
+    public IConfigurableStepBuilder Input<TStep>(
+        Action<TStep> setValues)
+        where TStep : class, IFlowStep;
+    public IConfigurableStepBuilder Input<TStep, TValue>(
+        Expression<Func<TStep, TValue>> stepProp,
+        TValue value)
+        where TStep : class, IFlowStep;
     public IConfigurableStepBuilder Input<TStep, TValue>(
         Expression<Func<TStep, TValue>> stepProp,
         Func<IFlowContext, TValue> inputGetter)
