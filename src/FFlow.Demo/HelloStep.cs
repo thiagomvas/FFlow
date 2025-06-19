@@ -8,6 +8,7 @@ namespace FFlow.Demo;
 [RequireRegex("name", @"^[A-Za-z\s]+$")]
 public class HelloStep : IFlowStep
 {
+    public string Name { get; set; }
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -18,7 +19,7 @@ public class HelloStep : IFlowStep
         
         return Task.Run(() =>
         {
-            Console.WriteLine($"Hello, {input}!");
+            Console.WriteLine($"Hello, {Name}!");
         }, cancellationToken);
     }
 }

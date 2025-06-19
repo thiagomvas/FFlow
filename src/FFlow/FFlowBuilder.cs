@@ -25,11 +25,11 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
+    public IConfigurableStepBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
         _steps.Add(step);
-        return this;
+        return new FlowStepBuilder(this, step);
     }
 
     public IWorkflowBuilder StartWith(AsyncFlowAction setupAction)
@@ -56,11 +56,11 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder Then<TStep>() where TStep : class, IFlowStep
+    public IConfigurableStepBuilder Then<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
         _steps.Add(step);
-        return this;
+        return new FlowStepBuilder(this, step);
     }
 
     public IWorkflowBuilder Then(AsyncFlowAction setupAction)
@@ -87,11 +87,11 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return this;
     }
 
-    public IWorkflowBuilder Finally<TStep>() where TStep : class, IFlowStep
+    public IConfigurableStepBuilder Finally<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
         _steps.Add(step);
-        return this;
+        return new FlowStepBuilder(this, step);
     }
 
     public IWorkflowBuilder Finally(AsyncFlowAction setupAction)
@@ -469,6 +469,20 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var step = new ThrowExceptionIfStep(condition, exception);
         _steps.Add(step);
         return this;
+    }
+
+    public IWorkflowBuilder InsertStepAt(int index, IFlowStep step)
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        if (index < 0 || index > _steps.Count) throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the range of existing steps.");
+        
+        _steps.Insert(index, step);
+        return this;
+    }
+
+    public int GetStepCount()
+    {
+        return _steps.Count;
     }
 
     public IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator

@@ -6,8 +6,9 @@ using FFlow.Validation;
 
 var workflow = new FFlowBuilder()
     .UseValidators()
-    .StartWith((ctx, _) => ctx.Set("name", "John Doe"))
+    .StartWith((ctx, _) => ctx.Set("name", "David"))
     .Then<HelloStep>()
+        .Input<HelloStep, string>(step => step.Name, ctx => ctx.Get<string>("name"))
     .Then<GoodByeStep>()
     .Build();
 

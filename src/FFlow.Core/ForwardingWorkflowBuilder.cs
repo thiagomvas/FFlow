@@ -15,7 +15,7 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.AddStep(step);
     }
 
-    public IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep
+    public IConfigurableStepBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
         return Delegate.StartWith<TStep>();
     }
@@ -30,7 +30,7 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.StartWith(setupAction);
     }
 
-    public IWorkflowBuilder Then<TStep>() where TStep : class, IFlowStep
+    public IConfigurableStepBuilder Then<TStep>() where TStep : class, IFlowStep
     {
         return Delegate.Then<TStep>();
     }
@@ -45,7 +45,7 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.Then(setupAction);
     }
 
-    public IWorkflowBuilder Finally<TStep>() where TStep : class, IFlowStep
+    public IConfigurableStepBuilder Finally<TStep>() where TStep : class, IFlowStep
     {
         return Delegate.Finally<TStep>();
     }
@@ -216,6 +216,16 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         where TException : Exception, new()
     {
         return Delegate.ThrowIf<TException>(condition, message);
+    }
+
+    public IWorkflowBuilder InsertStepAt(int index, IFlowStep step)
+    {
+        return Delegate.InsertStepAt(index, step);
+    }
+
+    public int GetStepCount()
+    {
+        return Delegate.GetStepCount();
     }
 
     public IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator
