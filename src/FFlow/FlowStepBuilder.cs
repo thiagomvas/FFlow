@@ -10,6 +10,7 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
     public IWorkflowBuilder Builder => Delegate;
     private readonly IFlowStep _step;
     private IFlowStep? _inputSetterStep;
+    private IFlowStep? _outputSetterStep;
 
     private readonly List<Action<IFlowContext>> _inputSetters = new();
     private readonly List<Action<IFlowContext>> _outputWriters = new();
@@ -54,6 +55,12 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
             var value = propGetter((TStep)_step);
             outputWriter(context, value!);
         });
+        
+        if(_outputSetterStep is null)
+        {
+            _outputSetterStep = new OutputSetterStep(_outputWriters);
+            AddStep(_outputSetterStep);
+        }
 
         return this;
     }
