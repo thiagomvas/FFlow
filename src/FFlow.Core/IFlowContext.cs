@@ -52,6 +52,14 @@ namespace FFlow.Core;
         /// An instance of <see cref="IFlowContext"/> with the same data as the original.
         /// </returns>
         IFlowContext Fork();
+        
+        /// <summary>
+        /// Gets all key-value pairs in the context.
+        /// </summary>
+        /// <returns>
+        /// An enumerable collection of key-value pairs representing the context's data.
+        /// </returns>
+        IEnumerable<KeyValuePair<string, object>> GetAll();
 
         IFlowContext SetId(Guid id);
     }

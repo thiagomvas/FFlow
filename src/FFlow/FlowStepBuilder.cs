@@ -30,8 +30,11 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
 
         _inputSetters.Add(context =>
         {
+            var name = GetPropertyName(stepProp);
+            var key = Internals.BuildInputKey(_step, name);
             var value = inputGetter(context);
             setter((TStep)_step, value!);
+            context.Set(key, value!);
         });
         
         if(_inputSetterStep is null)
@@ -52,7 +55,10 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
 
         _outputWriters.Add(context =>
         {
+            var name = GetPropertyName(stepProp);
+            var key = Internals.BuildOutputKey(_step, name);
             var value = propGetter((TStep)_step);
+            context.Set(key, value!);
             outputWriter(context, value!);
         });
         
@@ -63,6 +69,15 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
         }
 
         return this;
+    }
+    
+    private static string GetPropertyName<TObj, TValue>(Expression<Func<TObj, TValue>> expr)
+    {
+        if (expr.Body is MemberExpression member && member.Member is PropertyInfo)
+        {
+            return member.Member.Name;
+        }
+        throw new ArgumentException("Expression must be a property access.", nameof(expr));
     }
 
     private static Action<TObj, TValue> GetPropertySetter<TObj, TValue>(Expression<Func<TObj, TValue>> propExpr)
