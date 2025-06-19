@@ -6,15 +6,19 @@ The main objective with the library is to achieve **production-ready pipelines**
 It supports branching for parallel execution, decorator patterns for extending the steps to add more functionality like observability and validation, as well as full support for Dependency Injection using the standard `IServiceProvider` interface. 
 
 <div class="hero-buttons">
-  <a class="btn btn-primary" href="docs/getting-started.html">Get Started</a>
+  <a class="btn btn-primary" href="./getting-started.html">Get Started</a>
   <a class="btn btn-outline" href="https://github.com/thiagomvas/FFlow" target="_blank">View on GitHub</a>
 </div>
+
+---
 
 ## Terminology
 In general, FFlow uses the following terminology:
 - **Workflow**: A sequence of steps that define a process or automation task.
 - **Step**: An individual action or operation within a workflow.
 - **Branch**: A parallel execution path within a workflow.
+
+---
 
 ## How it works
 FFlow allows you to define workflows using a fluent API, which makes it easy to read and write. You can create workflows by chaining steps together, and you can use branches to run multiple steps in parallel.
