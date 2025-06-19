@@ -130,5 +130,6 @@ public class DotnetBuildStep : IFlowStep
         if (!string.IsNullOrWhiteSpace(Verbosity)) sb.Append($" --verbosity {Verbosity}");
         if (!string.IsNullOrWhiteSpace(VersionSuffix)) sb.Append($" --version-suffix {VersionSuffix}");
 
-        return sb.ToString();}
+        return sb.ToString();
+    }
 }
