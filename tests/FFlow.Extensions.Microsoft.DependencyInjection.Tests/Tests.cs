@@ -10,7 +10,7 @@ public class Tests
     public async Task AddFlow_ShouldRegisterAllWorkflowDefinitionsFound()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestWorkflowDefinition).Assembly);
+        serviceCollection.AddFFlow();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -24,7 +24,7 @@ public class Tests
     public async Task AddFlow_ShouldRegisterAllStepsFound()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestWorkflowDefinition).Assembly).AddTransient<TestService>()
+        serviceCollection.AddFFlow().AddTransient<TestService>()
             .AddTransient<IFlowStep, DiStep>();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();

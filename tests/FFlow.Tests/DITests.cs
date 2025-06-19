@@ -24,7 +24,7 @@ public class DITests
     public void Then_ShouldInjectDependencies()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
+        serviceCollection.AddFFlow().AddTransient<TestService>();
         
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -43,7 +43,7 @@ public class DITests
     public void StartWith_ShouldInjectDependencies()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
+        serviceCollection.AddFFlow().AddTransient<TestService>();
         
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -62,7 +62,7 @@ public class DITests
     public void Finally_ShouldInjectDependencies()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
+        serviceCollection.AddFFlow().AddTransient<TestService>();
         
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -81,7 +81,7 @@ public class DITests
     public void If_ShouldInjectDependencies()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
+        serviceCollection.AddFFlow().AddTransient<TestService>();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
@@ -103,7 +103,7 @@ public class DITests
     public void ForEach_ShouldInjectDependencies()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
+        serviceCollection.AddFFlow().AddTransient<TestService>();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
@@ -124,7 +124,7 @@ public class DITests
     public void Fork_ShouldInjectDependencies()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddFFlow(typeof(TestService).Assembly).AddTransient<TestService>();
+        serviceCollection.AddFFlow().AddTransient<TestService>();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
