@@ -1,3 +1,8 @@
+---
+title: Introduction
+description: Fluent, code-first workflow automation for .NET
+---
+
 ## Overview
 **FFlow** is a fluent and code-first workflow automation library for .NET. It is designed to help developers orchestrate business logic, automation tasks and CI/CD pipelines using simple, readable syntax.
 
