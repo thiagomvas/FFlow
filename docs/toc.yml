@@ -5,3 +5,7 @@ items:
         href: overview/introduction.md
       - name: Getting Started
         href: overview/getting-started.md
+  - name: Features
+    items:
+      - name: Dependency Injection
+        href: features/dependency-injection.md
