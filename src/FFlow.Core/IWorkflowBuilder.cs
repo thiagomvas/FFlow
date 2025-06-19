@@ -23,7 +23,7 @@ namespace FFlow.Core;
         /// </summary>
         /// <typeparam name="TStep">The type of the step to start with.</typeparam>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder StartWith<TStep>() where TStep : class, IFlowStep;
+        IConfigurableStepBuilder StartWith<TStep>() where TStep : class, IFlowStep;
     
         /// <summary>
         /// Starts the workflow with a custom setup action.
@@ -44,7 +44,7 @@ namespace FFlow.Core;
         /// </summary>
         /// <typeparam name="TStep">The type of the step to add.</typeparam>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder Then<TStep>() where TStep : class, IFlowStep;
+        IConfigurableStepBuilder Then<TStep>() where TStep : class, IFlowStep;
     
         /// <summary>
         /// Adds a step to the workflow with a custom setup action.
@@ -65,7 +65,7 @@ namespace FFlow.Core;
         /// </summary>
         /// <typeparam name="TStep">The type of the final step.</typeparam>
         /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-        IWorkflowBuilder Finally<TStep>() where TStep : class, IFlowStep;
+        IConfigurableStepBuilder Finally<TStep>() where TStep : class, IFlowStep;
     
         /// <summary>
         /// Adds a final step to the workflow with a custom setup action.
@@ -293,7 +293,9 @@ namespace FFlow.Core;
         IWorkflowBuilder Throw<TException>(string message) where TException : Exception, new();
         IWorkflowBuilder ThrowIf(Func<IFlowContext, bool> condition, string message);
         IWorkflowBuilder ThrowIf<TException>(Func<IFlowContext, bool> condition, string message) where TException : Exception, new();
-        
+
+        IWorkflowBuilder InsertStepAt(int index, IFlowStep step);
+        int GetStepCount();
         IWorkflowBuilder WithDecorator<TDecorator>(Func<IFlowStep, TDecorator> decoratorFactory) where TDecorator : BaseStepDecorator;
         /// <summary>
         /// Builds and returns the constructed workflow.
