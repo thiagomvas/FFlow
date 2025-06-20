@@ -10,7 +10,7 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
     /// </summary>
     protected abstract IWorkflowBuilder Delegate { get; }
 
-    public IWorkflowBuilder AddStep(IFlowStep step)
+    public IConfigurableStepBuilder AddStep(IFlowStep step)
     {
         return Delegate.AddStep(step);
     }
@@ -20,12 +20,12 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.StartWith<TStep>();
     }
 
-    public IWorkflowBuilder StartWith(AsyncFlowAction setupAction)
+    public IConfigurableStepBuilder StartWith(AsyncFlowAction setupAction)
     {
         return Delegate.StartWith(setupAction);
     }
 
-    public IWorkflowBuilder StartWith(SyncFlowAction setupAction)
+    public IConfigurableStepBuilder StartWith(SyncFlowAction setupAction)
     {
         return Delegate.StartWith(setupAction);
     }
@@ -35,12 +35,12 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.Then<TStep>();
     }
 
-    public IWorkflowBuilder Then(AsyncFlowAction setupAction)
+    public IConfigurableStepBuilder Then(AsyncFlowAction setupAction)
     {
         return Delegate.Then(setupAction);
     }
 
-    public IWorkflowBuilder Then(SyncFlowAction setupAction)
+    public IConfigurableStepBuilder Then(SyncFlowAction setupAction)
     {
         return Delegate.Then(setupAction);
     }
@@ -50,104 +50,104 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.Finally<TStep>();
     }
 
-    public IWorkflowBuilder Finally(AsyncFlowAction setupAction)
+    public IConfigurableStepBuilder Finally(AsyncFlowAction setupAction)
     {
         return Delegate.Finally(setupAction);
     }
 
-    public IWorkflowBuilder Finally(SyncFlowAction setupAction)
+    public IConfigurableStepBuilder Finally(SyncFlowAction setupAction)
     {
         return Delegate.Finally(setupAction);
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then,
+    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then,
         AsyncFlowAction? otherwise = null)
     {
         return Delegate.If(condition, then, otherwise);
     }
 
-    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null)
+    public IConfigurableStepBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null)
         where TTrue : class, IFlowStep
     {
         return Delegate.If<TTrue>(condition, otherwise);
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then,
+    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then,
         SyncFlowAction? otherwise = null)
     {
         return Delegate.If(condition, then, otherwise);
     }
 
-    public IWorkflowBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null)
+    public IConfigurableStepBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null)
         where TTrue : class, IFlowStep
     {
         return Delegate.If<TTrue>(condition, otherwise);
     }
 
-    public IWorkflowBuilder If<TTrue, TFalse>(Func<IFlowContext, bool> condition)
+    public IConfigurableStepBuilder If<TTrue, TFalse>(Func<IFlowContext, bool> condition)
         where TTrue : class, IFlowStep where TFalse : class, IFlowStep
     {
         return Delegate.If<TTrue, TFalse>(condition);
     }
 
-    public IWorkflowBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then,
-        Func<IWorkflowBuilder>? otherwise = null)
+    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IConfigurableStepBuilder> then,
+        Func<IConfigurableStepBuilder>? otherwise = null)
     {
         return Delegate.If(condition, then, otherwise);
     }
 
-    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, AsyncFlowAction action)
+    public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, AsyncFlowAction action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action)
+    public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action)
         where TItem : class
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, SyncFlowAction action)
+    public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, SyncFlowAction action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action)
+    public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action)
         where TItem : class
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector)
+    public IConfigurableStepBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector)
         where TStepIterator : class, IFlowStep
     {
         return Delegate.ForEach<TStepIterator>(itemsSelector);
     }
 
-    public IWorkflowBuilder ForEach<TStepIterator, TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector)
+    public IConfigurableStepBuilder ForEach<TStepIterator, TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector)
         where TStepIterator : class, IFlowStep
     {
         return Delegate.ForEach<TStepIterator, TItem>(itemsSelector);
     }
 
-    public IWorkflowBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector,
-        Func<IWorkflowBuilder> action)
+    public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector,
+        Func<IConfigurableStepBuilder> action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector,
-        Func<IWorkflowBuilder> action)
+    public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector,
+        Func<IConfigurableStepBuilder> action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
-    public IWorkflowBuilder ContinueWith<TWorkflowDefinition>() where TWorkflowDefinition : class, IWorkflowDefinition
+    public IConfigurableStepBuilder ContinueWith<TWorkflowDefinition>() where TWorkflowDefinition : class, IWorkflowDefinition
     {
         return Delegate.ContinueWith<TWorkflowDefinition>();
     }
 
-    public IWorkflowBuilder Switch(Action<ISwitchCaseBuilder> caseBuilder)
+    public IConfigurableStepBuilder Switch(Action<ISwitchCaseBuilder> caseBuilder)
     {
         return Delegate.Switch(caseBuilder);
     }
