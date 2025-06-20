@@ -2,7 +2,7 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class DelegateFlowStep : IFlowStep
+public class DelegateFlowStep : FlowStep
 {
     private readonly AsyncFlowAction _action;
 
@@ -11,7 +11,7 @@ public class DelegateFlowStep : IFlowStep
         _action = action ?? throw new ArgumentNullException(nameof(action));
     }
 
-    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 

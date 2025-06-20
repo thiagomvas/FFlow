@@ -6,11 +6,19 @@ namespace FFlow.Core;
 /// Provides a simplified mechanism for implementing <see cref="IFlowStep"/> by
 /// delegating the step logic to the <see cref="ExecuteAsync"/> method.
 /// </summary>
-public abstract class FlowStep : IFlowStep
+public abstract class FlowStep : IFlowStep, IRetryableFlowStep
 {
+    private IRetryPolicy? _retryPolicy;
+    
     /// <inheritdoc />
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
+        if (context == null) throw new ArgumentNullException(nameof(context));
+        
+        if (_retryPolicy != null)
+        {
+            return _retryPolicy.ExecuteAsync(() => ExecuteAsync(context, cancellationToken), cancellationToken);
+        }
         return ExecuteAsync(context, cancellationToken);
     }
         
@@ -22,4 +30,10 @@ public abstract class FlowStep : IFlowStep
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     protected abstract Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken);
+
+    public IRetryPolicy SetRetryPolicy(IRetryPolicy retryPolicy)
+    {
+        _retryPolicy = retryPolicy ?? throw new ArgumentNullException(nameof(retryPolicy));
+        return _retryPolicy;
+    }
 }

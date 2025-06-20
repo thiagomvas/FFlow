@@ -1,13 +1,11 @@
 ﻿using System.Reflection;
+using FFlow;
 using FFlow.Core;
+using FFlow.Extensions;
 
-string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-var assemblies = Directory.GetFiles(path, "*.dll")
-    .Select(Assembly.LoadFrom)
-    .Where(a => a.GetTypes().Any(t => typeof(IFlowStep).IsAssignableFrom(t) || typeof(IWorkflowDefinition).IsAssignableFrom(t)))
-    .ToList();
-Console.WriteLine("Available Assemblies:");
-foreach (var assembly in assemblies)
-{
-    Console.WriteLine($"- {assembly.GetName().Name}");
-}
+var workflow = new FFlowBuilder()
+    .StartWith((ctx, ct) => throw new AbandonedMutexException())
+    .WithRetryPolicy(RetryPolicies.FixedDelay(5, TimeSpan.FromSeconds(3)))
+    .Build();
+    
+await workflow.RunAsync("", CancellationToken.None);

@@ -122,7 +122,26 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
 
         return this;
     }
-    
+
+    public IConfigurableStepBuilder WithRetryPolicy(IRetryPolicy policy)
+    {
+        if (policy is null)
+        {
+            throw new ArgumentNullException(nameof(policy));
+        }
+
+        if (_step is IRetryableFlowStep retryableStep)
+        {
+            retryableStep.SetRetryPolicy(policy);
+        }
+        else
+        {
+            throw new InvalidOperationException($"The step type '{_step.GetType().Name}' does not support retry policies.");
+        }
+
+        return this;
+    }
+
     private static string GetPropertyName<TObj, TValue>(Expression<Func<TObj, TValue>> expr)
     {
         if (expr.Body is MemberExpression member && member.Member is PropertyInfo)

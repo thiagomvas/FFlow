@@ -20,4 +20,6 @@ public interface IConfigurableStepBuilder : IWorkflowBuilder
         Expression<Func<TStep, TValue>> stepProp,
         Action<IFlowContext, TValue> outputWriter)
         where TStep : class, IFlowStep;
+
+    public IConfigurableStepBuilder WithRetryPolicy(IRetryPolicy policy);
 }
