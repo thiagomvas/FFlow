@@ -24,7 +24,7 @@ var workflow = new FFlowBuilder()
 You can also create custom validation steps by implementing the `IFlowStep` interface. This allows you to define your own validation logic and integrate it into your workflow.
 
 ```csharp
-public class CustomValidationStep : IFlowStep
+public class CustomValidationStep : FlowStep
 {
     public async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
@@ -53,7 +53,7 @@ Validation attributes work by injecting steps that perform the validation before
 
 ```csharp
 [RequireKeys("key1", "key2")]
-public class ValidatedStep : IFlowStep
+public class ValidatedStep : FlowStep
 {
     public async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
@@ -93,7 +93,7 @@ public class MinLengthAttribute : BaseFlowValidationAttribute
     }
 }
 
-internal class MinLengthStep : IFlowStep
+internal class MinLengthStep : FlowStep
 {
     private readonly int _minLength;
     private readonly string _key;

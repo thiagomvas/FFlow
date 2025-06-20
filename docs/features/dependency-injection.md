@@ -31,7 +31,7 @@ public class MessageService : IMessageService
     public string GetMessage() => "Hello from DI!";
 }
 
-public class DiStep : IFlowStep
+public class DiStep : FlowStep
 {
     private readonly IMessageService _messageService;
 
