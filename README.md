@@ -11,6 +11,12 @@
   <a href="https://thiagomvas.dev/FFlow/">
     <img src="https://img.shields.io/badge/Docs-Available-limegreen?style=flat&logo=github">
   </a>
+  <a href="https://github.com/thiagomvas/fflow/labels/good%20first%20issue">
+    <img src="https://img.shields.io/github/issues/thiagomvas/fflow/good%20first%20issue?style=flat&color=%24EC820&label=good%20first%20issue">
+  </a>
+  <a href="https://github.com/thiagomvas/fflow/labels/help%20wanted">
+    <img src="https://img.shields.io/github/issues/thiagomvas/fflow/help%20wanted?style=flat&color=%24EC820&label=help%20wanted">
+  </a>
 </h1>
 <p align="center">
   <b>FFlow</b> is a fluent, code-first workflow automation library for .NET. It enables developers to orchestrate automation logic, business rules, and CI/CD pipelines in a <b>fully testable</b> and <b>extensible</b> way.
