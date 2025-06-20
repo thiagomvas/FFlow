@@ -7,6 +7,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
     private WorkflowOptions? _options { get; set;}
     private readonly List<IFlowStep> _steps = new List<IFlowStep>();
     private IFlowStep? _errorHandler;
+    private IFlowStep? _finalizer;
     private IServiceProvider? _serviceProvider;
     private Type? _contextType = typeof(InMemoryFFLowContext);
     private IFlowContext? _contextInstance = null;
@@ -89,8 +90,8 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
 
     public IConfigurableStepBuilder Finally<TStep>() where TStep : class, IFlowStep
     {
-        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
-        _steps.Add(step);
+        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);
+        _finalizer = step;
         return new FlowStepBuilder(this, step);
     }
 
@@ -99,7 +100,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
         
         var step = new DelegateFlowStep(setupAction);
-        _steps.Add(step);
+        _finalizer = step;
         return new FlowStepBuilder(this, step);
     }
 
@@ -114,7 +115,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         });
         
         var step = new DelegateFlowStep(asyncAction);
-        _steps.Add(step);
+        _finalizer = step;
         return new FlowStepBuilder(this, step);
     }
 
@@ -505,6 +506,8 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         {
             result.SetGlobalErrorHandler(_errorHandler);
         }
+
+        if (_finalizer is not null) result.SetFinalizer(_finalizer);
         
         return result;
     }

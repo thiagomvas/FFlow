@@ -18,7 +18,16 @@ namespace FFlow.Core;
         /// <param name="context">The context instance to use during workflow execution.</param>
         /// <returns>The current instance of <see cref="IWorkflow"/>.</returns>
         IWorkflow SetContext(IFlowContext context);
-    
+        
+        /// <summary>
+        /// Sets a finalizer step for the workflow.
+        /// </summary>
+        /// <param name="finalizer">The finalizer step that will be run at the end of the execution.</param>
+        /// <returns>The current instance of <see cref="IWorkflow"/>.</returns>
+        /// <remarks>
+        /// The finalizer step is executed after all other steps have completed, regardless of whether they succeeded or failed.
+        /// </remarks>
+        IWorkflow SetFinalizer(IFlowStep finalizer);
         /// <summary>
         /// Executes the workflow asynchronously with the specified input and cancellation token.
         /// </summary>
