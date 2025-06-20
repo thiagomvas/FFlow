@@ -1,4 +1,19 @@
-- name: Introduction
-  href: introduction.md
-- name: Getting Started
-  href: getting-started.md
+items:
+  - name: Overview
+    items:
+      - name: Introduction
+        href: overview/introduction.md
+      - name: Getting Started
+        href: overview/getting-started.md
+  - name: Features
+    items:
+      - name: Steps
+        href: features/steps.md
+      - name: Passing data around
+        href: features/passing-data.md
+      - name: Event Handling
+        href: features/events.md
+      - name: Dependency Injection
+        href: features/dependency-injection.md
+      - name: Validation
+        href: features/validation.md
