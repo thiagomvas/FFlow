@@ -8,7 +8,7 @@
   <a href="https://github.com/thiagomvas/FFlow/actions/workflows/cicd.yml">
     <img src="https://github.com/thiagomvas/FFlow/actions/workflows/cicd.yml/badge.svg">
   </a>
-  <a href="https://github.com/thiagomvas/FFlow/actions/workflows/cicd.yml">
+  <a href="https://thiagomvas.dev/FFlow/">
     <img src="https://img.shields.io/badge/Docs-Available-limegreen?style=flat&logo=github">
   </a>
 </h1>
@@ -17,6 +17,7 @@
 </p>
 
 ## Table of Contents
+- [Table of Contents](#table-of-contents)
 - [Installation](#installation)
 - [Quickstart](#quickstart)
 - [Features at a glance](#features-at-a-glance)

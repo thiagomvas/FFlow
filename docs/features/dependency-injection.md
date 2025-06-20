@@ -41,7 +41,7 @@ public class DiStep : FlowStep
         _messageService = messageService;
     }
 
-    public async Task ExecuteAsync(IFlowContext context)
+    public async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
         // Use the injected service
         var message = _messageService.GetMessage();

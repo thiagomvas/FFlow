@@ -7,11 +7,11 @@ To get started with FFlow, follow these steps:
    dotnet add package FFlow
    ```
 2. **Create a new step**:
-   Define a step by implementing the `IFlowStep` interface. For example:
+   Define a step by implementing the `FlowStep` base class. For example:
    ```csharp
-    public class HelloStep : IFlowStep
+    public class HelloStep : FlowStep
     {
-        public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
         {
             var input = context.GetInput<string>();
             Console.WriteLine($"Hello, {input}!");
