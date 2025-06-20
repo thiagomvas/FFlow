@@ -1,6 +1,29 @@
 # Steps
 FFlow is based on the concept of steps, which are individual units of work that can be executed in a workflow. Each step can perform a specific action, such as processing data, making API calls, or validating input.
 
+## Custom Steps
+You can create custom steps by implementing the `FlowStep` class or the `IFlowStep` interface. Custom steps allow you to encapsulate specific logic that can be reused across different workflows.
+
+By implementing `FlowStep`, you also inherit additional functionality. It is heavily recommended to use `FlowStep` for custom steps, as it provides a lot of built-in features that make it easier to work with FFlow.
+
+```csharp
+public class CustomStep : FlowStep
+{
+    public override async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    {
+        // Custom logic here
+        Console.WriteLine("Executing custom step...");
+        
+        // Simulate async work
+        await Task.Delay(1000, cancellationToken);
+        
+        // Optionally set output for the next step
+        context.SetOutput("result", "Custom step completed successfully.");
+    }
+}
+```
+---
+
 ## Flow Control
 FFlow provides various flow control mechanisms to manage the execution of steps in a workflow. You can use conditional execution, loops, and parallel execution to control how steps are executed based on the context or other conditions.
 
