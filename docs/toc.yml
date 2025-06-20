@@ -9,6 +9,8 @@ items:
     items:
       - name: Steps
         href: features/steps.md
+      - name: Passing data around
+        href: features/passing-data.md
       - name: Dependency Injection
         href: features/dependency-injection.md
       - name: Validation
