@@ -42,4 +42,28 @@ public class StepConfigurationTests
         var ctx = await workflow.RunAsync("input", new CancellationTokenSource(2000).Token);
         Assert.That(ctx.Get<int>("counter"), Is.EqualTo(4));
     }
+    
+    [Test]
+    public async Task WithRetryPolicy_ShouldCorrectlyApplyPolicy()
+    {
+        var retryCount = 0;
+        var workflow = new FFlowBuilder()
+            .StartWith((ctx, _) =>
+            {
+                var counter = ctx.Get<int>("retry_count");
+                ctx.Set("retry_count", counter + 1);
+                throw new InvalidOperationException("Test exception");
+            })
+            .WithRetryPolicy(RetryPolicies.FixedDelay(3, TimeSpan.FromMilliseconds(100)))
+            .Then((ctx, _) =>
+            {
+                ctx.Set("failed", true);
+            })
+            .OnAnyError((_, _) => {})
+            .Build();
+        
+        var ctx = await workflow.RunAsync("input", new CancellationTokenSource(2000).Token);
+        Assert.That(ctx.Get<int>("retry_count"), Is.EqualTo(3));
+        Assert.That(ctx.Get<bool>("failed"), Is.False, "The workflow should have cancelled execution.");
+    }
 }
