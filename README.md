@@ -1,92 +1,124 @@
-# FFlow - Code first automation built fluently
+<h1 align="center">
+  FFlow - Code first automations built fluently
+  <br>
+  <a href="https://github.com/thiagomvas/FFlow/actions/workflows/ci-tests.yml">
+    <img src="https://github.com/thiagomvas/FFlow/actions/workflows/ci-tests.yml/badge.svg">
+  </a>
 
-## FRs
+  <a href="https://github.com/thiagomvas/FFlow/actions/workflows/cicd.yml">
+    <img src="https://github.com/thiagomvas/FFlow/actions/workflows/cicd.yml/badge.svg">
+  </a>
+  <a href="https://github.com/thiagomvas/FFlow/actions/workflows/cicd.yml">
+    <img src="https://img.shields.io/badge/Docs-Available-limegreen?style=flat&logo=github">
+  </a>
+</h1>
+<p align="center">
+  <b>FFlow</b> is a fluent, code-first workflow automation library for .NET. It enables developers to orchestrate automation logic, business rules, and CI/CD pipelines in a <b>fully testable</b> and <b>extensible</b> way.
+</p>
 
-**FR1 — Workflow Definition DSL**  
-The system shall provide a fluent, chainable API to define workflows programmatically with methods such as `WithName`, `StartWith<TStep>`, `Then<TStep>`, `If(predicate)`, and `ForEach(collection)`.
+## Table of Contents
+- [Installation](#installation)
+- [Quickstart](#quickstart)
+- [Features at a glance](#features-at-a-glance)
+- [Why it exists](#why-it-exists)
+- [Using with Dependency Injection](#using-with-dependency-injection)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
 
-**FR2 — WorkflowContext**  
-The system shall maintain a `WorkflowContext` object that supports setting, getting, and trying to get variables by key during workflow execution.
+## Installation
+You can install FFlow via the Nuget Package Manager or by using the .NET CLI
+```bash
+dotnet add package FFlow
+```
 
-**FR3 — Step Execution**  
-Each workflow step shall implement an interface with an asynchronous `ExecuteAsync(WorkflowContext)` method, allowing custom logic and variable manipulation.
+## Quickstart
+Getting started with FFlow is easy. Here's an example of how to create a custom step that says 'Hello, FFlow!'. This example includes building a workflow with the builder, configuring it and executing it with an input.
+```csharp
+ public class HelloStep : FlowStep
+ {
+     protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
+     {
+         var input = context.GetInput<string>();
+         Console.WriteLine($"Hello, {input}!");
+         return Task.CompletedTask;
+     }
+ }
 
-**FR4 — Conditional Branching**  
-The workflow shall support conditional branching via `If` blocks that evaluate predicates against the current `WorkflowContext` to decide which path to execute.
-
-**FR5 — Looping**  
-The workflow shall support `ForEach` looping over collections accessible in the `WorkflowContext`, applying a nested workflow body for each item.
-
-**FR6 — Dependency Injection Support**  
-Workflow steps shall support constructor injection of services, enabling integration with dependency injection containers.
-
-**FR7 — Persistence Abstraction**  
-The system shall provide an abstraction layer to support multiple workflow persistence backends (e.g., in-memory, SQLite, Redis), enabling saving and resuming workflows.
-
-**FR8 — Extensible Step Registration**  
-Users shall be able to register custom step types and extend the fluent DSL with new methods or step behaviors via extension methods.
-
-**FR9 — Workflow Build and Execution**  
-The system shall support building a workflow definition into an executable object and running it asynchronously with proper context management.
-
-**FR10 — Error Handling and Logging**  
-The system shall provide mechanisms for error handling within steps and support logging integrations for diagnostic purposes.
-
-**FR11 — Support for CQRS Compatibility**  
-The workflow shall support dispatching commands or queries inside steps, aligning with CQRS patterns.
-
-**FR12 — Automatic DI for steps**  
-The workflow shall automatically register any steps involved when registering it on the service collection.
-
-
-**FR13 — Support for Multiple instances of the same workflow**  
-Any workflow execution shall be independent of each other and be able to be ran asynchronously, even if it is the same workflow type (Using a workflow definition marker interface).
-
-## Syntax
-### Basic Workflow
-```cs
-Flow.Define("SendWelcomeFlow")
-    .WithName("Send welcome email to user")
-    .StartWith<ValidateUser>()
-    .Then<CreateUser>()
-    .Then<SendWelcomeEmail>()
+var workflow = new FFlowBuilder()
+    .StartWith<HelloStep>()
     .Build();
 
+await workflow.RunAsync("FFlow");
 ```
 
-### Conditional
-```cs
-Flow.Define("ValidateAndProcess")
-    .StartWith<ValidateUser>()
-    .If(ctx => ctx.Get<bool>("isValid"), then => then
-        .Then<CreateUser>()
-        .Then<SendWelcomeEmail>(),
-        elseBranch: els => els
-        .Then<LogValidationFailure>())
+## Features at a glance
+- **Fluent syntax for flow control:** `StartWith()`, `Then()`, `Finally()`, `If()`, `Fork()`, and more
+- **Dependency Injection support:** Inject services into steps via constructor injection
+- **Validation utilities:** Write step context validation attributes or steps with the help of `FFlow.Validation`
+- **Branching and parallelism:** Run parts of the workflow concurrently with different dispatch strategies
+- **Context-aware:** Pass and retrieve dynamic data throughout the workflow
+- **Reusable definitions:** Encapsulate workflows into a `IWorkflowDefinition` for factory-like behaviours
+- **Lifecycle hooks:** Plug into events like step start, step failure or workflow completion.
+
+## Why it exists
+Writing and testing CI/CD pipelines has always been frustrating. It usually went from "waiting to compile" to "waiting for CI/CD", just to realize you missed something, fix it, and rerun the whole thing again. And again.
+
+The feedback loop was too long. Small mistakes led to wasted time, and workflows often lived outside the codebase in YAML files or GUI editors that were hard to test, debug, or reuse.
+
+FFlow was born out of this frustration. **It came from the idea that automation should feel like regular code.** Something you can write fluently, test locally, and plug into your existing services—just like anything else in your app.
+
+Tools like `Cake` or `Nuke` solve part of the problem, but I wanted something more structured and flexible. Less about running scripts. More about building flows.
+
+## Using with Dependency Injection
+FFlow integrates cleanly with Microsoft.Extensions.DependencyInjection. To enable DI:
+```csharp
+var services = new ServiceCollection();
+services.AddFlow(); // Registers IFlowSteps and IWorkflowDefinitions
+services.AddSingleton<IMyService, MyService>();
+
+var provider = services.BuildServiceProvider();
+
+var workflow = new FFlowBuilder(provider)
+    .StartWith<StepThatUsesIMyService>()
     .Build();
 ```
+Steps can receive services through construction injection:
+```csharp
+public class StepThatUsesIMyService : FlowStep
+{
+    private readonly IMyService _service;
 
-### Foreach
-```
-Flow.Define("NotifyAllUsers")
-    .StartWith<GetEmails>()
-    .ForEach(ctx => ctx.Get<List<string>>("emails"), each => each
-        .Then<SendNotification>())
-    .Build();
-```
-
-### Workflow Context
-```cs
-Flow.Define("CalculateTotal")
-    .StartWith<LoadCart>()
-    .Then<CalculateTax>()
-    .Then(ctx =>
+    public StepThatUsesIMyService(IMyService service)
     {
-        var total = ctx.Get<decimal>("subtotal") + ctx.Get<decimal>("tax");
-        ctx.Set("total", total);
+        _service = service;
+    }
+
+    protected override Task ExecuteAsync(IFlowContext context, CancellationToken ct)
+    {
+        var result = _service.DoSomething();
         return Task.CompletedTask;
-    })
-    .Then<ChargeCustomer>()
-    .Build();
+    }
+}
 ```
 
+## Testing
+FFlow includes unit tests covering key features such as step execution, context flow, branching, validation, and DI integration. All you need to do is run
+```
+dotnet test
+```
+
+## Contributing
+
+Contributions to FFlow are welcome and appreciated. Whether it’s fixing a bug, suggesting an improvement, writing documentation, or proposing a new feature.
+
+If you’ve worked with automation, DevOps, or pipeline tools and thought “this could be easier in code”, you’re in the right place. FFlow is still growing, and there’s a lot of room to help shape what it becomes.
+
+You don’t need to understand the entire codebase to contribute. Most improvements are isolated and straightforward. It's designs allow you to add new steps, small helpers, validation logic, or workflow patterns without knowing everything about the project.
+
+If you have an idea or just want to help, feel free to open an issue, start a discussion, or jump into the code.
+
+## License
+
+FFlow is **free software** and **always will be**, released under the MIT License.  
+See the [LICENSE](./LICENSE) file for more details.
