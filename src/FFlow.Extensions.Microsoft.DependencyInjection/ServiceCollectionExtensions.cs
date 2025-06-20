@@ -16,13 +16,29 @@ using System.Reflection;
         /// <param name="assemblies">The assemblies to scan for FFlow steps and workflow definitions.</param>
         /// <returns>The updated <see cref="IServiceCollection"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="services"/> parameter is null.</exception>
+        /// <remarks>
+        /// When no assemblies are provided, it will scan all loaded assemblies in the current application domain.
+        /// This sometimes includes third-party libraries, so it is recommended to specify the assemblies explicitly
+        /// </remarks>
         public static IServiceCollection AddFFlow(this IServiceCollection services, params Assembly[] assemblies)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            
+
+
             if (assemblies == null || assemblies.Length == 0)
             {
-                throw new ArgumentException("At least one assembly must be provided.", nameof(assemblies));
+                var targetTypes = new[]
+                {
+                    typeof(IFlowStep),
+                    typeof(IWorkflowDefinition)
+                };  
+                string path = AppDomain.CurrentDomain.BaseDirectory;
+                assemblies = Directory.GetFiles(path, "*.dll")
+                    .Select(Assembly.LoadFrom)
+                    .Where(a => a.GetTypes().Any(t =>
+                        targetTypes.Any(target => target.IsAssignableFrom(t))))
+                    .Where(a => !a.FullName.StartsWith("FFlow", StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
             }
     
             foreach (var assembly in assemblies)

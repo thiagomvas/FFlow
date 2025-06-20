@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.0-alpha.2"></a>
+## [1.0.0-alpha.2](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0-alpha.2) (2025-06-20)
+
+### Features
+
+* Add automatic assembly discovery for registering services ([3e486e4](https://www.github.com/thiagomvas/FFlow/commit/3e486e41d7ba410639d516f5800da0a7c1f32e90))
+* Add base FlowStep class for providing a base for common implementations ([920abc2](https://www.github.com/thiagomvas/FFlow/commit/920abc2c785f4535a5c2b5630d166a36d1f37d1d))
+* Add CheckForKey to validate if a key is present ([b1f24fb](https://www.github.com/thiagomvas/FFlow/commit/b1f24fbe8a1f108f4c581632ac61e0290eae3343))
+* Add CheckForRegexPattern to validate strings using regex ([c50488c](https://www.github.com/thiagomvas/FFlow/commit/c50488c284f806124b7d154eef31067e26b3d936))
+* Add IConfigurableStepBuilder to allow more specific configuration for individual steps ([2dd9087](https://www.github.com/thiagomvas/FFlow/commit/2dd90877fe4526d8f0c9ee3a8e8ee0aa53e0fbfe))
+* Add IFlowContext.LoadEnvironmentVariables extension ([b61740f](https://www.github.com/thiagomvas/FFlow/commit/b61740f9879734c629d3bf632133f2903401253d))
+* Add input overloads for easier configuration ([fcab480](https://www.github.com/thiagomvas/FFlow/commit/fcab480cbce09a67424716fbf093d91f0d9b5738))
+* Add Input() for allowing setting properties inside steps ([19c19d7](https://www.github.com/thiagomvas/FFlow/commit/19c19d724b66479f9aaf14b5eeb1977c6c858198))
+* Add not empty step ([5d5340b](https://www.github.com/thiagomvas/FFlow/commit/5d5340b1d7104bb3d9a19e97009696b6518f4520))
+* Add output setter steps ([9ea605f](https://www.github.com/thiagomvas/FFlow/commit/9ea605f1c90d29c1f9b7a9002081fca4700e3378))
+* Add RequireKey attribute ([97ed9e0](https://www.github.com/thiagomvas/FFlow/commit/97ed9e0b45184a07ad440061cb2e21bc7646dfd1))
+* Add RequireKeys to check multiple keys at once ([0f9f7e2](https://www.github.com/thiagomvas/FFlow/commit/0f9f7e2b70645495c2f1411a72ad2c28a551353b))
+* Add RequireNotNull attribute ([ced717c](https://www.github.com/thiagomvas/FFlow/commit/ced717c4ecea6608d53598e93e9c33976e0a4320))
+* Add RequireNotNull checks to validate if keys have a not null value ([397f664](https://www.github.com/thiagomvas/FFlow/commit/397f664b0a67bf1e355de6f04f0922167de376d0))
+* Add RequireRegex attribute ([cbe4de5](https://www.github.com/thiagomvas/FFlow/commit/cbe4de58c6ca28aa7a650e5342cd27fec7d89c2a))
+* Add Retry Policies support ([dee6fd5](https://www.github.com/thiagomvas/FFlow/commit/dee6fd56af1a8e7455d60cb6b0a5144fa9671659))
+* Add validation attribute discovery and decorators ([a42b755](https://www.github.com/thiagomvas/FFlow/commit/a42b7559e71dff305f905627335fdc84218cb553))
+* Allow delegate steps to be configured ([ee3fd4f](https://www.github.com/thiagomvas/FFlow/commit/ee3fd4f5c148ffa294a91a01de9314a89d43a311))
+* Dotnet steps are now configured via properties rather than context ([7a2fa59](https://www.github.com/thiagomvas/FFlow/commit/7a2fa59f5ca8b6b3d7b24e19e97d4e7c8b8481f0))
+* Finally sets step as a finalizer to run regardless of workflow success or failure ([a19e1dd](https://www.github.com/thiagomvas/FFlow/commit/a19e1dd9793d0436519fe33ec3d99c3c6d97e9fa))
+* Register input and outputs into the context ([f5aa540](https://www.github.com/thiagomvas/FFlow/commit/f5aa540e87ff0eb6d84b12f24f0310ff1633f408))
+* Throw a custom validation exception rather than general purpose ones ([f6752f7](https://www.github.com/thiagomvas/FFlow/commit/f6752f7fb40ce96898ee44199091dd0176d6392d))
+
+### Bug Fixes
+
+* Fix incorrect relative source code path ([1278975](https://www.github.com/thiagomvas/FFlow/commit/12789753092d65364c38173ca3bd1fe5c4f94171))
+
 <a name="1.0.0-alpha.1"></a>
 ## [1.0.0-alpha.1](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0-alpha.1) (2025-06-14)
 

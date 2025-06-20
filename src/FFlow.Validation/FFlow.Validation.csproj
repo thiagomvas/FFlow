@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
@@ -10,7 +10,7 @@
             Validation library for FFlow workflows, providing rules and constraints to ensure workflow integrity and correctness.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.0.0-alpha.1</Version>
+        <Version>1.0.0-alpha.2</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>

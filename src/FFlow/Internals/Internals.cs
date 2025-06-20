@@ -7,6 +7,27 @@ internal class Internals
 {
     internal const string FFlowContextInputKey = "fflow.ctx.input";
 
+    internal static string BuildInputKey(IFlowStep step, string key)
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or whitespace.", nameof(key));
+
+        var stepName = step.GetType().Name;
+
+        return $"input:{stepName}.{key}";
+    }
+    
+    internal static string BuildOutputKey(IFlowStep step, string key)
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or whitespace.", nameof(key));
+
+        var stepName = step.GetType().Name;
+
+        return $"output:{stepName}.{key}";
+    }
+
+    
     internal static TStep GetOrCreateStep<TStep>(IServiceProvider? serviceProvider) where TStep : class, IFlowStep
     {
         if (serviceProvider != null)

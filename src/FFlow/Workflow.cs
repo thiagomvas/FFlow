@@ -7,7 +7,8 @@ public class Workflow : IWorkflow
     public readonly Guid Id = Guid.NewGuid();
     private readonly IReadOnlyList<IFlowStep> _steps;
     private IFlowContext _context;
-    private IFlowStep _globalErrorHandler;
+    private IFlowStep? _globalErrorHandler;
+    private IFlowStep? _finalizer;
     private readonly WorkflowOptions? _options;
 
     public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null)
@@ -36,6 +37,12 @@ public class Workflow : IWorkflow
     public IWorkflow SetContext(IFlowContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        return this;
+    }
+
+    public IWorkflow SetFinalizer(IFlowStep finalizer)
+    {
+        _finalizer = finalizer ?? throw new ArgumentNullException(nameof(finalizer));
         return this;
     }
 
@@ -93,6 +100,11 @@ public class Workflow : IWorkflow
         }
         catch (Exception ex)
         {
+            if (_finalizer != null)
+            {
+                await _finalizer.RunAsync(_context, cancellationToken);
+            }
+
             if (current is not null)
                 eventListener?.OnStepFailed(current, _context, ex);
 
@@ -108,7 +120,13 @@ public class Workflow : IWorkflow
             }
         }
 
+        if (_finalizer != null)
+        {
+            await _finalizer.RunAsync(_context, cancellationToken);
+        }
+
         eventListener?.OnWorkflowCompleted(this);
+
         return _context;
     }
 }

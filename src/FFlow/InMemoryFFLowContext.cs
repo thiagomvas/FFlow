@@ -89,4 +89,9 @@ public class InMemoryFFLowContext : IFlowContext
         Id = id;
         return this;
     }
+    
+    public IEnumerable<KeyValuePair<string, object>> GetAll()
+    {
+        return _storage.AsEnumerable();
+    }
 }

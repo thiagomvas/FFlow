@@ -5,9 +5,7 @@
       "src": [
         {
           "src": "./src",
-          "files": [
-            "**/*.csproj"
-          ]
+          "files": ["**/*.csproj"]
         }
       ],
       "dest": "api"
@@ -16,26 +14,17 @@
   "build": {
     "content": [
       {
-        "files": [
-          "**/*.{md,yml}"
-        ],
-        "exclude": [
-          "_site/**"
-        ]
+        "files": ["**/*.{md,yml}"],
+        "exclude": ["_site/**"]
       }
     ],
     "resource": [
       {
-        "files": [
-          "images/**"
-        ]
+        "files": ["images/**"]
       }
     ],
     "output": "_site",
-    "template": [
-      "default",
-      "modern"
-    ],
+    "template": ["default", "modern"],
     "globalMetadata": {
       "_appName": "FFlow",
       "_appTitle": "FFlow",

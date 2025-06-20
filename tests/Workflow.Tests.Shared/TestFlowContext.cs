@@ -68,4 +68,12 @@ public class TestFlowContext : IFlowContext
         Id = id;
         return this;
     }
+    
+    public IEnumerable<KeyValuePair<string, object>> GetAll()
+    {
+        foreach (var kvp in _data)
+        {
+            yield return new KeyValuePair<string, object>(kvp.Key, kvp.Value!);
+        }
+    }
 }
