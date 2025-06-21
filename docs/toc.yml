@@ -17,3 +17,7 @@ items:
         href: features/dependency-injection.md
       - name: Validation
         href: features/validation.md
+  - name: Extensions
+    items:
+      - name: Custom Steps
+        href: extensions/observability.md
