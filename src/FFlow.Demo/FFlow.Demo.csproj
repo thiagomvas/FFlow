@@ -12,6 +12,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\FFlow.Observability\FFlow.Observability.csproj" />
       <ProjectReference Include="..\FFlow.Extensions.Microsoft.DependencyInjection\FFlow.Extensions.Microsoft.DependencyInjection.csproj" />
+      <ProjectReference Include="..\FFlow.Observability\FFlow.Observability.csproj" />
       <ProjectReference Include="..\FFlow.Steps.DotNet\FFlow.Steps.DotNet.csproj" />
       <ProjectReference Include="..\FFlow.Validation\FFlow.Validation.csproj" />
       <ProjectReference Include="..\FFlow\FFlow.csproj" />

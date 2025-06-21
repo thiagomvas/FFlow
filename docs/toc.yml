@@ -19,5 +19,5 @@ items:
         href: features/validation.md
   - name: Extensions
     items:
-      - name: Custom Steps
+      - name: Observability
         href: extensions/observability.md

@@ -3,41 +3,22 @@ using FFlow;
 using FFlow.Core;
 using FFlow.Demo;
 using FFlow.Extensions;
+using FFlow.Extensions.Microsoft.DependencyInjection;
 using FFlow.Observability.Extensions;
 using FFlow.Observability.Listeners;
 using FFlow.Observability.Metrics;
+using Microsoft.Extensions.DependencyInjection;
 
-var sink = new InMemoryMetricsSink();
-var timelineRecorder = new TimelineRecorder();
-var workflow = new FFlowBuilder()
-    .UseMetrics(sink)
-    .WithOptions(o => o.WithEventListener(timelineRecorder))
-    .StartWith<HelloStep>().Input<HelloStep, string>(step => step.Name, "World")
-    .Delay(1000)
-    .Then<GoodByeStep>().Input<GoodByeStep, string>(step => step.Name, "World")
-    .Build();
-    
-var ctx = await workflow.RunAsync("", CancellationToken.None);
+var services = new ServiceCollection()
+    .AddFFlow()
+    .AddSingleton<InMemoryMetricsSink>()
+    .AddSingleton<MetricTrackingListener<InMemoryMetricsSink>>()
+    .BuildServiceProvider();
 
+var workflow = services.GetRequiredService<HelloWorkflow>().Build();
+var ctx = await workflow.RunAsync("input");
 
-Console.WriteLine("===============TIMELINE===============");
-foreach (var entry in ctx.GetEventListener<TimelineRecorder>()?.GetTimeline() ?? [])
-{
-    Console.WriteLine(entry);
-}
+// Get the InMemoryMetricsSink to access the metrics
+var sink = services.GetRequiredService<InMemoryMetricsSink>();
 
-Console.WriteLine("==========================================");
-Console.WriteLine("Workflow completed. Counters collected:");
-foreach (var metric in ctx.GetMetricsSink<InMemoryMetricsSink>().GetCounters())
-{
-    Console.WriteLine($"{metric.Key}: {metric.Value}");
-}
-Console.WriteLine("==========================================\nTimings collected:");
-
-foreach (var timing in ctx.GetMetricsSink<InMemoryMetricsSink>().GetTimings())
-{
-    var values = timing.Value;
-    var avg = values.Count > 0 ? TimeSpan.FromMilliseconds(values.Average(t => t.TotalMilliseconds)) : TimeSpan.Zero;
-    Console.WriteLine($"{timing.Key}: Count={values.Count}, Avg={avg.TotalMilliseconds:F2}ms");
-}
 
