@@ -1,6 +1,7 @@
 using FFlow.Core;
 using FFlow.Extensions;
 using FFlow.Observability.Listeners;
+using FFlow.Observability.Metrics;
 
 namespace FFlow.Demo;
 
@@ -26,7 +27,7 @@ public class HelloWorkflow : WorkflowDefinition
     {
         return options =>
         {
-            options.WithEventListener(new ConsoleFlowEventListener());
+            options.WithEventListener(new MetricTrackingListener(new InMemoryMetricsSink()));
         };
     }
 }
