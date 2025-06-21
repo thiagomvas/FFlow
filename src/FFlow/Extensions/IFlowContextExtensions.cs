@@ -5,6 +5,7 @@ namespace FFlow.Extensions;
 
 public static class IFlowContextExtensions
 {
+    private const string FlowContextIdKey = "__context.id";
     /// <summary>
     /// Loads environment variables into the flow context.
     /// </summary>
@@ -18,7 +19,7 @@ public static class IFlowContextExtensions
         {
             if (env.Key is string key && env.Value is string value)
             {
-                context.Set(key, value);
+                context.SetValue(key, value);
             }
         }
 
@@ -30,13 +31,37 @@ public static class IFlowContextExtensions
         if (context is null) throw new ArgumentNullException(nameof(context));
 
         var key = Internals.BuildEventListenerKey<TListener>();
-        if (context.TryGet(key, out IFlowEventListener? listener))
+        if (context.GetValue<TListener>(key) is TListener listener)
         {
-            return (TListener) listener;
+            return listener;
         }
 
         throw new InvalidOperationException($"Event listener of type {typeof(TListener).FullName} is not registered in the context.");
     }
     
+    public static Guid GetId(this IFlowContext context)
+    {
+        if (context is null) throw new ArgumentNullException(nameof(context));
+
+        var id = context.GetValue<Guid>(FlowContextIdKey);
+        if (id == default)
+        {
+            throw new InvalidOperationException("Flow context ID is not set.");
+        }
+
+        return id;
+    }
+    
+    public static void SetId(this IFlowContext context, Guid id)
+    {
+        if (context is null) throw new ArgumentNullException(nameof(context));
+
+        if (id == default)
+        {
+            throw new ArgumentException("ID cannot be default value.", nameof(id));
+        }
+
+        context.SetValue(FlowContextIdKey, id);
+    }
     
 }
