@@ -14,7 +14,6 @@ public class BuilderStep : ForwardingWorkflowBuilder, IFlowStep
     }
 
     protected override IWorkflowBuilder Delegate => _workflowBuilder;
-
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
-        => _workflowBuilder.Build().SetContext(context).RunAsync(context.GetInput<object>(), cancellationToken);
+        => _workflowBuilder.Build().SetContext(context).RunAsync(context.GetLastOutput<object>(), cancellationToken);
 }

@@ -15,7 +15,7 @@ public class HelloStep : IFlowStep
 
         if (context == null) throw new ArgumentNullException(nameof(context));
 
-        var input = context.Get<string>("name") ?? context.GetInput<string>();
+        var input = context.GetValue<string>("name") ?? context.GetLastOutput<string>();
         
         return Task.Run(() =>
         {

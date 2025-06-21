@@ -4,94 +4,136 @@ namespace FFlow;
 
 public class InMemoryFFLowContext : IFlowContext
 {
+    private readonly Dictionary<string, object> _values = new();
+    private readonly OrderedDictionary<Type, object> _inputs = new();
+    private readonly OrderedDictionary<Type, object> _outputs = new();
 
-    private readonly Dictionary<string, object> _storage = new();
-    public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public InMemoryFFLowContext()
+    public void SetInputFor<TStep, TInput>(TInput input) where TStep : class, IFlowStep
     {
-        
-    }
-    public InMemoryFFLowContext(Dictionary<string, object> storage)
-    {
-        _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-    }
 
-    public InMemoryFFLowContext(Dictionary<string, object> storage, Guid Id)
-    {
-        _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-        this.Id = Id;
+        var key = typeof(TStep);
+        _inputs[key] = input;
     }
 
-    public TInput GetInput<TInput>()
+    public void SetInputFor<TStep, TInput>(TStep step, TInput input) where TStep : class, IFlowStep
     {
-        if (_storage.TryGetValue(Internals.FFlowContextInputKey, out var value))
+
+        if (step == null)
+            throw new ArgumentNullException(nameof(step), "Step cannot be null.");
+
+        var key = step.GetType();
+        _inputs[key] = input;
+    }
+
+    public void SetOutputFor<TStep, TOutput>(TOutput output) where TStep : class, IFlowStep
+    {
+
+        var key = typeof(TStep);
+        _outputs[key] = output;
+    }
+
+    public void SetOutputFor<TStep, TOutput>(TStep step, TOutput output) where TStep : class, IFlowStep
+    {
+
+        if (step == null)
+            throw new ArgumentNullException(nameof(step), "Step cannot be null.");
+
+        var key = step.GetType();
+        _outputs[key] = output;
+    }
+
+    public TInput? GetInputFor<TStep, TInput>() where TStep : class, IFlowStep
+    {
+        var key = typeof(TStep);
+        if (_inputs.TryGetValue(key, out var input) && input is TInput result)
         {
-            if (value is TInput typedValue)
-            {
-                return typedValue;
-            }
-            throw new InvalidCastException($"Stored input is not of type {typeof(TInput).Name}.");
+            return result;
         }
-        return default; // Return default value if input is not set
-    }
-
-    public void SetInput<TInput>(TInput input)
-    {
-        _storage[Internals.FFlowContextInputKey] = input;
-    }
-
-    public T Get<T>(string key)
-    {
-        if (_storage.TryGetValue(key, out var value))
-        {
-            if (value is T typedValue)
-            {
-                return typedValue;
-            }
-            throw new InvalidCastException($"Stored value for key '{key}' is not of type {typeof(T).Name}.");
-        }
-
         return default;
     }
 
-    public void Set<T>(string key, T value)
+    public TOutput? GetOutputFor<TStep, TOutput>() where TStep : class, IFlowStep
     {
-        if (key == null) throw new ArgumentNullException(nameof(key));
-        if (value == null) throw new ArgumentNullException(nameof(value));
-
-        _storage[key] = value;
+        var key = typeof(TStep);
+        if (_outputs.TryGetValue(key, out var output) && output is TOutput result)
+        {
+            return result;
+        }
+        return default;
     }
 
-    public bool TryGet<T>(string key, out T value)
+    public T? GetValue<T>(string key, T defaultValue = default) 
     {
-        if (_storage.TryGetValue(key, out var storedValue))
+        if (_values.TryGetValue(key, out var value))
         {
-            if (storedValue is T typedValue)
-            {
-                value = typedValue;
-                return true;
-            }
-            value = default;
-            return false; // Type mismatch
+            return (T)value;
         }
-        value = default;
-        return false; // Key not found
+        return defaultValue;
+    }
+
+    public void SetValue<T>(string key, T value)
+    {
+
+        _values[key] = value;
+    }
+
+    public T? GetSingleValue<T>()
+    {
+        if (_values.TryGetValue(typeof(T).FullName ?? string.Empty, out var value))
+        {
+            return (T)value;
+        }
+        return default;
+    }
+
+    public void SetSingleValue<T>(T value)
+    {
+        _values[typeof(T).FullName ?? string.Empty] = value;
+    }
+
+    public T? GetLastInput<T>()
+    {
+        if (_inputs.Count == 0)
+            return default;
+
+        var lastInput = _inputs.Values.LastOrDefault();
+        if (lastInput is T result)
+        {
+            return result;
+        }
+        return default;
+    }
+
+    public T? GetLastOutput<T>()
+    {
+        if (_outputs.Count == 0)
+            return default;
+
+        var lastOutput = _outputs.Values.LastOrDefault();
+        if (lastOutput is T result)
+        {
+            return result;
+        }
+        return default;
     }
 
     public IFlowContext Fork()
     {
-        return new InMemoryFFLowContext(_storage.ToDictionary(), Id);
-    }
-
-    public IFlowContext SetId(Guid id)
-    {
-        Id = id;
-        return this;
-    }
-    
-    public IEnumerable<KeyValuePair<string, object>> GetAll()
-    {
-        return _storage.AsEnumerable();
+        var forkedContext = new InMemoryFFLowContext();
+        foreach (var kvp in _values)
+        {
+            forkedContext.SetValue(kvp.Key, kvp.Value);
+        }
+        foreach (var kvp in _inputs)
+        {
+            forkedContext._inputs[kvp.Key] = kvp.Value;
+        }
+        foreach (var kvp in _outputs)
+        {
+            forkedContext._outputs[kvp.Key] = kvp.Value;
+        }
+        return forkedContext;
+        
     }
 }

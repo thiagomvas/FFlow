@@ -25,7 +25,7 @@ public class ThrowExceptionIfStep : IFlowStep
 
         if (!_condition(context)) return Task.CompletedTask;
         
-        context.Set("Exception", _exception);
+        context.SetSingleValue(_exception);
         return Task.FromException(_exception);
 
     }

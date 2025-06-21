@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using FFlow.Core;
+using FFlow.Extensions;
 
 namespace FFlow.Observability.Listeners;
 
@@ -31,17 +32,17 @@ public class TimelineRecorder : IFlowEventListener
 
     public void OnStepStarted(IFlowStep step, IFlowContext context)
     {
-        _timeline.Add($"[{_stopwatch.Elapsed:g}] [Step Started] {step.GetType().Name} - Context ID: {context.Id}");
+        _timeline.Add($"[{_stopwatch.Elapsed:g}] [Step Started] {step.GetType().Name} - Context ID: {context.GetId()}");
     }
 
     public void OnStepCompleted(IFlowStep step, IFlowContext context)
     {
-        _timeline.Add($"[{_stopwatch.Elapsed:g}] [Step Completed] {step.GetType().Name} - Context ID: {context.Id}");
+        _timeline.Add($"[{_stopwatch.Elapsed:g}] [Step Completed] {step.GetType().Name} - Context ID: {context.GetId()}");
     }
 
     public void OnStepFailed(IFlowStep step, IFlowContext context, Exception exception)
     {
-        _timeline.Add($"[{_stopwatch.Elapsed:g}] [Step Failed] {step.GetType().Name} - Context ID: {context.Id} - Exception: {exception.Message}");
+        _timeline.Add($"[{_stopwatch.Elapsed:g}] [Step Failed] {step.GetType().Name} - Context ID: {context.GetId()} - Exception: {exception.Message}");
     }
     
     public IReadOnlyList<string> GetTimeline() => _timeline.AsReadOnly();

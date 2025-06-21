@@ -21,7 +21,7 @@ internal class HasKeyStep : IFlowStep
 
         foreach (var key in _key)
         {
-            if (!context.TryGet<object>(key, out _))
+            if (context.GetValue<object>(key) is null)
             {
                 throw new FlowValidationException($"Key '{key}' not found in the context.");
             }

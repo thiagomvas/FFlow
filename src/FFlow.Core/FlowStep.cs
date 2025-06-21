@@ -14,7 +14,7 @@ public abstract class FlowStep : IFlowStep, IRetryableFlowStep
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         if (context == null) throw new ArgumentNullException(nameof(context));
-        
+        context.SetInputFor(this, context.GetLastOutput<object>());
         if (_retryPolicy != null)
         {
             return _retryPolicy.ExecuteAsync(() => ExecuteAsync(context, cancellationToken), cancellationToken);

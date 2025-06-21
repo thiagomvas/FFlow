@@ -24,7 +24,7 @@ public static class IFlowContextExtensions
         if (context == null) throw new ArgumentNullException(nameof(context));
         
         var key = Internals.BuildMetricsSinkKey<TMetricSink>();
-        if (context.TryGet(key, out TMetricSink? sink))
+        if (context.GetValue<TMetricSink>(key) is TMetricSink sink)
         {
             return sink;
         }

@@ -13,17 +13,17 @@ public class DefaultStepTests
         var workflow = new FFlowBuilder()
             .StartWith((ctx, ct) =>
             {
-                ctx.SetInput(items);
+                ctx.SetValue("items", items);
                 return Task.CompletedTask;
             })
-            .ForEach(ctx => ctx.GetInput<IEnumerable<int>>(), () =>
+            .ForEach(ctx => ctx.GetValue<IEnumerable<int>>("items", []), () =>
             {
                 return new FFlowBuilder().StartWith<TestStep>();
             })
             .Build();
         
         var ctx = await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
-        int counter = ctx.Get<int>("counter");
+        int counter = ctx.GetValue<int>("counter");
         Assert.That(counter, Is.EqualTo(items.Length), $"ForEach should iterate over all items, instead iterated over {counter}.");
     }
 
@@ -135,7 +135,7 @@ public class DefaultStepTests
                     .Then((_, _) => Console.WriteLine("Task 3")))
             .OnAnyError((ctx, ct) =>
             {
-                var ex = ctx.Get<Exception>("Exception");
+                var ex = ctx.GetSingleValue<Exception>();
                 Assert.That(ex, Is.Not.Null);
                 
                 return Task.CompletedTask;
@@ -144,7 +144,7 @@ public class DefaultStepTests
         
         Assert.DoesNotThrowAsync(async () =>
         {
-            await workflow.RunAsync(null);
+            await workflow.RunAsync("");
         }, "Workflow should execute without throwing an exception when handling a single forked step that throws an exception.");
     }
     
@@ -161,7 +161,7 @@ public class DefaultStepTests
                     .Then((_, _) => throw new Exception("Task 3 threw an exception")))
             .OnAnyError((ctx, ct) =>
             {
-                var ex = ctx.Get<Exception>("Exception");
+                var ex = ctx.GetSingleValue<Exception>();
                 Assert.That(ex, Is.Not.Null);
 
                 return Task.CompletedTask;
