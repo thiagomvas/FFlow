@@ -19,10 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\src\FFlow.Core\FFlow.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Extensions\" />
+      <ProjectReference Include="..\src\FFlow\FFlow.csproj" />
     </ItemGroup>
 
 </Project>

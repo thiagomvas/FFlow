@@ -3,15 +3,13 @@ using FFlow;
 using FFlow.Core;
 using FFlow.Demo;
 using FFlow.Extensions;
+using FFlow.Observability.Extensions;
 using FFlow.Observability.Listeners;
 using FFlow.Observability.Metrics;
 
 var sink = new InMemoryMetricsSink();
 var workflow = new FFlowBuilder()
-    .WithOptions(options =>
-    {
-        options.WithEventListener(new MetricTrackingListener(sink));
-    })
+    .UseMetrics(sink)
     .StartWith<HelloStep>().Input<HelloStep, string>(step => step.Name, "World")
     .Delay(1000)
     .Then<GoodByeStep>().Input<GoodByeStep, string>(step => step.Name, "World")
