@@ -2,24 +2,24 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class Workflow : IWorkflow, IWorkflowMetadata
+public class Workflow : IWorkflow
 {
-    public Guid Id { get; } = Guid.CreateVersion7();
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public Dictionary<string, string> Tags { get; }
+    public readonly Guid Id = Guid.CreateVersion7();
     
     private readonly IReadOnlyList<IFlowStep> _steps;
     private IFlowContext _context;
     private IFlowStep? _globalErrorHandler;
     private IFlowStep? _finalizer;
     private readonly WorkflowOptions? _options;
+    private readonly IWorkflowMetadataStore? _metadataStore;
+    public IWorkflowMetadataStore? MetadataStore { get; internal set; }
 
-    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null)
+    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null, IWorkflowMetadataStore? metadataStore = null)
     {
         _steps = steps ?? throw new ArgumentNullException(nameof(steps));
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _options = options;
+        MetadataStore = metadataStore ?? new InMemoryMetadataStore();
         if (options?.StepDecoratorFactory is not null)
         {
             var decoratedSteps = new List<IFlowStep>();
