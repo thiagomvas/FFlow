@@ -5,6 +5,7 @@ namespace FFlow.Core;
     /// </summary>
     public interface IWorkflow
     {
+        public IWorkflowMetadataStore MetadataStore { get; }
         /// <summary>
         /// Sets a global error handler for the workflow.
         /// </summary>
