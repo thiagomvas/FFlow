@@ -4,94 +4,80 @@ namespace FFlow;
 
 public class InMemoryFFLowContext : IFlowContext
 {
+    private readonly Dictionary<string, object> _values = new();
+    private readonly Dictionary<Type, object> _inputs = new();
+    private readonly Dictionary<Type, object> _outputs = new();
 
-    private readonly Dictionary<string, object> _storage = new();
-    public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public InMemoryFFLowContext()
+    public void SetInput<TStep, TInput>(TInput input) where TStep : class, IFlowStep where TInput : class
     {
-        
-    }
-    public InMemoryFFLowContext(Dictionary<string, object> storage)
-    {
-        _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-    }
+        if (input == null)
+            throw new ArgumentNullException(nameof(input), "Input cannot be null.");
 
-    public InMemoryFFLowContext(Dictionary<string, object> storage, Guid Id)
-    {
-        _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-        this.Id = Id;
+        var key = typeof(TStep);
+        _inputs[key] = input;
     }
 
-    public TInput GetInput<TInput>()
+    public void SetOutput<TStep, TOutput>(TOutput output) where TStep : class, IFlowStep where TOutput : class
     {
-        if (_storage.TryGetValue(Internals.FFlowContextInputKey, out var value))
+        if (output == null)
+            throw new ArgumentNullException(nameof(output), "Output cannot be null.");
+
+        var key = typeof(TStep);
+        _outputs[key] = output;
+    }
+
+    public TInput? GetInputFor<TStep, TInput>() where TStep : class, IFlowStep where TInput : class
+    {
+        var key = typeof(TStep);
+        if (_inputs.TryGetValue(key, out var input))
         {
-            if (value is TInput typedValue)
-            {
-                return typedValue;
-            }
-            throw new InvalidCastException($"Stored input is not of type {typeof(TInput).Name}.");
+            return input as TInput;
         }
-        return default; // Return default value if input is not set
+        return null;
     }
 
-    public void SetInput<TInput>(TInput input)
+    public TOutput? GetOutputFor<TStep, TOutput>() where TStep : class, IFlowStep where TOutput : class
     {
-        _storage[Internals.FFlowContextInputKey] = input;
-    }
-
-    public T Get<T>(string key)
-    {
-        if (_storage.TryGetValue(key, out var value))
+        var key = typeof(TStep);
+        if (_outputs.TryGetValue(key, out var output))
         {
-            if (value is T typedValue)
-            {
-                return typedValue;
-            }
-            throw new InvalidCastException($"Stored value for key '{key}' is not of type {typeof(T).Name}.");
+            return output as TOutput;
         }
-
-        return default;
+        return null;
     }
 
-    public void Set<T>(string key, T value)
+    public T? GetValue<T>(string key, T defaultValue = null) where T : class
     {
-        if (key == null) throw new ArgumentNullException(nameof(key));
-        if (value == null) throw new ArgumentNullException(nameof(value));
-
-        _storage[key] = value;
-    }
-
-    public bool TryGet<T>(string key, out T value)
-    {
-        if (_storage.TryGetValue(key, out var storedValue))
+        if (_values.TryGetValue(key, out var value))
         {
-            if (storedValue is T typedValue)
-            {
-                value = typedValue;
-                return true;
-            }
-            value = default;
-            return false; // Type mismatch
+            return value as T;
         }
-        value = default;
-        return false; // Key not found
+        return defaultValue;
     }
 
-    public IFlowContext Fork()
+    public void SetValue<T>(string key, T value)
     {
-        return new InMemoryFFLowContext(_storage.ToDictionary(), Id);
+        if (value == null)
+            throw new ArgumentNullException(nameof(value), "Value cannot be null.");
+
+        _values[key] = value;
     }
 
-    public IFlowContext SetId(Guid id)
+    public T? GetSingleValue<T>() where T : class
     {
-        Id = id;
-        return this;
+        if (_values.TryGetValue(typeof(T).FullName ?? string.Empty, out var value))
+        {
+            return value as T;
+        }
+        return null;
     }
-    
-    public IEnumerable<KeyValuePair<string, object>> GetAll()
+
+    public void SetSingleValue<T>(T value)
     {
-        return _storage.AsEnumerable();
+        if (value == null)
+            throw new ArgumentNullException(nameof(value), "Value cannot be null.");
+
+        _values[typeof(T).FullName ?? string.Empty] = value;
     }
 }
