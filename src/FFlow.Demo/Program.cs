@@ -17,24 +17,24 @@ var workflow = new FFlowBuilder()
     .Then<GoodByeStep>().Input<GoodByeStep, string>(step => step.Name, "World")
     .Build();
     
-await workflow.RunAsync("", CancellationToken.None);
+var ctx = await workflow.RunAsync("", CancellationToken.None);
 
 
 Console.WriteLine("===============TIMELINE===============");
-foreach (var entry in timelineRecorder.GetTimeline())
+foreach (var entry in ctx.GetEventListener<TimelineRecorder>()?.GetTimeline() ?? [])
 {
     Console.WriteLine(entry);
 }
 
 Console.WriteLine("==========================================");
 Console.WriteLine("Workflow completed. Counters collected:");
-foreach (var metric in sink.GetCounters())
+foreach (var metric in ctx.GetMetricsSink<InMemoryMetricsSink>().GetCounters())
 {
     Console.WriteLine($"{metric.Key}: {metric.Value}");
 }
 Console.WriteLine("==========================================\nTimings collected:");
 
-foreach (var timing in sink.GetTimings())
+foreach (var timing in ctx.GetMetricsSink<InMemoryMetricsSink>().GetTimings())
 {
     var values = timing.Value;
     var avg = values.Count > 0 ? TimeSpan.FromMilliseconds(values.Average(t => t.TotalMilliseconds)) : TimeSpan.Zero;

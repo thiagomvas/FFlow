@@ -27,6 +27,16 @@ internal class Internals
         return $"output:{stepName}.{key}";
     }
 
+    internal static string BuildEventListenerKey<TEventListener>()
+        where TEventListener : class, IFlowEventListener
+    {
+        return $"__event_listener:{typeof(TEventListener).FullName}";
+    }
+
+    internal static string BuildEventListenerKey(IFlowEventListener listener)
+    {
+        return $"__event_listener:{listener.GetType().FullName}";
+    }
     
     internal static TStep GetOrCreateStep<TStep>(IServiceProvider? serviceProvider) where TStep : class, IFlowStep
     {

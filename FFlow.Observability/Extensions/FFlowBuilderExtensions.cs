@@ -11,16 +11,17 @@ public static class FFlowBuilderExtensions
     /// <param name="builder">The <see cref="FFlowBuilder"/> to attach the <see cref="IMetricsSink"/> into</param>
     /// <param name="metricsSink">The <see cref="IMetricsSink"/> to be attached.</param>
     /// <returns>The same <see cref="FFlowBuilder"/> instance.</returns>
-    public static FFlowBuilder UseMetrics(this FFlowBuilder builder, IMetricsSink metricsSink)
+    public static FFlowBuilder UseMetrics<TSink>(this FFlowBuilder builder, TSink metricsSink) where TSink : class, IMetricsSink
     {
         if (builder == null) throw new ArgumentNullException(nameof(builder));
         if (metricsSink == null) throw new ArgumentNullException(nameof(metricsSink));
 
         builder.WithOptions(options =>
         {
-            options.WithEventListener(new MetricTrackingListener(metricsSink));
+            options.WithEventListener(new MetricTrackingListener<TSink>(metricsSink));
         });
         return builder;
+        
     }
     
 }

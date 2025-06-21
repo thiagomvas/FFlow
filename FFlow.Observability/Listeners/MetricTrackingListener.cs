@@ -3,14 +3,14 @@ using FFlow.Observability.Metrics;
 
 namespace FFlow.Observability.Listeners;
 
-public class MetricTrackingListener : IFlowEventListener
+public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : class, IMetricsSink
 {
-    private readonly IMetricsSink _metricsSink;
+    private readonly TSink _metricsSink;
 
     private const string StepStartKeyPrefix = "__metrics.step_start:";
     private const string WorkflowStartKey = "__metrics.workflow_start";
 
-    public MetricTrackingListener(IMetricsSink metricsSink)
+    public MetricTrackingListener(TSink metricsSink)
     {
         _metricsSink = metricsSink ?? throw new ArgumentNullException(nameof(metricsSink));
     }
@@ -19,6 +19,8 @@ public class MetricTrackingListener : IFlowEventListener
     {
         if (workflow is null) throw new ArgumentNullException(nameof(workflow));
 
+        workflow.GetContext().Set(Internals.BuildMetricsSinkKey<TSink>(), _metricsSink);
+        
         workflow.MetadataStore.Set(WorkflowStartKey, DateTime.UtcNow);
 
         _metricsSink.Increment("workflow.started", new Dictionary<string, string>

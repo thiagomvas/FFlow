@@ -14,6 +14,12 @@ namespace FFlow.Core;
         IWorkflow SetGlobalErrorHandler(IFlowStep errorHandler);
     
         /// <summary>
+        /// Gets the current context of the workflow.
+        /// </summary>
+        /// <returns>The context of the current workflow execution.</returns>
+        IFlowContext GetContext();
+        
+        /// <summary>
         /// Sets the context for the workflow.
         /// </summary>
         /// <param name="context">The context instance to use during workflow execution.</param>

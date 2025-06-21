@@ -24,6 +24,19 @@ public static class IFlowContextExtensions
 
         return context;
     }
+
+    public static TListener? GetEventListener<TListener>(this IFlowContext context) where TListener : class, IFlowEventListener
+    {
+        if (context is null) throw new ArgumentNullException(nameof(context));
+
+        var key = Internals.BuildEventListenerKey<TListener>();
+        if (context.TryGet(key, out IFlowEventListener? listener))
+        {
+            return (TListener) listener;
+        }
+
+        throw new InvalidOperationException($"Event listener of type {typeof(TListener).FullName} is not registered in the context.");
+    }
     
     
 }

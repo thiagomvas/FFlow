@@ -38,6 +38,11 @@ public class Workflow : IWorkflow
         return this;
     }
 
+    public IFlowContext GetContext()
+    {
+        return _context;
+    }
+
     public IWorkflow SetContext(IFlowContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -55,6 +60,19 @@ public class Workflow : IWorkflow
         _context.SetId(Id);
         if (input is not null)
             _context.SetInput(input);
+
+        if (_options.EventListener is CompositeFlowEventListener composite)
+        {
+            foreach (var listener in composite.Listeners)
+            {
+                _context.Set(Internals.BuildEventListenerKey(listener), listener);
+            }
+        }
+        else if (_options?.EventListener is not null)
+        {
+            _context.Set(Internals.BuildEventListenerKey(_options.EventListener), _options.EventListener);
+        }
+        
 
 
         var eventListener = _options?.EventListener;

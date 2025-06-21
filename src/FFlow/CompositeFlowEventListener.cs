@@ -5,6 +5,7 @@ namespace FFlow;
 public class CompositeFlowEventListener : IFlowEventListener
 {
     private readonly List<IFlowEventListener> _listeners;
+    public IReadOnlyList<IFlowEventListener> Listeners => _listeners;
     
     public CompositeFlowEventListener(IEnumerable<IFlowEventListener> listeners)
     {

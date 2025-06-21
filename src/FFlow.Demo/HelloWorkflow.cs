@@ -27,7 +27,7 @@ public class HelloWorkflow : WorkflowDefinition
     {
         return options =>
         {
-            options.WithEventListener(new MetricTrackingListener(new InMemoryMetricsSink()));
+            options.WithEventListener(new MetricTrackingListener<InMemoryMetricsSink>(new InMemoryMetricsSink()));
         };
     }
 }
