@@ -4,18 +4,22 @@ namespace FFlow;
 
 public class Workflow : IWorkflow
 {
-    public readonly Guid Id = Guid.NewGuid();
+    public readonly Guid Id = Guid.CreateVersion7();
+    
     private readonly IReadOnlyList<IFlowStep> _steps;
     private IFlowContext _context;
     private IFlowStep? _globalErrorHandler;
     private IFlowStep? _finalizer;
     private readonly WorkflowOptions? _options;
+    private readonly IWorkflowMetadataStore? _metadataStore;
+    public IWorkflowMetadataStore? MetadataStore { get; internal set; }
 
-    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null)
+    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null, IWorkflowMetadataStore? metadataStore = null)
     {
         _steps = steps ?? throw new ArgumentNullException(nameof(steps));
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _options = options;
+        MetadataStore = metadataStore ?? new InMemoryMetadataStore();
         if (options?.StepDecoratorFactory is not null)
         {
             var decoratedSteps = new List<IFlowStep>();
@@ -32,6 +36,11 @@ public class Workflow : IWorkflow
     {
         _globalErrorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
         return this;
+    }
+
+    public IFlowContext GetContext()
+    {
+        return _context;
     }
 
     public IWorkflow SetContext(IFlowContext context)
@@ -51,6 +60,19 @@ public class Workflow : IWorkflow
         _context.SetId(Id);
         if (input is not null)
             _context.SetInput(input);
+
+        if (_options.EventListener is CompositeFlowEventListener composite)
+        {
+            foreach (var listener in composite.Listeners)
+            {
+                _context.Set(Internals.BuildEventListenerKey(listener), listener);
+            }
+        }
+        else if (_options?.EventListener is not null)
+        {
+            _context.Set(Internals.BuildEventListenerKey(_options.EventListener), _options.EventListener);
+        }
+        
 
 
         var eventListener = _options?.EventListener;
