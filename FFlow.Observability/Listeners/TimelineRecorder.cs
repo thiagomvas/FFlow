@@ -3,6 +3,9 @@ using FFlow.Core;
 
 namespace FFlow.Observability.Listeners;
 
+/// <summary>
+/// Records a timeline of workflow and step events with relative timestamps for observability and debugging purposes.
+/// </summary>
 public class TimelineRecorder : IFlowEventListener
 {
     private readonly List<string> _timeline = new();

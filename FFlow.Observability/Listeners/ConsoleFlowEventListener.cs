@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow.Observability.Listeners;
 
+/// <summary>
+/// A simple implementation of <see cref="IFlowEventListener"/> that logs workflow and step events to the console.
+/// </summary>
 public class ConsoleFlowEventListener : IFlowEventListener
 {
     public void OnWorkflowStarted(IWorkflow workflow)

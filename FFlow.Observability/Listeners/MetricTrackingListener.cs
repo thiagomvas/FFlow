@@ -3,6 +3,13 @@ using FFlow.Observability.Metrics;
 
 namespace FFlow.Observability.Listeners;
 
+/// <summary>
+/// An implementation of <see cref="IFlowEventListener"/> that tracks metrics for workflow and step events
+/// using the provided metrics sink.
+/// </summary>
+/// <typeparam name="TSink">
+/// The type of the metrics sink used for tracking. Must implement <see cref="IMetricsSink"/>.
+/// </typeparam>
 public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : class, IMetricsSink
 {
     private readonly TSink _metricsSink;
