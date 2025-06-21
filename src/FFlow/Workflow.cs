@@ -2,9 +2,13 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class Workflow : IWorkflow
+public class Workflow : IWorkflow, IWorkflowMetadata
 {
-    public readonly Guid Id = Guid.NewGuid();
+    public Guid Id { get; } = Guid.CreateVersion7();
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public Dictionary<string, string> Tags { get; }
+    
     private readonly IReadOnlyList<IFlowStep> _steps;
     private IFlowContext _context;
     private IFlowStep? _globalErrorHandler;
