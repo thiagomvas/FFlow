@@ -8,8 +8,10 @@ using FFlow.Observability.Listeners;
 using FFlow.Observability.Metrics;
 
 var sink = new InMemoryMetricsSink();
+var timelineRecorder = new TimelineRecorder();
 var workflow = new FFlowBuilder()
     .UseMetrics(sink)
+    .WithOptions(o => o.WithEventListener(timelineRecorder))
     .StartWith<HelloStep>().Input<HelloStep, string>(step => step.Name, "World")
     .Delay(1000)
     .Then<GoodByeStep>().Input<GoodByeStep, string>(step => step.Name, "World")
@@ -17,6 +19,14 @@ var workflow = new FFlowBuilder()
     
 await workflow.RunAsync("", CancellationToken.None);
 
+
+Console.WriteLine("===============TIMELINE===============");
+foreach (var entry in timelineRecorder.GetTimeline())
+{
+    Console.WriteLine(entry);
+}
+
+Console.WriteLine("==========================================");
 Console.WriteLine("Workflow completed. Counters collected:");
 foreach (var metric in sink.GetCounters())
 {
