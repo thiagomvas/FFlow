@@ -41,6 +41,23 @@ public class InMemoryMetricsSink : IMetricsSink
         var tagString = string.Join(",", tags.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key}={kv.Value}"));
         return $"{name}[{tagString}]";
     }
+    
+    public MetricsSnapshot Flush(bool reset = false)
+    {
+        var snapshot = new MetricsSnapshot(
+            new Dictionary<string, int>(_counters),
+            _timings.ToDictionary(kv => kv.Key, kv => new List<TimeSpan>(kv.Value)),
+            new Dictionary<string, double>(_gauges));
+
+        if (reset)
+        {
+            _counters.Clear();
+            _timings.Clear();
+            _gauges.Clear();
+        }
+
+        return snapshot;
+    }
 
     /// <summary>
     /// Gets the recorded counter metrics.

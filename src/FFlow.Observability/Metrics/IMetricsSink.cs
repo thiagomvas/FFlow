@@ -30,4 +30,16 @@ public interface IMetricsSink
     /// <param name="tags">Optional tags to associate with the metric for filtering or grouping.</param>
     void SetGauge(string name, double value, IDictionary<string, string>? tags = null);
 
+    /// <summary>
+    /// Captures a snapshot of the current metrics, optionally resetting the internal state.
+    /// </summary>
+    /// <param name="reset">
+    /// If <c>true</c>, clears the internal counters, timings, and gauges after capturing the snapshot. 
+    /// If <c>false</c>, leaves the internal state unchanged.
+    /// </param>
+    /// <returns>
+    /// A <see cref="MetricsSnapshot"/> containing the current metrics data at the time of the call.
+    /// </returns>
+    MetricsSnapshot Flush(bool reset = false);
+
 }
