@@ -5,16 +5,19 @@ namespace FFlow.Core;
 /// </summary>
 public interface IFlowContext
 {
-    void SetInput<TStep, TInput>(TInput input) where TStep : class, IFlowStep
-        where TInput : class;
-    void SetOutput<TStep, TOutput>(TOutput output) where TStep : class, IFlowStep
-        where TOutput : class;
-    TInput? GetInputFor<TStep, TInput>() where TStep : class, IFlowStep
-        where TInput : class;
-    TOutput? GetOutputFor<TStep, TOutput>() where TStep : class, IFlowStep
-        where TOutput : class;
-    T? GetValue<T>(string key, T defaultValue = null) where T : class;
+    void SetInputFor<TStep, TInput>(TInput input) where TStep : class, IFlowStep;
+    void SetInputFor<TStep, TInput>(TStep step, TInput input) where TStep : class, IFlowStep;
+    void SetOutputFor<TStep, TOutput>(TOutput output) where TStep : class, IFlowStep;
+    void SetOutputFor<TStep, TOutput>(TStep step, TOutput output) where TStep : class, IFlowStep;
+    TInput? GetInputFor<TStep, TInput>() where TStep : class, IFlowStep;
+    TOutput? GetOutputFor<TStep, TOutput>() where TStep : class, IFlowStep;
+    T? GetValue<T>(string key, T defaultValue = default);
     void SetValue<T>(string key, T value);
-    T? GetSingleValue<T>() where T : class;
+    T? GetSingleValue<T>();
     void SetSingleValue<T>(T value);
+
+    T? GetLastInput<T>();
+    T? GetLastOutput<T>();
+
+    IFlowContext Fork();
 }
