@@ -1,4 +1,5 @@
 using FFlow.Core;
+using FFlow.Extensions;
 using FFlow.Observability.Metrics;
 
 namespace FFlow.Observability.Listeners;
@@ -26,7 +27,7 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
     {
         if (workflow is null) throw new ArgumentNullException(nameof(workflow));
 
-        workflow.GetContext().Set(Internals.BuildMetricsSinkKey<TSink>(), _metricsSink);
+        workflow.GetContext().SetSingleValue(_metricsSink);
         
         workflow.MetadataStore.Set(WorkflowStartKey, DateTime.UtcNow);
 
@@ -82,12 +83,12 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
         if (step is null) throw new ArgumentNullException(nameof(step));
         if (context is null) throw new ArgumentNullException(nameof(context));
 
-        context.Set(StepStartKey(step), DateTime.UtcNow);
+        context.SetValue(StepStartKey(step), DateTime.UtcNow);
 
         _metricsSink.Increment("step.started", new Dictionary<string, string>
         {
             { "step.name", step.GetType().Name },
-            { "context.id", context.Id.ToString() }
+            { "context.id", context.GetId().ToString() }
         });
     }
 
@@ -98,7 +99,7 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
         _metricsSink.Increment("step.completed", new Dictionary<string, string>
         {
             { "step.name", step.GetType().Name },
-            { "context.id", context.Id.ToString() }
+            { "context.id", context.GetId().ToString() }
         });
     }
 
@@ -109,21 +110,21 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
         _metricsSink.Increment("step.failed", new Dictionary<string, string>
         {
             { "step.name", step.GetType().Name },
-            { "context.id", context.Id.ToString() },
+            { "context.id", context.GetId().ToString() },
             { "error.message", exception.Message }
         });
     }
 
     private void RecordStepTiming(IFlowStep step, IFlowContext context, string status)
     {
-        if (context.TryGet<DateTime>(StepStartKey(step), out var start))
+        if (context.GetValue<DateTime>(StepStartKey(step)) is DateTime start)
         {
             var duration = DateTime.UtcNow - start;
 
             _metricsSink.RecordTiming("step.duration", duration, new Dictionary<string, string>
             {
                 { "step.name", step.GetType().Name },
-                { "context.id", context.Id.ToString() },
+                { "context.id", context.GetId().ToString() },
                 { "status", status }
             });
         }

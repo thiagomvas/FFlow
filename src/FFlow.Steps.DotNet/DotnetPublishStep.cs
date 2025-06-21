@@ -99,7 +99,7 @@ public class DotnetPublishStep : IFlowStep
         }
 
         Result = new DotnetPublishResult(exitCode, output, error);
-        context.SetInput(Result);
+        context.SetOutputFor<DotnetPublishStep, DotnetPublishResult>(Result);
     }
 
     private string BuildCommand()

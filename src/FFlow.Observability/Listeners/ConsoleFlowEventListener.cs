@@ -1,4 +1,5 @@
 using FFlow.Core;
+using FFlow.Extensions;
 
 namespace FFlow.Observability.Listeners;
 
@@ -24,17 +25,17 @@ public class ConsoleFlowEventListener : IFlowEventListener
 
     public void OnStepStarted(IFlowStep step, IFlowContext context)
     {
-        Console.WriteLine($"[{Timestamp()}] [Step Started] {step.GetType().Name} - Context ID: {context.Id}");
+        Console.WriteLine($"[{Timestamp()}] [Step Started] {step.GetType().Name} - Context ID: {context.GetId()}");
     }
 
     public void OnStepCompleted(IFlowStep step, IFlowContext context)
     {
-        Console.WriteLine($"[{Timestamp()}] [Step Completed] {step.GetType().Name} - Context ID: {context.Id}");
+        Console.WriteLine($"[{Timestamp()}] [Step Completed] {step.GetType().Name} - Context ID: {context.GetId()}");
     }
 
     public void OnStepFailed(IFlowStep step, IFlowContext context, Exception exception)
     {
-        Console.WriteLine($"[{Timestamp()}] [Step Failed] {step.GetType().Name} - Context ID: {context.Id} - Exception: {exception.Message}");
+        Console.WriteLine($"[{Timestamp()}] [Step Failed] {step.GetType().Name} - Context ID: {context.GetId()} - Exception: {exception.Message}");
     }
 
     private static string BuildWorkflowName(IWorkflow workflow)

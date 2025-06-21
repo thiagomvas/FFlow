@@ -21,7 +21,7 @@ public class ThrowExceptionStep : IFlowStep
         if (context is null)
             throw new ArgumentNullException(nameof(context));
         
-        context.Set("Exception", _exception);
+        context.SetSingleValue(_exception);
         return Task.FromException(_exception);
     }
 }

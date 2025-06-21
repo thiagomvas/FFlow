@@ -6,6 +6,7 @@ namespace FFlow.Extensions;
 public static class IFlowContextExtensions
 {
     private const string FlowContextIdKey = "__context.id";
+    private const string FlowContextRootKey = "__context.root";
     /// <summary>
     /// Loads environment variables into the flow context.
     /// </summary>
@@ -63,5 +64,26 @@ public static class IFlowContextExtensions
 
         context.SetValue(FlowContextIdKey, id);
     }
+    
+    public static void SetRoot(this IFlowContext context)
+    {
+        if (context is null) throw new ArgumentNullException(nameof(context));
+
+        context.SetValue(FlowContextRootKey, context);
+    }
+    
+    public static IFlowContext GetRoot(this IFlowContext context)
+    {
+        if (context is null) throw new ArgumentNullException(nameof(context));
+
+        var root = context.GetValue<IFlowContext>(FlowContextRootKey);
+        if (root is null)
+        {
+            throw new InvalidOperationException("Root flow context is not set.");
+        }
+
+        return root;
+    }
+    
     
 }

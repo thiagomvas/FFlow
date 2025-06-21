@@ -124,7 +124,7 @@ public class DotnetTestStep : IFlowStep
         var failed = ParseTestCount(output, "Failed");
         var skipped = ParseTestCount(output, "Skipped");
 
-        var result = new DotnetTestResult
+        Result = new DotnetTestResult
         {
             Output = output,
             Error = error,
@@ -134,7 +134,7 @@ public class DotnetTestStep : IFlowStep
             Skipped = skipped
         };
 
-        context.SetInput(result);
+        context.SetOutputFor<DotnetTestStep, DotnetTestResult>(Result);
     }
 
     private int ParseTestCount(string output, string key)

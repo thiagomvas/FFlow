@@ -1,11 +1,12 @@
 using FFlow.Core;
+using FFlow.Extensions;
 
 namespace FFlow;
 
 public class Workflow : IWorkflow
 {
     public readonly Guid Id = Guid.CreateVersion7();
-    
+
     private readonly IReadOnlyList<IFlowStep> _steps;
     private IFlowContext _context;
     private IFlowStep? _globalErrorHandler;
@@ -14,7 +15,8 @@ public class Workflow : IWorkflow
     private readonly IWorkflowMetadataStore? _metadataStore;
     public IWorkflowMetadataStore? MetadataStore { get; internal set; }
 
-    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null, IWorkflowMetadataStore? metadataStore = null)
+    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null,
+        IWorkflowMetadataStore? metadataStore = null)
     {
         _steps = steps ?? throw new ArgumentNullException(nameof(steps));
         _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -59,21 +61,19 @@ public class Workflow : IWorkflow
     {
         _context.SetId(Id);
         if (input is not null)
-            _context.SetInput(input);
+            _context.SetValue("Workflow.Input", input);
 
         if (_options.EventListener is CompositeFlowEventListener composite)
         {
             foreach (var listener in composite.Listeners)
             {
-                _context.Set(Internals.BuildEventListenerKey(listener), listener);
+                _context.SetValue(Internals.BuildEventListenerKey(listener), listener);
             }
         }
         else if (_options?.EventListener is not null)
         {
-            _context.Set(Internals.BuildEventListenerKey(_options.EventListener), _options.EventListener);
+            _context.SetValue(Internals.BuildEventListenerKey(_options.EventListener), _options.EventListener);
         }
-        
-
 
         var eventListener = _options?.EventListener;
         eventListener?.OnWorkflowStarted(this);
@@ -95,6 +95,7 @@ public class Workflow : IWorkflow
             {
                 eventListener?.OnStepStarted(step, _context);
                 current = step;
+
                 if (_options?.StepTimeout is not null)
                 {
                     using var stepCts = CancellationTokenSource.CreateLinkedTokenSource(effectiveToken);
@@ -131,9 +132,10 @@ public class Workflow : IWorkflow
                 eventListener?.OnStepFailed(current, _context, ex);
 
             eventListener?.OnWorkflowFailed(this, ex);
+
             if (_globalErrorHandler != null)
             {
-                _context.Set("Exception", ex);
+                _context.SetSingleValue(ex);
                 await _globalErrorHandler.RunAsync(_context);
             }
             else

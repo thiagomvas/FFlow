@@ -11,7 +11,7 @@ public class TestStepDecorator : BaseStepDecorator
 
     public override Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        context.Set("decorated_counter", context.Get<int>("decorated_counter") + 1);
+        context.SetValue("decorated_counter", context.GetValue<int>("decorated_counter") + 1);
         return _innerStep.RunAsync(context, cancellationToken);
     }
 }

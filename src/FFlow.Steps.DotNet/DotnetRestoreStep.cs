@@ -77,7 +77,7 @@ public class DotnetRestoreStep : IFlowStep
     /// <summary>
     /// The result of the <c>dotnet restore</c> command.
     /// </summary>
-    public DotnetPublishResult? Result { get; private set; }
+    public DotnetRestoreResult? Result { get; private set; }
 
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
@@ -97,8 +97,8 @@ public class DotnetRestoreStep : IFlowStep
                 $"Dotnet restore failed with exit code {exitCode}.\nOutput: {output}\nError: {error}");
         }
 
-        Result = new DotnetPublishResult(exitCode, output, error);
-        context.SetInput(Result);
+        Result = new DotnetRestoreResult(exitCode, output, error);
+        context.SetOutputFor<DotnetRestoreStep, DotnetRestoreResult>(Result);
     }
 
     private string BuildCommand()

@@ -26,14 +26,9 @@ internal class NotNullStep : IFlowStep
 
         foreach (var key in _keys)
         {
-            if (!context.TryGet<object>(key, out var obj))
+            if (context.GetValue<object>(key) is null)
             {
-                throw new FlowValidationException($"Key '{key}' not found in the context.");
-            }
-            
-            if (obj == null)
-            {
-                throw new FlowValidationException($"Value for key '{key}' cannot be null.");
+                throw new FlowValidationException($"Key '{key}' not found or is null in the context.");
             }
         }
 

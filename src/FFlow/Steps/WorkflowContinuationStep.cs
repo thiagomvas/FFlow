@@ -15,6 +15,6 @@ public WorkflowContinuationStep(IWorkflowDefinition workflowDefinition)
         if (context == null) throw new ArgumentNullException(nameof(context));
         
         var workflow = _workflowDefinition.Build().SetContext(context);
-        return workflow.RunAsync(context.GetInput<object>(), cancellationToken);
+        return workflow.RunAsync(context.GetLastInput<object>(), cancellationToken);
     }
 }

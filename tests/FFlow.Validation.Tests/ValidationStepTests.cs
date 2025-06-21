@@ -20,7 +20,7 @@ public class ValidationStepTests
     public async Task CheckForKeyStep_ShouldNotThrow_IfKeyExists()
     {
         var workflow = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set("existing_key", "value"))
+            .StartWith((ctx, ct) => ctx.SetValue("existing_key", "value"))
             .RequireKey("existing_key")
             .Build();
 
@@ -34,7 +34,7 @@ public class ValidationStepTests
     public async Task RegexPatternStep_ShouldThrow_IfValueDoesNotMatchPattern()
     {
         var workflow = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set("test_key", "invalid_value"))
+            .StartWith((ctx, ct) => ctx.SetValue("test_key", "invalid_value"))
             .RequireRegex("test_key", @"^\d{3}-\d{2}-\d{4}$") // Example pattern: 123-45-6789
             .Build();
 
@@ -48,7 +48,7 @@ public class ValidationStepTests
     public async Task RegexPatternStep_ShouldNotThrow_IfValueMatchesPattern()
     {
         var workflow = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set("test_key", "123-45-6789")) // Example pattern: 123-45-6789
+            .StartWith((ctx, ct) => ctx.SetValue("test_key", "123-45-6789")) // Example pattern: 123-45-6789
             .RequireRegex("test_key", @"^\d{3}-\d{2}-\d{4}$")
             .Build();
 
@@ -62,11 +62,11 @@ public class ValidationStepTests
     public async Task NotNullStep_ShouldThrow_IfValueIsNull()
     {
         var workflow = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set<object?>("test_key", null))
+            .StartWith((ctx, ct) => ctx.SetValue<object?>("test_key", null))
             .RequireNotNull("test_key")
             .Build();
 
-        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        Assert.ThrowsAsync<FlowValidationException>(async () =>
         {
             await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
         }, "Should throw ArgumentNullException when the value is null.");
@@ -76,7 +76,7 @@ public class ValidationStepTests
     public async Task NotNullStep_ShouldNotThrow_IfValueIsNotNull()
     {
         var workflow = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set("test_key", "value"))
+            .StartWith((ctx, ct) => ctx.SetValue("test_key", "value"))
             .RequireNotNull("test_key")
             .Build();
 
@@ -90,7 +90,7 @@ public class ValidationStepTests
     public async Task NotEmptyStep_ShouldThrow_IfValueIsEmpty()
     {
         var workflow = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set("test_key", string.Empty))
+            .StartWith((ctx, ct) => ctx.SetValue("test_key", string.Empty))
             .RequireNotEmpty("test_key")
             .Build();
 
@@ -100,7 +100,7 @@ public class ValidationStepTests
         }, "Should throw ArgumentNullException when the value is empty.");
         
         var workflowWithCollection = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set("test_collection", new List<string>()))
+            .StartWith((ctx, ct) => ctx.SetValue("test_collection", new List<string>()))
             .RequireNotEmpty("test_collection")
             .Build();
         
@@ -114,7 +114,7 @@ public class ValidationStepTests
     public async Task NotEmptyStep_ShouldNotThrow_IfValueIsNotEmpty()
     {
         var workflow = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set("test_key", "value"))
+            .StartWith((ctx, ct) => ctx.SetValue("test_key", "value"))
             .RequireNotEmpty("test_key")
             .Build();
 
@@ -124,7 +124,7 @@ public class ValidationStepTests
         }, "Should not throw when the value is not empty.");
         
         var workflowWithCollection = new FFlowBuilder()
-            .StartWith((ctx, ct) => ctx.Set("test_collection", new List<string> { "item1" }))
+            .StartWith((ctx, ct) => ctx.SetValue("test_collection", new List<string> { "item1" }))
             .RequireNotEmpty("test_collection")
             .Build();
         

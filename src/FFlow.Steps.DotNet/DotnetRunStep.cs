@@ -80,7 +80,7 @@ public class DotnetRunStep : IFlowStep
         }
 
         Result = new DotnetRunResult(exitCode, output, error);
-        context.SetInput(Result);
+        context.SetOutputFor<DotnetRunStep, DotnetRunResult>(Result);
     }
 
     private string BuildCommand()
