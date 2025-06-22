@@ -10,11 +10,9 @@ using FFlow.Observability.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 
 var workflow = new FFlowBuilder()
-    .Fork(ForkStrategy.FireAndForget, () => new FFlowBuilder()
-        .Then((_, _) => Console.WriteLine("1"))
-        .Then((_, _) => Console.WriteLine("2")),
-    () => new FFlowBuilder()
-        .Then((_, _) => Console.WriteLine("3")))
+    .Then<NoOpStep>()
+    .Then<NoOpStep>()   
+    .Then<NoOpStep>()   
     .Throw<Exception>("Simulated")
     .Build();
     
