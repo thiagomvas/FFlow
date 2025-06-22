@@ -31,3 +31,13 @@ FFlow allows you to define workflows using a fluent API, which makes it easy to 
 Workflows are built using `IWorkflowBuilder`, which provides methods to add steps and branches. Each step can be a simple action, a complex operation, or even a call to an external service. The default `FFlowBuilder` also resolves dependencies using the standard `IServiceProvider` interface, allowing you to inject services and other dependencies into your steps.
 
 An `IFlowContext` passes the data through each step in the workflow, allowing you to share state and data between steps. This context can be used to store results, pass parameters, and manage the flow of execution.
+
+
+## Why it exists
+Writing and testing CI/CD pipelines has always been frustrating. It usually went from "waiting to compile" to "waiting for CI/CD", just to realize you missed something, fix it, and rerun the whole thing again. And again.
+
+The feedback loop was too long. Small mistakes led to wasted time, and workflows often lived outside the codebase in YAML files or GUI editors that were hard to test, debug, or reuse.
+
+FFlow was born out of this frustration. **It came from the idea that automation should feel like regular code.** Something you can write fluently, test locally, and plug into your existing services just like anything else in your app.
+
+Tools like `Cake` or `Nuke` solve part of the problem, but I wanted something more structured and flexible. Less about running scripts. More about building flows.

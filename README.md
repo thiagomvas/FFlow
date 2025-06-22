@@ -73,7 +73,7 @@ Writing and testing CI/CD pipelines has always been frustrating. It usually went
 
 The feedback loop was too long. Small mistakes led to wasted time, and workflows often lived outside the codebase in YAML files or GUI editors that were hard to test, debug, or reuse.
 
-FFlow was born out of this frustration. **It came from the idea that automation should feel like regular code.** Something you can write fluently, test locally, and plug into your existing services—just like anything else in your app.
+FFlow was born out of this frustration. **It came from the idea that automation should feel like regular code.** Something you can write fluently, test locally, and plug into your existing services just like anything else in your app.
 
 Tools like `Cake` or `Nuke` solve part of the problem, but I wanted something more structured and flexible. Less about running scripts. More about building flows.
 
