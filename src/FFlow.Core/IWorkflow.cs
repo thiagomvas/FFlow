@@ -42,4 +42,6 @@ namespace FFlow.Core;
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous operation, containing the resulting <see cref="IFlowContext"/>.</returns>
         Task<IFlowContext> RunAsync(object input, CancellationToken cancellationToken = default);
+        
+        Task<IFlowContext> CompensateAsync(CancellationToken cancellationToken = default);
     }

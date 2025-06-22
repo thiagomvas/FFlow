@@ -161,4 +161,23 @@ public class Workflow : IWorkflow
 
         return _context;
     }
+
+    public async Task<IFlowContext> CompensateAsync(CancellationToken cancellationToken = default)
+    {
+        while (_steps.TryBacktrack(out IFlowStep step))
+        {
+            if (step is ICompensableStep compensable)
+            {
+                try
+                {
+                    await compensable.CompensateAsync(_context, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _context.SetSingleValue(ex);
+                }
+            }
+        }
+        return _context;
+    }
 }
