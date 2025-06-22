@@ -17,6 +17,8 @@ items:
         href: features/dependency-injection.md
       - name: Validation
         href: features/validation.md
+      - name: Compensation
+        href: features/compensation.md
   - name: Extensions
     items:
       - name: Observability
