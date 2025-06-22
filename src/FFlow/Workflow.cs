@@ -125,9 +125,10 @@ public class Workflow : IWorkflow
         }
         catch (Exception ex)
         {
-            while (_steps.TryBacktrack(out IFlowStep step) && step is ICompensableStep compensable)
+            while (_steps.TryBacktrack(out IFlowStep step))
             {
-                await compensable.CompensateAsync(_context, cancellationToken);
+                if(step is ICompensableStep compensable)
+                    await compensable.CompensateAsync(_context, cancellationToken);
             }
             
             if (_finalizer != null)
