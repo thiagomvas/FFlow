@@ -2,19 +2,25 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class WorkflowContinuationStep : IFlowStep
+public class WorkflowContinuationStep : FlowStep
 {
     private readonly IWorkflowDefinition _workflowDefinition;
-    
-public WorkflowContinuationStep(IWorkflowDefinition workflowDefinition)
+    private IWorkflow _execution;
+    public WorkflowContinuationStep(IWorkflowDefinition workflowDefinition)
     {
         _workflowDefinition = workflowDefinition ?? throw new ArgumentNullException(nameof(workflowDefinition));
     }
-    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
+
+    protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         if (context == null) throw new ArgumentNullException(nameof(context));
-        
-        var workflow = _workflowDefinition.Build().SetContext(context);
-        return workflow.RunAsync(context.GetLastInput<object>(), cancellationToken);
+
+        _execution = _workflowDefinition.Build().SetContext(context);
+        return _execution.RunAsync(context.GetLastInput<object>(), cancellationToken);
+    }
+
+    public override Task CompensateAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    {
+        return _execution.CompensateAsync(cancellationToken);
     }
 }
