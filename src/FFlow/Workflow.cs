@@ -7,7 +7,7 @@ public class Workflow : IWorkflow
 {
     public readonly Guid Id = Guid.CreateVersion7();
 
-    private readonly IReadOnlyList<IFlowStep> _steps;
+    private readonly ReversibleQueue<IFlowStep> _steps;
     private IFlowContext _context;
     private IFlowStep? _globalErrorHandler;
     private IFlowStep? _finalizer;
@@ -18,20 +18,22 @@ public class Workflow : IWorkflow
     public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null,
         IWorkflowMetadataStore? metadataStore = null)
     {
-        _steps = steps ?? throw new ArgumentNullException(nameof(steps));
+        var result = steps.ToList();
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _options = options;
         MetadataStore = metadataStore ?? new InMemoryMetadataStore();
         if (options?.StepDecoratorFactory is not null)
         {
             var decoratedSteps = new List<IFlowStep>();
-            foreach (var step in _steps)
+            foreach (var step in result)
             {
                 decoratedSteps.Add(options.StepDecoratorFactory(step));
             }
 
-            _steps = decoratedSteps.AsReadOnly();
+            result = decoratedSteps;
         }
+        
+        _steps = new ReversibleQueue<IFlowStep>(result);
     }
 
     public IWorkflow SetGlobalErrorHandler(IFlowStep errorHandler)
@@ -91,7 +93,7 @@ public class Workflow : IWorkflow
 
             var effectiveToken = globalCts?.Token ?? cancellationToken;
 
-            foreach (var step in _steps)
+            while(_steps.TryDequeue(out IFlowStep step))
             {
                 eventListener?.OnStepStarted(step, _context);
                 current = step;
