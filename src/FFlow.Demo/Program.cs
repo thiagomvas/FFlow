@@ -1,19 +1,12 @@
-﻿using System.Reflection;
-using FFlow;
-using FFlow.Core;
-using FFlow.Demo;
+﻿using FFlow;
 using FFlow.Extensions;
-using FFlow.Extensions.Microsoft.DependencyInjection;
-using FFlow.Observability.Extensions;
-using FFlow.Observability.Listeners;
-using FFlow.Observability.Metrics;
-using Microsoft.Extensions.DependencyInjection;
+using FFlow.Steps.Shell;
 
 var workflow = new FFlowBuilder()
-    .Then<NoOpStep>()
-    .Then<NoOpStep>()   
-    .Then<NoOpStep>()   
-    .Throw<Exception>("Simulated")
+    .RunCommand("echo", step => {
+        step.Arguments = "Hello, World!";
+        step.OutputHandler = Console.WriteLine;
+    })
     .Build();
-    
-    await workflow.RunAsync("");
+
+await workflow.RunAsync("");

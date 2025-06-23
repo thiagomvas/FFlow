@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>FFlow.Steps.Shell</PackageId>
+    <Description>
+      Provides steps and configuration methods for interacting with shell commands within FFlow workflows. Supports running shell commands, scripts, and more.
+    </Description>
+    <Authors>thiagomvas</Authors>
+    <Version>1.0.0-alpha.2</Version>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
+  </ItemGroup>
+
+</Project>
