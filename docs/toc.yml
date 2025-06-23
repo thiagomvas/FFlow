@@ -23,3 +23,5 @@ items:
     items:
       - name: Observability
         href: extensions/observability.md
+      - name: Shell
+        href: extensions/shell.md
