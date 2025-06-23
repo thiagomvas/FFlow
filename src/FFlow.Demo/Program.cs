@@ -9,7 +9,10 @@ var workflow = new FFlowBuilder()
     })
     .RunScriptRaw("echo '{context:Greeting}'\n" +
                   "echo \"foo $ENV_VAR\"\n" +
-                  "echo '{context:Description}'", script => script.EnvironmentVariables = "ENV_VAR=DemoValue")
+                  "echo '{context:Description}'", script => script.EnvironmentVariables = new()
+        {
+            {"ENV_VAR", "Some Value"}
+        })
     .Build();
 
 await workflow.RunAsync("");

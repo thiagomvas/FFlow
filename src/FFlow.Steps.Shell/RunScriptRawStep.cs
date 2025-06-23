@@ -9,11 +9,11 @@ public class RunScriptRawStep : FlowStep
     public string? WorkingDirectory { get; set; }
     public Action<string>? OutputHandler { get; set; } = Console.WriteLine;
     public string? Arguments { get; set; }
-    public string? EnvironmentVariables { get; set; }
+    public Dictionary<string, string>? EnvironmentVariables { get; set; }
     public string ShellPath { get; set; } = "/bin/bash"; // Default to bash, can be overridden
 
     private string _tempScriptPath = string.Empty;
-    
+
     protected override async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(Script))
@@ -29,7 +29,7 @@ public class RunScriptRawStep : FlowStep
         // Set executable bit on Unix-like systems
         if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
         {
-            Process chmod = new()
+            var chmod = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -54,15 +54,11 @@ public class RunScriptRawStep : FlowStep
             WorkingDirectory = WorkingDirectory ?? Environment.CurrentDirectory
         };
 
-        if (!string.IsNullOrEmpty(EnvironmentVariables))
+        if (EnvironmentVariables != null)
         {
-            foreach (var env in EnvironmentVariables.Split(';'))
+            foreach (var kvp in EnvironmentVariables)
             {
-                var parts = env.Split('=');
-                if (parts.Length == 2)
-                {
-                    processStartInfo.Environment[parts[0]] = parts[1];
-                }
+                processStartInfo.Environment[kvp.Key] = kvp.Value;
             }
         }
 
@@ -84,8 +80,9 @@ public class RunScriptRawStep : FlowStep
         {
             File.Delete(_tempScriptPath);
         }
-        catch (Exception ex)
+        catch
         {
+            // Silent cleanup failure
         }
     }
 
@@ -102,7 +99,7 @@ public class RunScriptRawStep : FlowStep
                 OutputHandler?.Invoke($"Failed to delete temporary script file: {ex.Message}");
             }
         }
-        
+
         return Task.CompletedTask;
     }
 }
