@@ -7,13 +7,11 @@ using FFlow.Extensions.Microsoft.DependencyInjection;
 using FFlow.Observability.Extensions;
 using FFlow.Observability.Listeners;
 using FFlow.Observability.Metrics;
+using FFlow.Steps.Shell;
 using Microsoft.Extensions.DependencyInjection;
 
 var workflow = new FFlowBuilder()
-    .Then<NoOpStep>()
-    .Then<NoOpStep>()   
-    .Then<NoOpStep>()   
-    .Throw<Exception>("Simulated")
+    .RunCommand("echo 'Hello, World!'")
     .Build();
-    
-    await workflow.RunAsync("");
+
+await workflow.RunAsync("");
