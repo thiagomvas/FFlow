@@ -54,5 +54,7 @@ public class RunScriptRawStep : FlowStep
 
         await process.WaitForExitAsync(cancellationToken);
         
+        var exitCode = process.ExitCode;
+        OutputHandler?.Invoke($"Process exited with code {exitCode}");
     }
 }
