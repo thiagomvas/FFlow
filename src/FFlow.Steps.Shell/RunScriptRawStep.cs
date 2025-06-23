@@ -11,6 +11,8 @@ public class RunScriptRawStep : FlowStep
     public string? Arguments { get; set; }
     public string? EnvironmentVariables { get; set; }
     public string ShellPath { get; set; } = "/bin/bash"; // Default to bash, can be overridden
+
+    private string _tempScriptPath = string.Empty;
     
     protected override async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
@@ -18,13 +20,34 @@ public class RunScriptRawStep : FlowStep
             throw new InvalidOperationException("Script must be set.");
 
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         Script = Internals.InjectContext(Script, context);
+
+        _tempScriptPath = Path.GetTempFileName();
+        await File.WriteAllTextAsync(_tempScriptPath, Script, cancellationToken);
+
+        // Set executable bit on Unix-like systems
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        {
+            Process chmod = new()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "/bin/chmod",
+                    Arguments = $"+x \"{_tempScriptPath}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            chmod.Start();
+            await chmod.WaitForExitAsync(cancellationToken);
+        }
 
         var processStartInfo = new ProcessStartInfo
         {
             FileName = ShellPath,
-            Arguments = $"-c \"{Script}\" {Arguments ?? string.Empty}",
+            Arguments = $"\"{_tempScriptPath}\" {Arguments ?? string.Empty}",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -53,8 +76,33 @@ public class RunScriptRawStep : FlowStep
         process.BeginErrorReadLine();
 
         await process.WaitForExitAsync(cancellationToken);
-        
+
         var exitCode = process.ExitCode;
         OutputHandler?.Invoke($"Process exited with code {exitCode}");
+
+        try
+        {
+            File.Delete(_tempScriptPath);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    public override Task CompensateAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    {
+        if (!string.IsNullOrEmpty(_tempScriptPath) && File.Exists(_tempScriptPath))
+        {
+            try
+            {
+                File.Delete(_tempScriptPath);
+            }
+            catch (Exception ex)
+            {
+                OutputHandler?.Invoke($"Failed to delete temporary script file: {ex.Message}");
+            }
+        }
+        
+        return Task.CompletedTask;
     }
 }

@@ -1,14 +1,5 @@
-﻿using System.Reflection;
-using FFlow;
-using FFlow.Core;
-using FFlow.Demo;
-using FFlow.Extensions;
-using FFlow.Extensions.Microsoft.DependencyInjection;
-using FFlow.Observability.Extensions;
-using FFlow.Observability.Listeners;
-using FFlow.Observability.Metrics;
+﻿using FFlow;
 using FFlow.Steps.Shell;
-using Microsoft.Extensions.DependencyInjection;
 
 var workflow = new FFlowBuilder()
     .StartWith((ctx, _) => 
@@ -17,8 +8,8 @@ var workflow = new FFlowBuilder()
         ctx.SetValue("Description", "This is a demo workflow using FFlow.");
     })
     .RunScriptRaw("echo '{context:Greeting}'\n" +
-                  "echo 'This is a raw script execution step.'\n" +
-                  "echo '{context:Description}'")
+                  "echo \"foo $ENV_VAR\"\n" +
+                  "echo '{context:Description}'", script => script.EnvironmentVariables = "ENV_VAR=DemoValue")
     .Build();
 
 await workflow.RunAsync("");
