@@ -23,4 +23,16 @@ public static class IWorkflowBuilderExtensions
         configure?.Invoke(step);
         return builder.AddStep(step);
     }
+    
+    public static IConfigurableStepBuilder RunScriptFile(this IWorkflowBuilder builder, string scriptFilePath, Action<RunScriptRawStep>? configure = null)
+    {
+        if (string.IsNullOrEmpty(scriptFilePath))
+            throw new ArgumentException("Script file path cannot be null or empty.", nameof(scriptFilePath));
+
+        if (!System.IO.File.Exists(scriptFilePath))
+            throw new FileNotFoundException("Script file not found.", scriptFilePath);
+
+        var script = System.IO.File.ReadAllText(scriptFilePath);
+        return builder.RunScriptRaw(script, configure);
+    }
 }
