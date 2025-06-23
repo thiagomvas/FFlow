@@ -11,7 +11,9 @@ using FFlow.Steps.Shell;
 using Microsoft.Extensions.DependencyInjection;
 
 var workflow = new FFlowBuilder()
-    .RunCommand("echo 'Hello, World!'")
+    .RunScriptRaw("echo 'Hello from FFlow!'\n" +
+                  "echo 'This is a raw script execution step.'\n" +
+                  "echo 'You can run any shell commands here.'")
     .Build();
 
 await workflow.RunAsync("");
