@@ -18,6 +18,8 @@ public class RunScriptRawStep : FlowStep
             throw new InvalidOperationException("Script must be set.");
 
         cancellationToken.ThrowIfCancellationRequested();
+        
+        Script = Internals.InjectContext(Script, context);
 
         var processStartInfo = new ProcessStartInfo
         {

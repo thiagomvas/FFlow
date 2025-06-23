@@ -20,6 +20,8 @@ public class RunCommandStep : FlowStep
             Command = parts[0];
             Arguments = parts.Length > 1 ? parts[1] : string.Empty + Arguments;
         }
+        
+        Arguments = Internals.InjectContext(Arguments ?? string.Empty, context);
 
         cancellationToken.ThrowIfCancellationRequested();
 
