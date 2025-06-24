@@ -74,7 +74,6 @@ public class RunScriptRawStep : FlowStep
         await process.WaitForExitAsync(cancellationToken);
 
         var exitCode = process.ExitCode;
-        OutputHandler?.Invoke($"Process exited with code {exitCode}");
 
         try
         {
@@ -84,6 +83,7 @@ public class RunScriptRawStep : FlowStep
         {
             // Silent cleanup failure
         }
+        context.SetOutputFor<RunScriptRawStep, int>(exitCode);
     }
 
     public override Task CompensateAsync(IFlowContext context, CancellationToken cancellationToken = default)
