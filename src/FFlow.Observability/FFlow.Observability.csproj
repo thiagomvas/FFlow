@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
@@ -10,7 +10,7 @@
             Observability extension for FFlow, providing telemetry and logging capabilities to enhance workflow monitoring and diagnostics.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.0.0-alpha.2</Version>
+        <Version>1.0.0-alpha.3</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>

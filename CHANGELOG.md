@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.0-alpha.3"></a>
+## [1.0.0-alpha.3](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0-alpha.3) (2025-06-24)
+
+### Features
+
+* Add compensation support ([2f39877](https://www.github.com/thiagomvas/FFlow/commit/2f398772771cd317cf1b263382bdaf3fe6ace7f1))
+* Add compensation support for conditional step ([2167409](https://www.github.com/thiagomvas/FFlow/commit/2167409bcbce329dc0789cb6e41fb49729c77bbc))
+* Add compensation support for ContinueWith (aka subworkflow) step ([97f5865](https://www.github.com/thiagomvas/FFlow/commit/97f58653f531a17092405a320ec2773ff41893ff))
+* Add compensation support for switch cases ([dcf945c](https://www.github.com/thiagomvas/FFlow/commit/dcf945ca3d2789195c21a34cea3bfc4d6671e9e6))
+* Add ConsoleFlowEventListener ([63da69e](https://www.github.com/thiagomvas/FFlow/commit/63da69e1e25f243f7a280fa9e2b77147762c02f7))
+* Add context injection to commands using {context:Key} syntax ([160791f](https://www.github.com/thiagomvas/FFlow/commit/160791ff4c4a6e01f4d0ccddc11f3b7dc5546d7a))
+* Add Dotnet CLI Extension methods for more convenient use ([dd0e23e](https://www.github.com/thiagomvas/FFlow/commit/dd0e23e59af6ef8236b70cbc3623a1a6a47509f3))
+* Add Dotnet Nuget Push step ([72889f7](https://www.github.com/thiagomvas/FFlow/commit/72889f7c437035cdb4cd6cd8e2a8bcb3e793a4fb))
+* Add extensions for getting and setting the context id ([56126b3](https://www.github.com/thiagomvas/FFlow/commit/56126b3ff7f10b10ea8a27426957a62df172a23a))
+* Add Gauges to IMetricsSink ([3ae2581](https://www.github.com/thiagomvas/FFlow/commit/3ae25817498fbddef960889417a7a793ddc11572))
+* Add GetLastInput/Output methods ([b731ba0](https://www.github.com/thiagomvas/FFlow/commit/b731ba02080a667b65113e57733275044caf29f9))
+* Add IFlowContext extensions for getting metrics sinks and event listeners ([795112c](https://www.github.com/thiagomvas/FFlow/commit/795112c7d1031fcd41668bb822da71390353dddb))
+* Add IMetricSink with in memory implementation ([4e44fc2](https://www.github.com/thiagomvas/FFlow/commit/4e44fc2ac761d6ed3fc42d167a102d85c45a0d83))
+* Add IWorkflow.CompensateAsync() ([bd46af1](https://www.github.com/thiagomvas/FFlow/commit/bd46af1522f30df817b6a4a366df9b17d10356c0))
+* Add IWorkflowMetadata to attach metadata properties in workflows ([dae9c37](https://www.github.com/thiagomvas/FFlow/commit/dae9c37c868e844c19a0dc313a49c63e4ac03ef7))
+* Add IWorkflowMetadataStore to store workflow metadata rather than adding properties. ([1f85849](https://www.github.com/thiagomvas/FFlow/commit/1f85849d661f1d019155945bb0056d41e1b88705))
+* Add MetricsSnapshot and IMetricsSink.Flush ([6ff313e](https://www.github.com/thiagomvas/FFlow/commit/6ff313e966eaf143cdf1b49ec0e1087bc0dffb24))
+* Add MetricTrackingListener ([f0da764](https://www.github.com/thiagomvas/FFlow/commit/f0da764a60a5e875df185047d1b5eb8b7710049c))
+* Add new base WorkflowDefinition class to introduce default behaviours for workflow definitions ([eb5f7ed](https://www.github.com/thiagomvas/FFlow/commit/eb5f7edf4cee68cf15e184472d1c102311393d9a))
+* Add NoOpMemorySink ([193e43e](https://www.github.com/thiagomvas/FFlow/commit/193e43e8916d18bc037b01178f7df09aee310c3b))
+* Add Run Command step ([709851e](https://www.github.com/thiagomvas/FFlow/commit/709851e5faf6da2d365e19916bac0f202f615797))
+* Add RunScriptFile extension method ([f0fc4c1](https://www.github.com/thiagomvas/FFlow/commit/f0fc4c1066c2631c8c7b9bbeca635778a50fa6d6))
+* Add RunScriptRaw step ([2620c39](https://www.github.com/thiagomvas/FFlow/commit/2620c3984782063cfcfd340df2c867765a034285))
+* Add Timeline Recorder ([1125f08](https://www.github.com/thiagomvas/FFlow/commit/1125f08ff66a1cba9b3aac77e3c307694146d687))
+* Add UseMetrics extension to attach an IMetricSink to a FFlowBuilder ([a836136](https://www.github.com/thiagomvas/FFlow/commit/a83613648fcc7e8ae932c833ba705d8abbb8c2b5))
+* Refactor IFlowContext to be more convenient when getting values from the workflow ([487b879](https://www.github.com/thiagomvas/FFlow/commit/487b879ef34bb2c661b28a8041143ad140487c68))
+* Shell executions now set the exit code as output rather than logging to output ([3dc808c](https://www.github.com/thiagomvas/FFlow/commit/3dc808cd4c31139fdf8e1306f0bbb56b73e2f8d7))
+
+### Bug Fixes
+
+* Dotnet Nuget Push source now defaults to nuget.org ([8ebbc24](https://www.github.com/thiagomvas/FFlow/commit/8ebbc24b23e0316146fc8f139de2d83fd5a886aa))
+* Log exit code for shell related step ([cc6cc8b](https://www.github.com/thiagomvas/FFlow/commit/cc6cc8b1d91a4673c4913c4b18535671827734a5))
+* Register workflow definition types as well ([b8d38eb](https://www.github.com/thiagomvas/FFlow/commit/b8d38eb0775b784ccbea1a8ef3041dcec9ece512))
+* Shell steps no longer log empty lines to output handler ([0bc04f1](https://www.github.com/thiagomvas/FFlow/commit/0bc04f116e33675db2c73055d7d073f8da5d2050))
+* Use temp file for scripts instead of raw strings to properly support env variables ([c8e53c5](https://www.github.com/thiagomvas/FFlow/commit/c8e53c577ee9a86d429b34ecf3726a494103861c))
+* Workflow no longer stops compensation when the last step isnt compensable ([075d08b](https://www.github.com/thiagomvas/FFlow/commit/075d08b031222291695452b494ff118c5995f207))
+
 <a name="1.0.0-alpha.2"></a>
 ## [1.0.0-alpha.2](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0-alpha.2) (2025-06-20)
 
