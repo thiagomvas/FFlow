@@ -47,8 +47,18 @@ public class RunCommandStep : FlowStep
 
         using var process = new Process();
         process.StartInfo = processStartInfo;
-        process.OutputDataReceived += (sender, e) => OutputHandler?.Invoke(e.Data ?? string.Empty);
-        process.ErrorDataReceived += (sender, e) => OutputHandler?.Invoke(e.Data ?? string.Empty);
+        process.OutputDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+                OutputHandler?.Invoke(e.Data);
+        };
+
+        process.ErrorDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+                OutputHandler?.Invoke(e.Data);
+        };
+
 
         process.Start();
         process.BeginOutputReadLine();
