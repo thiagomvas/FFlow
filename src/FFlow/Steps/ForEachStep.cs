@@ -35,7 +35,7 @@ public class ForEachStep<T> : IFlowStep
 
         foreach (var item in items)
         {
-            context.SetInput(item);
+            context.SetInputFor(_itemAction, item);
             await _itemAction.RunAsync(context, cancellationToken);
         }
     }

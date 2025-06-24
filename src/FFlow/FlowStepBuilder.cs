@@ -34,7 +34,7 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
             foreach (var prop in typeof(TStep).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 var key = Internals.BuildInputKey(step, prop.Name);
-                context.Set(key, prop.GetValue(step)!);
+                context.SetValue(key, prop.GetValue(step)!);
             }
         });
 
@@ -61,7 +61,7 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
             var name = GetPropertyName(stepProp);
             var key = Internals.BuildInputKey(_step, name);
             setter((TStep)_step, value);
-            context.Set(key, value);
+            context.SetValue(key, value);
         });
 
         if (_inputSetterStep is null)
@@ -86,7 +86,7 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
             var key = Internals.BuildInputKey(_step, name);
             var value = inputGetter(context);
             setter((TStep)_step, value!);
-            context.Set(key, value!);
+            context.SetValue(key, value!);
         });
         
         if(_inputSetterStep is null)
@@ -110,7 +110,7 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
             var name = GetPropertyName(stepProp);
             var key = Internals.BuildOutputKey(_step, name);
             var value = propGetter((TStep)_step);
-            context.Set(key, value!);
+            context.SetValue(key, value!);
             outputWriter(context, value!);
         });
         

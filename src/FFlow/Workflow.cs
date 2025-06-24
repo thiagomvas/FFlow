@@ -1,37 +1,50 @@
 using FFlow.Core;
+using FFlow.Extensions;
 
 namespace FFlow;
 
 public class Workflow : IWorkflow
 {
-    public readonly Guid Id = Guid.NewGuid();
-    private readonly IReadOnlyList<IFlowStep> _steps;
+    public readonly Guid Id = Guid.CreateVersion7();
+
+    private readonly ReversibleQueue<IFlowStep> _steps;
     private IFlowContext _context;
     private IFlowStep? _globalErrorHandler;
     private IFlowStep? _finalizer;
     private readonly WorkflowOptions? _options;
+    private readonly IWorkflowMetadataStore? _metadataStore;
+    public IWorkflowMetadataStore? MetadataStore { get; internal set; }
 
-    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null)
+    public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null,
+        IWorkflowMetadataStore? metadataStore = null)
     {
-        _steps = steps ?? throw new ArgumentNullException(nameof(steps));
+        var result = steps.ToList();
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _options = options;
+        MetadataStore = metadataStore ?? new InMemoryMetadataStore();
         if (options?.StepDecoratorFactory is not null)
         {
             var decoratedSteps = new List<IFlowStep>();
-            foreach (var step in _steps)
+            foreach (var step in result)
             {
                 decoratedSteps.Add(options.StepDecoratorFactory(step));
             }
 
-            _steps = decoratedSteps.AsReadOnly();
+            result = decoratedSteps;
         }
+        
+        _steps = new ReversibleQueue<IFlowStep>(result);
     }
 
     public IWorkflow SetGlobalErrorHandler(IFlowStep errorHandler)
     {
         _globalErrorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
         return this;
+    }
+
+    public IFlowContext GetContext()
+    {
+        return _context;
     }
 
     public IWorkflow SetContext(IFlowContext context)
@@ -50,8 +63,19 @@ public class Workflow : IWorkflow
     {
         _context.SetId(Id);
         if (input is not null)
-            _context.SetInput(input);
+            _context.SetValue("Workflow.Input", input);
 
+        if (_options.EventListener is CompositeFlowEventListener composite)
+        {
+            foreach (var listener in composite.Listeners)
+            {
+                _context.SetValue(Internals.BuildEventListenerKey(listener), listener);
+            }
+        }
+        else if (_options?.EventListener is not null)
+        {
+            _context.SetValue(Internals.BuildEventListenerKey(_options.EventListener), _options.EventListener);
+        }
 
         var eventListener = _options?.EventListener;
         eventListener?.OnWorkflowStarted(this);
@@ -69,10 +93,11 @@ public class Workflow : IWorkflow
 
             var effectiveToken = globalCts?.Token ?? cancellationToken;
 
-            foreach (var step in _steps)
+            while(_steps.TryDequeue(out IFlowStep step))
             {
                 eventListener?.OnStepStarted(step, _context);
                 current = step;
+
                 if (_options?.StepTimeout is not null)
                 {
                     using var stepCts = CancellationTokenSource.CreateLinkedTokenSource(effectiveToken);
@@ -100,6 +125,12 @@ public class Workflow : IWorkflow
         }
         catch (Exception ex)
         {
+            while (_steps.TryBacktrack(out IFlowStep step))
+            {
+                if(step is ICompensableStep compensable)
+                    await compensable.CompensateAsync(_context, cancellationToken);
+            }
+            
             if (_finalizer != null)
             {
                 await _finalizer.RunAsync(_context, cancellationToken);
@@ -109,9 +140,10 @@ public class Workflow : IWorkflow
                 eventListener?.OnStepFailed(current, _context, ex);
 
             eventListener?.OnWorkflowFailed(this, ex);
+
             if (_globalErrorHandler != null)
             {
-                _context.Set("Exception", ex);
+                _context.SetSingleValue(ex);
                 await _globalErrorHandler.RunAsync(_context);
             }
             else
@@ -127,6 +159,25 @@ public class Workflow : IWorkflow
 
         eventListener?.OnWorkflowCompleted(this);
 
+        return _context;
+    }
+
+    public async Task<IFlowContext> CompensateAsync(CancellationToken cancellationToken = default)
+    {
+        while (_steps.TryBacktrack(out IFlowStep step))
+        {
+            if (step is ICompensableStep compensable)
+            {
+                try
+                {
+                    await compensable.CompensateAsync(_context, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _context.SetSingleValue(ex);
+                }
+            }
+        }
         return _context;
     }
 }

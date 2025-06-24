@@ -1,6 +1,6 @@
 using FFlow.Core;
 
-namespace FFlow;
+namespace FFlow.Core;
 
 public interface IFlowEventListener
 {

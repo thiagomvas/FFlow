@@ -14,7 +14,7 @@ public class AttributeTests
     {
         empty = new TestFlowContext();
         context = new TestFlowContext();
-        context.Set("key", "123-45-6789");
+        context.SetValue("key", "123-45-6789");
     }
 
     [Test]
@@ -38,12 +38,8 @@ public class AttributeTests
             "Expected RunAsync to succeed when the required key is present and not null.");
 
         Assert.ThrowsAsync<FlowValidationException>(async () => await step.RunAsync(empty),
-            "Expected FlowValidationException when the required key is missing.");
+            "Expected FlowValidationException when the required key is missing or is null.");
 
-        empty.Set<string?>("key", null);
-
-        Assert.ThrowsAsync<FlowValidationException>(async () => await step.RunAsync(empty),
-            "Expected FlowValidationException when the required key is present but its value is null.");
     }
 
     [Test]
@@ -57,7 +53,7 @@ public class AttributeTests
         Assert.ThrowsAsync<FlowValidationException>(async () => await step.RunAsync(empty),
             "Expected FlowValidationException when the key is missing from the context.");
 
-        empty.Set("key", "1234567890");
+        empty.SetValue("key", "1234567890");
 
         Assert.ThrowsAsync<FlowValidationException>(async () => await step.RunAsync(empty),
             "Expected FlowValidationException when the key is present but does not match the regex pattern.");

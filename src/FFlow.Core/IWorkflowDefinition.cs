@@ -14,4 +14,6 @@ public interface IWorkflowDefinition
     /// </summary>
     /// <returns>An instance of <see cref="IWorkflow"/> representing the built workflow.</returns>
     IWorkflow Build();
+    
+    IWorkflowMetadataStore MetadataStore { get; }
 }

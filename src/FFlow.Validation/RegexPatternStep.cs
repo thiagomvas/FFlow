@@ -22,7 +22,7 @@ internal class RegexPatternStep : IFlowStep
         if (context == null) throw new ArgumentNullException(nameof(context));
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (!context.TryGet<string>(_key, out var value))
+        if (context.GetValue<object>(_key) is not string value)
         {
             throw new FlowValidationException($"Key '{_key}' not found in the context.");
         }

@@ -13,7 +13,7 @@ public class ExtensionTests
 
         context.LoadEnvironmentVariables();
 
-        Assert.That(context.Get<string>("TEST_VAR"), Is.EqualTo("123"));
+        Assert.That(context.GetValue<string>("TEST_VAR"), Is.EqualTo("123"));
         
         // Cleanup
         Environment.SetEnvironmentVariable("TEST_VAR", null);

@@ -8,7 +8,7 @@
         <PackageId>FFlow.Extensions.Microsoft.DependencyInjection</PackageId>
         <Description>Integration package for FFlow with Microsoft.Extensions.DependencyInjection, enabling automatic resolution of workflow steps via DI.</Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.0.0-alpha.2</Version>
+        <Version>1.0.0-alpha.3</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>

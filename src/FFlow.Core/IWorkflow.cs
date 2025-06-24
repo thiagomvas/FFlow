@@ -5,6 +5,7 @@ namespace FFlow.Core;
     /// </summary>
     public interface IWorkflow
     {
+        public IWorkflowMetadataStore MetadataStore { get; }
         /// <summary>
         /// Sets a global error handler for the workflow.
         /// </summary>
@@ -12,6 +13,12 @@ namespace FFlow.Core;
         /// <returns>The current instance of <see cref="IWorkflow"/>.</returns>
         IWorkflow SetGlobalErrorHandler(IFlowStep errorHandler);
     
+        /// <summary>
+        /// Gets the current context of the workflow.
+        /// </summary>
+        /// <returns>The context of the current workflow execution.</returns>
+        IFlowContext GetContext();
+        
         /// <summary>
         /// Sets the context for the workflow.
         /// </summary>
@@ -35,4 +42,6 @@ namespace FFlow.Core;
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous operation, containing the resulting <see cref="IFlowContext"/>.</returns>
         Task<IFlowContext> RunAsync(object input, CancellationToken cancellationToken = default);
+        
+        Task<IFlowContext> CompensateAsync(CancellationToken cancellationToken = default);
     }

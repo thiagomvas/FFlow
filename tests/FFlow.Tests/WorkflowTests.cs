@@ -138,7 +138,7 @@ public class WorkflowTests
 
         var ctx = await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
 
-        var decoratedCounter = ctx.Get<int>("decorated_counter");
+        var decoratedCounter = ctx.GetValue<int>("decorated_counter");
         Assert.That(decoratedCounter, Is.EqualTo(1), "The step decorator should have incremented the counter.");
     }
 
@@ -192,13 +192,13 @@ public class WorkflowTests
             .Then<TestStep>()
             .Finally((ctx, ct) =>
             {
-                ctx.Set("finalized", true);
+                ctx.SetValue("finalized", true);
                 return Task.CompletedTask;
             })
             .Build();
 
         var ctx = await workflow.RunAsync(null);
-        Assert.That(ctx.Get<bool>("finalized"), Is.True,
+        Assert.That(ctx.GetValue<bool>("finalized"), Is.True,
             "The finalizer step should have run and set the 'finalized' context value to true.");
     }
 
@@ -210,7 +210,7 @@ public class WorkflowTests
             .Throw<Exception>("Simulated error")
             .Finally((ctx, ct) =>
             {
-                ctx.Set("finalized", true);
+                ctx.SetValue("finalized", true);
                 return Task.CompletedTask;
             })
             .OnAnyError((_, _) => { })
@@ -218,7 +218,7 @@ public class WorkflowTests
 
         await workflow.RunAsync(null);
         var ctx = await workflow.RunAsync(null);
-        Assert.That(ctx.Get<bool>("finalized"), Is.True,
+        Assert.That(ctx.GetValue<bool>("finalized"), Is.True,
             "The finalizer step should have run even after an exception was thrown.");
     }
 }

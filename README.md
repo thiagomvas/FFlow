@@ -11,6 +11,12 @@
   <a href="https://thiagomvas.dev/FFlow/">
     <img src="https://img.shields.io/badge/Docs-Available-limegreen?style=flat&logo=github">
   </a>
+  <a href="https://github.com/thiagomvas/fflow/labels/good%20first%20issue">
+    <img src="https://img.shields.io/github/issues/thiagomvas/fflow/good%20first%20issue?style=flat&color=%24EC820&label=good%20first%20issue">
+  </a>
+  <a href="https://github.com/thiagomvas/fflow/labels/help%20wanted">
+    <img src="https://img.shields.io/github/issues/thiagomvas/fflow/help%20wanted?style=flat&color=%24EC820&label=help%20wanted">
+  </a>
 </h1>
 <p align="center">
   <b>FFlow</b> is a fluent, code-first workflow automation library for .NET. It enables developers to orchestrate automation logic, business rules, and CI/CD pipelines in a <b>fully testable</b> and <b>extensible</b> way.
@@ -67,7 +73,7 @@ Writing and testing CI/CD pipelines has always been frustrating. It usually went
 
 The feedback loop was too long. Small mistakes led to wasted time, and workflows often lived outside the codebase in YAML files or GUI editors that were hard to test, debug, or reuse.
 
-FFlow was born out of this frustration. **It came from the idea that automation should feel like regular code.** Something you can write fluently, test locally, and plug into your existing services—just like anything else in your app.
+FFlow was born out of this frustration. **It came from the idea that automation should feel like regular code.** Something you can write fluently, test locally, and plug into your existing services just like anything else in your app.
 
 Tools like `Cake` or `Nuke` solve part of the problem, but I wanted something more structured and flexible. Less about running scripts. More about building flows.
 

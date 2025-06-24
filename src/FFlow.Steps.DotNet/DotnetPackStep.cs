@@ -82,7 +82,7 @@ public class DotnetPackStep : IFlowStep
         }
 
         Result = new DotnetPackResult(exitCode, output, error);
-        context.SetInput(Result);
+        context.SetOutputFor<DotnetPackStep, DotnetPackResult>(Result);
         
     }
 

@@ -26,17 +26,17 @@ internal class NotEmptyStep : IFlowStep
 
         foreach (var key in _keys)
         {
-            if (!context.TryGet<object>(key, out var obj))
+            if (context.GetValue<object>(key) is null)
             {
                 throw new FlowValidationException($"Key '{key}' not found in the context.");
             }
 
-            if (obj is string str && string.IsNullOrWhiteSpace(str))
+            if (context.GetValue<object>(key) is string str && string.IsNullOrWhiteSpace(str))
             {
                 throw new FlowValidationException($"Value for key '{key}' cannot be empty.");
             }
             
-            if (obj is ICollection collection && collection.Count == 0)
+            if (context.GetValue<object>(key) is ICollection collection && collection.Count == 0)
             {
                 throw new FlowValidationException($"Collection for key '{key}' cannot be empty.");
             }

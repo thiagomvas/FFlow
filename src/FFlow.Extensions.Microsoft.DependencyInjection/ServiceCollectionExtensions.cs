@@ -20,7 +20,7 @@ using System.Reflection;
         /// When no assemblies are provided, it will scan all loaded assemblies in the current application domain.
         /// This sometimes includes third-party libraries, so it is recommended to specify the assemblies explicitly
         /// </remarks>
-        public static IServiceCollection AddFFlow(this IServiceCollection services, params Assembly[] assemblies)
+        public static IServiceCollection AddFFlow(this IServiceCollection services, params Assembly[]? assemblies)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
@@ -30,7 +30,8 @@ using System.Reflection;
                 var targetTypes = new[]
                 {
                     typeof(IFlowStep),
-                    typeof(IWorkflowDefinition)
+                    typeof(IWorkflowDefinition),
+                    typeof(FlowStep)
                 };  
                 string path = AppDomain.CurrentDomain.BaseDirectory;
                 assemblies = Directory.GetFiles(path, "*.dll")
@@ -59,6 +60,7 @@ using System.Reflection;
                 foreach (var workflowType in workflowTypes)
                 {
                     services.AddTransient(typeof(IWorkflowDefinition), workflowType);
+                    services.AddTransient(workflowType);
                     services.AddTransient(provider =>
                     {
                         var workflowDefinition = (IWorkflowDefinition)provider.GetRequiredService(workflowType);

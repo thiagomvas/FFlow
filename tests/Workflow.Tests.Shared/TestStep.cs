@@ -8,8 +8,8 @@ public class TestStep : IFlowStep
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         // Simulate some work
-        var counter = context.Get<int>("counter");
-        context.Set("counter", counter + Increment);
+        var counter = context.GetValue<int>("counter");
+        context.SetValue("counter", counter + Increment);
         return Task.CompletedTask;
     }
 }

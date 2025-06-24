@@ -1,4 +1,5 @@
 using FFlow.Core;
+using FFlow.Extensions;
 
 namespace FFlow;
 
@@ -15,16 +16,14 @@ public class ForkStep : IFlowStep
 
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        var parentId = context.Id;
-
         var tasks = _forks.Select(f =>
         {
             var task = f().Build()
                 .SetContext(context.Fork())
-                .RunAsync(context.GetInput<object>(), cancellationToken);
+                .RunAsync(context.GetLastInput<object>(), cancellationToken);
 
             if (_forkStrategy == ForkStrategy.FireAndForget)
-                ParallelStepTracker.Instance.AddTask(parentId, task);
+                ParallelStepTracker.Instance.AddTask(context.GetId(), task);
 
             return task;
         });

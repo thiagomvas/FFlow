@@ -2,14 +2,15 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class SwitchStep : IFlowStep
+public class SwitchStep : FlowStep
 {
     private readonly List<SwitchCase> _switches = new List<SwitchCase>();
+    private IWorkflow _execution;
     internal SwitchStep(List<SwitchCase> cases)
     {
         _switches = cases;
     }
-    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         if (context == null) throw new ArgumentNullException(nameof(context));
         if(_switches == null) throw new ArgumentNullException(nameof(_switches));
@@ -23,7 +24,27 @@ public class SwitchStep : IFlowStep
                 throw new InvalidOperationException("Builder must be set for each switch case.");
             if (switchCase.Condition(context))
             {
-                return switchCase.Builder!.Build().SetContext(context).RunAsync(context, cancellationToken);
+                _execution = switchCase.Builder!.Build();
+                return _execution.SetContext(context).RunAsync(context, cancellationToken);
+            }
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    public override Task CompensateAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    {
+        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (_switches == null) throw new ArgumentNullException(nameof(_switches));
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        foreach (var switchCase in _switches)
+        {
+            if (switchCase.Builder == null)
+                throw new InvalidOperationException("Builder must be set for each switch case.");
+            if (switchCase.Condition(context))
+            {
+                return _execution.CompensateAsync(cancellationToken);
             }
         }
         
