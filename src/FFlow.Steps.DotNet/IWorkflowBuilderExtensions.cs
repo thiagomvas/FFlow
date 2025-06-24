@@ -211,4 +211,39 @@ public static class IWorkflowBuilderExtensions
         configure?.Invoke(step);
         return builder.AddStep(step);
     }
+    
+    /// <summary>
+    /// Adds a <see cref="DotnetNugetPushStep"/> to the workflow and allows configuration via delegate.
+    /// </summary>
+    /// <param name="builder">The workflow builder.</param>
+    /// <param name="configure">An action to configure the <see cref="DotnetPublishStep"/>.</param>
+    /// <returns>The step builder for further configuration.</returns>
+    public static IConfigurableStepBuilder DotnetNugetPush(this IWorkflowBuilder builder,
+        Action<DotnetNugetPushStep> configure)
+    {
+        var step = new DotnetNugetPushStep();
+        configure?.Invoke(step);
+        return builder.AddStep(step);
+    }
+    
+    
+    /// <summary>
+    /// Adds a <see cref="DotnetNugetPushStep"/> to the workflow for the specified project or solution,
+    /// and allows optional configuration via delegate.
+    /// </summary>
+    /// <param name="builder">The workflow builder.</param>
+    /// <param name="packagePathOrRoot">The package path or root directory containing the packages..</param>
+    /// <param name="configure">An optional action to configure the <see cref="DotnetNugetPushStep"/>.</param>
+    /// <returns>The step builder for further configuration.</returns>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="packagePathOrRoot"/> is null or empty.</exception>
+    public static IConfigurableStepBuilder DotnetNugetPush(this IWorkflowBuilder builder, string packagePathOrRoot,
+        Action<DotnetNugetPushStep>? configure = null)
+    {
+        if (string.IsNullOrEmpty(packagePathOrRoot))
+            throw new ArgumentException("Package file path cannot be null or empty.", nameof(packagePathOrRoot));
+
+        var step = new DotnetNugetPushStep { PackagePathOrRoot = packagePathOrRoot };
+        configure?.Invoke(step);
+        return builder.AddStep(step);
+    }
 }
