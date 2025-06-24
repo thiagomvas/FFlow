@@ -23,7 +23,7 @@ public class DotnetNugetPushStep : IFlowStep
     /// <summary>
     /// The source URL or folder where the package is pushed.
     /// </summary>
-    public string? Source { get; set; }
+    public string? Source { get; set; } = "https://api.nuget.org/v3/index.json";
 
     /// <summary>
     /// The symbol API key to use for symbol packages.
