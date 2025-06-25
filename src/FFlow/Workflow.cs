@@ -63,6 +63,7 @@ public class Workflow : IWorkflow
     {
         _context.SetId(Id);
         _context.SetSingleValue<IWorkflow>(this);
+        _context.SetSingleValue<Workflow>(this);
         if (input is not null)
             _context.SetValue("Workflow.Input", input);
 
