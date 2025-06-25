@@ -4,6 +4,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+/// <summary>
+/// A builder for configuring flow steps within a workflow.
+/// </summary>
 public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuilder
 {
     protected override IWorkflowBuilder Delegate { get; }

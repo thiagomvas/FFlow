@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+/// <summary>
+/// Represents a composite event listener that aggregates multiple <see cref="IFlowEventListener"/> instances.
+/// </summary>
 public class CompositeFlowEventListener : IFlowEventListener
 {
     private readonly List<IFlowEventListener> _listeners;

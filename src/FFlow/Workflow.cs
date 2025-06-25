@@ -3,6 +3,9 @@ using FFlow.Extensions;
 
 namespace FFlow;
 
+/// <summary>
+/// An implementation of a workflow that manages a sequence of steps with backtracking capabilities.
+/// </summary>
 public class Workflow : IWorkflow
 {
     public readonly Guid Id = Guid.CreateVersion7();

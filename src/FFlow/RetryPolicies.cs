@@ -2,14 +2,36 @@ using FFlow.Core;
 
 namespace FFlow;
 
+/// <summary>
+/// Contains various retry policies for handling transient failures in workflows.
+/// </summary>
 public static class RetryPolicies
 {
+    /// <summary>
+    /// Creates a fixed delay retry policy.
+    /// </summary>
+    /// <param name="maxRetries">The maximum number of retry attempts.</param>
+    /// <param name="delay">The delay between each retry attempt.</param>
+    /// <returns>An instance of <see cref="IRetryPolicy"/> with fixed delays.</returns>
     public static IRetryPolicy FixedDelay(int maxRetries, TimeSpan delay) =>
         new FixedDelayRetryPolicy(maxRetries, delay);
 
+    /// <summary>
+    /// Creates a retry policy that retries on specific exception types with fixed delays.
+    /// </summary>
+    /// <param name="maxRetries">The maximum number of retry attempts.</param>
+    /// <param name="delay">The delay between each retry attempt.</param>
+    /// <param name="retryOnExceptions">The exception types to retry on.</param>
+    /// <returns>An instance of <see cref="IRetryPolicy"/> that handles specified exceptions.</returns>
     public static IRetryPolicy ExceptionType(int maxRetries, TimeSpan delay, params Type[] retryOnExceptions) =>
         new ExceptionTypeRetryPolicy(maxRetries, delay, retryOnExceptions);
 
+    /// <summary>
+    /// Creates an exponential backoff retry policy.
+    /// </summary>
+    /// <param name="maxRetries">The maximum number of retry attempts.</param>
+    /// <param name="initialDelay">The initial delay before the first retry. Subsequent delays increase exponentially.</param>
+    /// <returns>An instance of <see cref="IRetryPolicy"/> with exponential backoff behavior.</returns>
     public static IRetryPolicy ExponentialBackoff(int maxRetries, TimeSpan initialDelay) =>
         new ExponentialBackoffRetryPolicy(maxRetries, initialDelay);
 

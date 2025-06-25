@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+/// <summary>
+/// In memory implementation of <see cref="IFlowContext"/>.
+/// </summary>
 public class InMemoryFFLowContext : IFlowContext
 {
     private readonly Dictionary<string, object> _values = new();
