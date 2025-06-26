@@ -43,5 +43,10 @@ namespace FFlow.Core;
         /// <returns>A task that represents the asynchronous operation, containing the resulting <see cref="IFlowContext"/>.</returns>
         Task<IFlowContext> RunAsync(object input, CancellationToken cancellationToken = default);
         
+        /// <summary>
+        /// Executes the compensation logic asynchronously to undo or handle rollback actions.
+        /// </summary>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A task representing the asynchronous compensation operation, returning the resulting <see cref="IFlowContext"/>.</returns>
         Task<IFlowContext> CompensateAsync(CancellationToken cancellationToken = default);
     }
