@@ -154,3 +154,55 @@ var workflow = new FFlowBuilder()
     .Build();
 ```
 
+## Extending steps with additional functionality
+You can extend steps with additional functionality by implementing the respective interfaces. The builder and workflow classes will automatically use the implementations when applicable.
+
+> [!NOTE]
+> If you inherit from `FlowStep` when defining custom steps, all the interfaces below will already be implemented as virtual methods that you can then override.
+
+### Retry Policies
+You can create retry policies defined by `IRetryPolicy` and inject them into an `IRetryableStep` with `SetRetryPolicy`. This allows you to define how many times a step should be retried in case of failure, and under what conditions.
+
+Here is an example of a custom retry policy that retries a step a fixed number of times with a delay between retries:
+
+```csharp
+public class FixedDelayRetryPolicy : IRetryPolicy
+{
+    private readonly int _maxRetries;
+    private readonly TimeSpan _delay;
+    public FixedDelayRetryPolicy(int maxRetries, TimeSpan delay)
+    {
+        _maxRetries = maxRetries;
+        _delay = delay;
+    }
+    public async Task ExecuteAsync(Func<Task> action, CancellationToken cancellationToken = default)
+    {
+        for (int i = 0; i < _maxRetries; i++)
+        {
+            try
+            {
+                await action();
+                return;
+            }
+            catch
+            {
+                if (i == _maxRetries - 1) throw;
+                await Task.Delay(_delay, cancellationToken);
+            }
+        }
+    }
+}
+```
+
+> [!TIP]
+> The RetryPolicies class provides a set of common retry policies that you can use out of the box, such as `RetryPolicies.FixedDelay` and `RetryPolicies.ExponentialBackoff`.
+
+### Skippable Steps
+Implementing `ISkippableStep` allows you to define steps that can be skipped based on certain conditions. This is useful for workflows where some steps may not be necessary depending on the context.
+
+It is up to the developer on how and when, during the execution, the step should be skipped. `FlowStep` skips any and all operations other than setting the input for said step by default.
+
+### Compensable Steps
+Implementing `ICompensableStep` allows you to define steps that can be compensated if a previous step fails. This is useful for workflows where you need to roll back changes made by previous steps in case of an error.
+
+For detailed information on compensable steps, refer to the [Compensation documentation](./compensation.md).
