@@ -145,6 +145,25 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
         return this;
     }
 
+    public IConfigurableStepBuilder SkipOn(Func<IFlowContext, bool> skipOn)
+    {
+        if (skipOn is null)
+        {
+            throw new ArgumentNullException(nameof(skipOn));
+        }
+
+        if (_step is FlowStep flowStep)
+        {
+            flowStep.SetSkipCondition(skipOn);
+        }
+        else
+        {
+            throw new InvalidOperationException($"The step type '{_step.GetType().Name}' does not support skipping logic.");
+        }
+
+        return this;
+    }
+
     private static string GetPropertyName<TObj, TValue>(Expression<Func<TObj, TValue>> expr)
     {
         if (expr.Body is MemberExpression member && member.Member is PropertyInfo)

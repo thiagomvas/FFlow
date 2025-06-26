@@ -221,4 +221,20 @@ public class WorkflowTests
         Assert.That(ctx.GetValue<bool>("finalized"), Is.True,
             "The finalizer step should have run even after an exception was thrown.");
     }
+    
+    [Test]
+    public async Task Step_ShouldSkip_WhenConditionIsTrue()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith<TestStep>()
+            .Then<ExceptionStep>().SkipOn(ctx => ctx.GetValue<int>("counter") > 0)
+            .Then<TestStep>()
+            .Build();
+
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            var ctx = await workflow.RunAsync(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token);
+            Assert.That(ctx.GetValue<int>("counter"), Is.EqualTo(2), "Counter should be incremented.");
+        });
+    }
 }

@@ -2,9 +2,9 @@ using FFlow.Core;
 
 namespace Workflow.Tests.Shared;
 
-public class ExceptionStep : IFlowStep
+public class ExceptionStep : FlowStep
 {
-    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         throw new InvalidOperationException("This step always fails.");
     }

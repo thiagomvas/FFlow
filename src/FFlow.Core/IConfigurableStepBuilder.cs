@@ -62,4 +62,6 @@ using System.Linq.Expressions;
         /// <param name="policy">The retry policy to apply.</param>
         /// <returns>The current instance of <see cref="IConfigurableStepBuilder"/> for chaining.</returns>
         public IConfigurableStepBuilder WithRetryPolicy(IRetryPolicy policy);
+        
+        public IConfigurableStepBuilder SkipOn(Func<IFlowContext, bool> skipOn);
     }
