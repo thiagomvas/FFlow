@@ -135,7 +135,7 @@ namespace FFlow.Core;
         /// <param name="then">The workflow builder for the true branch.</param>
         /// <param name="otherwise">The optional workflow builder for the false branch.</param>
         /// <returns>The current instance of <see cref="IConfigurableStepBuilder"/>.</returns>
-        IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IConfigurableStepBuilder> then, Func<IConfigurableStepBuilder>? otherwise = null);
+        IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then, Func<IWorkflowBuilder>? otherwise = null);
     
         /// <summary>
         /// Adds a loop to the workflow that iterates over a collection of items.
@@ -197,7 +197,7 @@ namespace FFlow.Core;
         /// <param name="itemsSelector">The function to select the collection of items.</param>
         /// <param name="action">The workflow builder to execute for each item.</param>
         /// <returns>The current instance of <see cref="IConfigurableStepBuilder"/>.</returns>
-        IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IConfigurableStepBuilder> action);
+        IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IWorkflowBuilder> action);
     
         /// <summary>
         /// Adds a loop to the workflow that iterates over a collection of items of a specific type with a nested workflow builder.
@@ -207,7 +207,7 @@ namespace FFlow.Core;
         /// <param name="action">The workflow builder to execute for each item.</param>
         /// <returns>The current instance of <see cref="IConfigurableStepBuilder"/>.</returns>
         IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector,
-            Func<IConfigurableStepBuilder> action);
+            Func<IWorkflowBuilder> action);
     
         /// <summary>
         /// Continues the workflow with another workflow definition.

@@ -214,7 +214,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return new FlowStepBuilder(this, ifStep);
     }
 
-    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IConfigurableStepBuilder> then, Func<IConfigurableStepBuilder>? otherwise = null)
+    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then, Func<IWorkflowBuilder>? otherwise = null)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         if (then == null) throw new ArgumentNullException(nameof(then));
@@ -304,7 +304,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return new FlowStepBuilder(this, step);
     }
 
-    public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IConfigurableStepBuilder> action)
+    public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IWorkflowBuilder> action)
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         if (action == null) throw new ArgumentNullException(nameof(action));
@@ -315,7 +315,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         return new FlowStepBuilder(this, step);
     }
 
-    public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, Func<IConfigurableStepBuilder> action)
+    public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, Func<IWorkflowBuilder> action)
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         if (action == null) throw new ArgumentNullException(nameof(action));
