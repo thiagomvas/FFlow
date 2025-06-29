@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace FFlow.Scheduling;
 
@@ -42,7 +43,9 @@ public static class FFlowSchedulingServiceCollectionExtensions
         {
             builder.ApplyRegistrations(provider);
             var store = provider.GetRequiredService<IFlowScheduleStore>();
-            return new FFlowScheduleRunner(store);
+            var options = provider.GetService<FFlowScheduleRunnerOptions>() ?? new FFlowScheduleRunnerOptions();
+            var logger = provider.GetService<ILogger<FFlowScheduleRunner>>();
+            return new FFlowScheduleRunner(store, options, logger);
         });
 
         services.AddSingleton<IHostedService>(provider =>

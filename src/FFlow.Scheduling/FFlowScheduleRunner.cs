@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace FFlow.Scheduling;
 
@@ -8,17 +9,24 @@ namespace FFlow.Scheduling;
 public class FFlowScheduleRunner : BackgroundService
 {
     private readonly IFlowScheduleStore _flowScheduleStore;
+    private ILogger<FFlowScheduleRunner>? _logger;
+    private readonly FFlowScheduleRunnerOptions _options;
 
-    public FFlowScheduleRunner(IFlowScheduleStore flowScheduleStore)
+    public FFlowScheduleRunner(IFlowScheduleStore flowScheduleStore, FFlowScheduleRunnerOptions options,
+        ILogger<FFlowScheduleRunner>? logger)
     {
+        _logger = logger;
         _flowScheduleStore = flowScheduleStore ?? throw new ArgumentNullException(nameof(flowScheduleStore));
+        _options = options ?? throw new ArgumentNullException(nameof(options));
+    }
+
+    public FFlowScheduleRunner(IFlowScheduleStore flowScheduleStore, FFlowScheduleRunnerOptions options)
+        : this(flowScheduleStore, options, null)
+    {
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-
-        var allWorkflows = await _flowScheduleStore.GetAllAsync(stoppingToken);
-
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -28,8 +36,10 @@ public class FFlowScheduleRunner : BackgroundService
 
                 foreach (var workflow in dueWorkflows)
                 {
-                    Console.WriteLine($"Executing workflow: {workflow.Workflow.GetType().Name} at {now}");
                     await workflow.Workflow.Build().RunAsync("", stoppingToken);
+                    if (_options.EnableLogging)
+                        _logger?.LogInformation("Executed scheduled workflow: {WorkflowName} at {ExecutionTime}",
+                            workflow.Workflow.GetType().Name, now);
 
                     if (workflow.Recurring)
                         workflow.UpdateNextExecution(now);
@@ -39,10 +49,11 @@ public class FFlowScheduleRunner : BackgroundService
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error executing scheduled workflows: {ex.Message}");
+                if (_options.EnableLogging)
+                    _logger?.LogError(ex, "An error occurred while executing scheduled workflows.");
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+            await Task.Delay(_options.PollingInterval, stoppingToken);
         }
     }
 }

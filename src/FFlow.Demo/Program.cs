@@ -8,14 +8,16 @@ using FFlow.Scheduling;
 using FFlow.Steps.DotNet;
 using FFlow.Steps.Shell;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 var services = new ServiceCollection();
 services.AddFFlow(typeof(HelloWorkflow).Assembly)
+    .AddLogging(builder => builder.AddConsole())
     .AddSingleton<InMemoryMetricsSink>()
     .AddSingleton<MetricTrackingListener<InMemoryMetricsSink>>();
 services.AddFflowScheduling(builder =>
 {
-    builder.AddWorkflow<HelloWorkflow>().RunEvery(TimeSpan.FromSeconds(1));
+    builder.AddWorkflow<HelloWorkflow>().RunEvery(TimeSpan.FromSeconds(5));
 });
 
 var serviceProvider = services.BuildServiceProvider();
