@@ -20,6 +20,7 @@ public static class FFlowSchedulingServiceCollectionExtensions
         this IServiceCollection services,
         Action<IFflowSchedulingBuilder>? configure = null)
     {
+        services.AddSingleton<IFlowScheduleStore, InMemoryFlowScheduleStore>();
         return AddFlowScheduling<InMemoryFlowScheduleStore>(services, configure);
     }
 
@@ -35,7 +36,6 @@ public static class FFlowSchedulingServiceCollectionExtensions
         Action<IFflowSchedulingBuilder>? configure = null)
         where TScheduleStore : class, IFlowScheduleStore
     {
-        services.AddSingleton<IFlowScheduleStore, TScheduleStore>();
 
         var builder = new FflowSchedulingBuilder(services);
         configure?.Invoke(builder);
