@@ -25,5 +25,7 @@ items:
     items:
       - name: Observability
         href: extensions/observability.md
+      - name: Scheduling
+        href: extensions/scheduling.md
       - name: Shell
         href: extensions/shell.md

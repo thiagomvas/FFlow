@@ -7,12 +7,11 @@ namespace FFlow.Demo;
 
 public class HelloWorkflow : WorkflowDefinition
 {
-    private readonly MetricTrackingListener<InMemoryMetricsSink> _metricTrackingListener;
+    private readonly MetricTrackingListener<InMemoryMetricsSink>? _metricTrackingListener;
     
-    public HelloWorkflow(MetricTrackingListener<InMemoryMetricsSink> metricTrackingListener)
+    public HelloWorkflow(MetricTrackingListener<InMemoryMetricsSink>? metricTrackingListener = null)
     {
-        _metricTrackingListener = metricTrackingListener ?? throw new ArgumentNullException(nameof(metricTrackingListener));
-        
+        _metricTrackingListener = metricTrackingListener;
         MetadataStore.SetName("Hello Workflow")
             .SetDescription("A simple workflow that greets the world and then says goodbye.");
     }
@@ -31,7 +30,8 @@ public class HelloWorkflow : WorkflowDefinition
     {
         return options =>
         {
-            options.WithEventListener(_metricTrackingListener);
+            if(_metricTrackingListener is not null)
+                options.WithEventListener(_metricTrackingListener);
         };
     }
 }
