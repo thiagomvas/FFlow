@@ -29,9 +29,10 @@ public class FFlowScheduleRunner : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
+            var now = DateTimeOffset.UtcNow;
+            
             try
             {
-                var now = DateTimeOffset.UtcNow;
                 var dueWorkflows = await _flowScheduleStore.GetDueAsync(now, stoppingToken);
 
                 foreach (var workflow in dueWorkflows)
@@ -53,7 +54,24 @@ public class FFlowScheduleRunner : BackgroundService
                     _logger?.LogError(ex, "An error occurred while executing scheduled workflows.");
             }
 
-            await Task.Delay(_options.PollingInterval, stoppingToken);
+            var timeUntilNext = await _flowScheduleStore.GetNextAsync(stoppingToken);
+            var delay = timeUntilNext?.ExecuteAt - now;
+            
+            TimeSpan delayToWait;
+            if (delay.HasValue)
+            {
+                delayToWait = delay.Value < _options.PollingInterval ? 
+                    _options.PollingInterval : delay.Value;
+            }
+            else
+            {
+                delayToWait = _options.PollingInterval;
+            }
+            
+            if (_options.EnableLogging)
+                _logger?.LogInformation("Next workflow execution in {Delay}", delayToWait);
+            
+            await Task.Delay(delayToWait, stoppingToken);
         }
     }
 }

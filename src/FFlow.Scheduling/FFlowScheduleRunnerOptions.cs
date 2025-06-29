@@ -6,7 +6,8 @@ namespace FFlow.Scheduling;
 public class FFlowScheduleRunnerOptions
 {
     /// <summary>
-    /// Gets or sets the interval at which the schedule runner polls for updates or due workflows.
+    /// Gets or sets the interval at which the schedule runner checks for the next due workflow.
+    /// If no workflow is due sooner, this interval is used as the delay between polling cycles.
     /// Default value is 30 seconds.
     /// </summary>
     public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(30);
