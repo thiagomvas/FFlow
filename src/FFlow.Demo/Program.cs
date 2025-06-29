@@ -9,9 +9,9 @@ var store = new InMemoryFlowScheduleStore();
 var runner = new FFlowScheduleRunner(store);
 
 await store.AddAsync(ScheduledWorkflow.CreateRecurring(new HelloWorkflow(),
-    TimeSpan.FromSeconds(5)));
+    "* * * * *"));
 
-Console.WriteLine("Scheduled workflow to run in 5 seconds...");
+Console.WriteLine("Scheduled workflow to run in 1 min...");
 await runner.StartAsync(CancellationToken.None);
 
 Console.WriteLine("Press any key to exit...");

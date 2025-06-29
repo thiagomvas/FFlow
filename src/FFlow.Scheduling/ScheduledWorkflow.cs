@@ -1,4 +1,6 @@
+using System;
 using FFlow.Core;
+using NCrontab;
 
 namespace FFlow.Scheduling;
 
@@ -13,7 +15,6 @@ public class ScheduledWorkflow
 
     private ScheduledWorkflow()
     {
-        
     }
     
     public static ScheduledWorkflow CreateSingleTime(
@@ -49,20 +50,30 @@ public class ScheduledWorkflow
         IWorkflowDefinition workflow,
         string cronExpression)
     {
+        var schedule = CrontabSchedule.Parse(cronExpression);
+        var next = schedule.GetNextOccurrence(DateTime.UtcNow);
         return new ScheduledWorkflow
         {
             Workflow = workflow,
             Recurring = true,
-            CronExpression = cronExpression
+            CronExpression = cronExpression,
+            ExecuteAt = new DateTimeOffset(next, TimeSpan.Zero)
         };
     }
     
     internal void UpdateNextExecution(DateTimeOffset now)
     {
         if (!Recurring) return;
+        
         if (Interval.HasValue)
         {
             ExecuteAt = now.Add(Interval.Value);
+        }
+        else if (!string.IsNullOrEmpty(CronExpression))
+        {
+            var schedule = CrontabSchedule.Parse(CronExpression);
+            var next = schedule.GetNextOccurrence(now.UtcDateTime);
+            ExecuteAt = new DateTimeOffset(next, TimeSpan.Zero);
         }
     }
 }
