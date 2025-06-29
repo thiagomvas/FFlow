@@ -58,18 +58,19 @@ public class FFlowScheduleRunner : BackgroundService
             var delay = timeUntilNext?.ExecuteAt - now;
             
             TimeSpan delayToWait;
-            if (delay.HasValue)
+            if (delay.HasValue && delay.Value < _options.PollingInterval)
             {
-                delayToWait = delay.Value < _options.PollingInterval ? 
-                    _options.PollingInterval : delay.Value;
+                delayToWait = delay.Value;
+                if (_options.EnableLogging)
+                    _logger?.LogInformation("Next workflow execution in {Delay}", delayToWait);
             }
             else
             {
                 delayToWait = _options.PollingInterval;
+                if (_options.EnableLogging)
+                    _logger?.LogInformation("Checking for due workflows in {Delay}", delayToWait);
             }
             
-            if (_options.EnableLogging)
-                _logger?.LogInformation("Next workflow execution in {Delay}", delayToWait);
             
             await Task.Delay(delayToWait, stoppingToken);
         }
