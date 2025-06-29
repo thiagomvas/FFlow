@@ -13,11 +13,6 @@ using Microsoft.Extensions.Logging;
 var services = new ServiceCollection();
 services.AddFFlow(typeof(HelloWorkflow).Assembly)
     .AddLogging(builder => builder.AddConsole())
-    .Configure<FFlowScheduleRunnerOptions>(options =>
-    {
-        options.PollingInterval = TimeSpan.FromSeconds(2);
-        options.EnableLogging = true;
-    })
     .AddSingleton<InMemoryMetricsSink>()
     .AddSingleton<MetricTrackingListener<InMemoryMetricsSink>>();
 services.AddFflowScheduling(builder =>
