@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Description>
-            Supports scheduling and orchestration of FFlow workflows, enabling execution of steps at specified intervals.
+            Provides scheduling capabilities for FFlow workflows, allowing automatic execution of defined steps at fixed intervals or cron-based schedules. Designed for integration with .NET background services and extensible hosting environments.
         </Description>
         <PackageId>FFlow.Scheduling</PackageId>
         <AssemblyName>FFlow.Scheduling</AssemblyName>
