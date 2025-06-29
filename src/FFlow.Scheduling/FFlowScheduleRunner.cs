@@ -2,6 +2,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace FFlow.Scheduling;
 
+/// <summary>
+/// A background service that manages the execution of scheduled workflows.
+/// </summary>
 public class FFlowScheduleRunner : BackgroundService
 {
     private readonly IFlowScheduleStore _flowScheduleStore;
@@ -13,14 +16,8 @@ public class FFlowScheduleRunner : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Console.WriteLine("FFlow Schedule Runner started.");
 
         var allWorkflows = await _flowScheduleStore.GetAllAsync(stoppingToken);
-        foreach (var workflow in allWorkflows)
-        {
-            Console.WriteLine($"Loaded scheduled workflow: {workflow.Workflow.GetType().Name} " +
-                              $"(Next execution: {workflow.ExecuteAt}, Recurring: {workflow.Recurring})");
-        }
 
         while (!stoppingToken.IsCancellationRequested)
         {

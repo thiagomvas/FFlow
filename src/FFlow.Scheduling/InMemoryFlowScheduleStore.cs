@@ -1,5 +1,9 @@
 namespace FFlow.Scheduling;
 
+/// <summary>
+/// Represents an in-memory implementation of the <see cref="IFlowScheduleStore"/> interface.
+/// Provides methods to manage scheduled workflows stored in memory.
+/// </summary>
 public class InMemoryFlowScheduleStore : IFlowScheduleStore
 {
     private readonly List<ScheduledWorkflow> _scheduledWorkflows = new();

@@ -53,5 +53,5 @@ foreach (var gauge in snapshot.Gauges)
 Console.WriteLine("Timings:");
 foreach (var timer in snapshot.Timings)
 {
-    Console.WriteLine($"- {timer.Key}: {timer.Value}");
+    Console.WriteLine($"- {timer.Key}: {timer.Value.Sum(t => t.TotalMilliseconds) / timer.Value.Count} ms (Count: {timer.Value.Count})");
 }
