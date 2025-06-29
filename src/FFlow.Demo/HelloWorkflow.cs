@@ -11,6 +11,7 @@ public class HelloWorkflow : WorkflowDefinition
     
     public HelloWorkflow(MetricTrackingListener<InMemoryMetricsSink>? metricTrackingListener = null)
     {
+        _metricTrackingListener = metricTrackingListener;
         MetadataStore.SetName("Hello Workflow")
             .SetDescription("A simple workflow that greets the world and then says goodbye.");
     }

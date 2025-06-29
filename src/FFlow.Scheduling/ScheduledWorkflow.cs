@@ -17,7 +17,7 @@ public class ScheduledWorkflow
     {
     }
     
-    public static ScheduledWorkflow CreateSingleTime(
+    public static ScheduledWorkflow CreateOneTime(
         IWorkflowDefinition workflow,
         DateTimeOffset executeAt)
     {
