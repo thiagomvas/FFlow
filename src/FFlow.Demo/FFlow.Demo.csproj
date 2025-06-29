@@ -12,6 +12,7 @@
     <ItemGroup>
       <ProjectReference Include="..\FFlow.Extensions.Microsoft.DependencyInjection\FFlow.Extensions.Microsoft.DependencyInjection.csproj" />
       <ProjectReference Include="..\FFlow.Observability\FFlow.Observability.csproj" />
+      <ProjectReference Include="..\FFlow.Scheduling\FFlow.Scheduling.csproj" />
       <ProjectReference Include="..\FFlow.Steps.DotNet\FFlow.Steps.DotNet.csproj" />
       <ProjectReference Include="..\FFlow.Steps.Shell\FFlow.Steps.Shell.csproj" />
       <ProjectReference Include="..\FFlow.Validation\FFlow.Validation.csproj" />
@@ -19,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
     </ItemGroup>
 
 </Project>
