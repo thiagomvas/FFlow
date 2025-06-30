@@ -88,7 +88,6 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
         _metricsSink.Increment("step.started", new Dictionary<string, string>
         {
             { "step.name", step.GetType().Name },
-            { "context.id", context.GetId().ToString() }
         });
     }
 
@@ -99,7 +98,6 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
         _metricsSink.Increment("step.completed", new Dictionary<string, string>
         {
             { "step.name", step.GetType().Name },
-            { "context.id", context.GetId().ToString() }
         });
     }
 
@@ -110,7 +108,6 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
         _metricsSink.Increment("step.failed", new Dictionary<string, string>
         {
             { "step.name", step.GetType().Name },
-            { "context.id", context.GetId().ToString() },
             { "error.message", exception.Message }
         });
     }
@@ -124,7 +121,6 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
             _metricsSink.RecordTiming("step.duration", duration, new Dictionary<string, string>
             {
                 { "step.name", step.GetType().Name },
-                { "context.id", context.GetId().ToString() },
                 { "status", status }
             });
         }
