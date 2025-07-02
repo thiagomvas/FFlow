@@ -26,4 +26,10 @@ public static class IWorkflowBuilderExtensions
         return builder.WithOptions(options =>
             options.AddStepDecorator(factory));
     }
+    
+    public static IWorkflowBuilder WithPipelineLogger(
+        this IConfigurableWorkflowBuilder builder)
+    {
+        return builder.WithOptions(options => options.WithEventListener(new PipelineLoggerEventListener()));
+    }
 }

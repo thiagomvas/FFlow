@@ -66,6 +66,15 @@ public class InMemoryFFLowContext : IFlowContext
         return default;
     }
 
+    public object? GetOutputFor(Type stepType)
+    {
+        if (_outputs.TryGetValue(stepType, out var output))
+        {
+            return output;
+        }
+        return null;
+    }
+
     public T? GetValue<T>(string key, T defaultValue = default) 
     {
         if (_values.TryGetValue(key, out var value))
