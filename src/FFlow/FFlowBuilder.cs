@@ -13,6 +13,18 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
     private IFlowContext? _contextInstance;
     private readonly IStepTemplateRegistry? _templateRegistry;
     
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FFlowBuilder"/> class.
+    /// </summary>
+    /// <param name="serviceProvider">
+    /// The service provider to resolve dependencies for steps and context.
+    /// </param>
+    /// <param name="templateRegistry">
+    /// The registry for step templates, allowing for default configurations and overrides.
+    /// </param>
+    /// <remarks>
+    /// When <paramref name="templateRegistry"/> is <c>null</c>, it will use <see cref="StepTemplateRegistry.Instance">the singleton instance</see> for <see cref="StepTemplateRegistry"/>.
+    /// </remarks>
     public FFlowBuilder(IServiceProvider? serviceProvider, IStepTemplateRegistry? templateRegistry = null)
     {
         _serviceProvider = serviceProvider;
@@ -24,6 +36,12 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FFlowBuilder"/> class.
+    /// </summary>
+    /// <param name="serviceProvider">
+    /// The service provider to resolve dependencies for steps and context.
+    /// </param>
     public FFlowBuilder(IServiceProvider? serviceProvider = null) : 
         this(serviceProvider, 
             (IStepTemplateRegistry?) serviceProvider?.GetService(typeof(IStepTemplateRegistry)))

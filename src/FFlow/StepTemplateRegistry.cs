@@ -6,6 +6,9 @@ public class StepTemplateRegistry : IStepTemplateRegistry
 {
     private readonly Dictionary<string, object> _templates = new();
     private static readonly Lazy<StepTemplateRegistry> _instance = new(() => new StepTemplateRegistry());
+    /// <summary>
+    /// Gets the singleton instance of the StepTemplateRegistry.
+    /// </summary>
     public static StepTemplateRegistry Instance => _instance.Value;
     
     public void RegisterTemplate<TStep>(string name, Action<TStep> configure) where TStep : IFlowStep

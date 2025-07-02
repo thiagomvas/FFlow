@@ -63,7 +63,19 @@ using System.Linq.Expressions;
         /// <returns>The current instance of <see cref="IConfigurableStepBuilder"/> for chaining.</returns>
         public IConfigurableStepBuilder WithRetryPolicy(IRetryPolicy policy);
         
+        /// <summary>
+        /// Sets a condition to skip the step based on the flow context.
+        /// </summary>
+        /// <param name="skipOn">
+        /// The function that determines whether to skip the step.
+        /// </param>
+        /// <returns>The current instance of <see cref="IConfigurableStepBuilder"/> for chaining.</returns>
         public IConfigurableStepBuilder SkipOn(Func<IFlowContext, bool> skipOn);
 
+        /// <summary>
+        /// Applies a template to the step configuration.
+        /// </summary>
+        /// <param name="name">The name/key for the template</param>
+        /// <returns>The current instance of <see cref="IConfigurableStepBuilder"/> for chaining.</returns>
         public IConfigurableStepBuilder UseTemplate(string name);
     }
