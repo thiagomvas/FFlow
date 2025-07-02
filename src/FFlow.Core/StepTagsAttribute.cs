@@ -1,7 +1,7 @@
 namespace FFlow.Core;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class StepTagsAttribute
+public class StepTagsAttribute : Attribute
 {
     /// <summary>
     /// Gets or sets the tags associated with the step.
