@@ -62,7 +62,7 @@ public class Workflow : IWorkflow
         return this;
     }
 
-    public async Task<IFlowContext> RunAsync(object input, CancellationToken cancellationToken = default)
+    public async Task<IFlowContext> RunAsync(object? input = null, CancellationToken cancellationToken = default)
     {
         _context.SetId(Id);
         _context.SetSingleValue<IWorkflow>(this);
