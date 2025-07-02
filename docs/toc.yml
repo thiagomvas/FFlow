@@ -29,3 +29,5 @@ items:
         href: extensions/scheduling.md
       - name: Shell
         href: extensions/shell.md
+      - name: .NET CLI
+        href: extensions/dotnet.md
