@@ -8,6 +8,8 @@ namespace FFlow.Steps.DotNet;
 /// Executes the <c>dotnet nuget push</c> command to push a NuGet package to a server or local source.
 /// Throws if no package path is specified or if the push fails.
 /// </summary>
+[StepName(".NET Push to Nuget")]
+[StepTags("dotnet")]
 public class DotnetNugetPushStep : IFlowStep
 {
     /// <summary>

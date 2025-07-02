@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Throw Exception If")]
+[StepTags("built-in")]
+[SilentStep]
 public class ThrowExceptionStep : IFlowStep
 {
     private readonly Exception _exception;

@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Throw If")]
+[StepTags("built-in")]
+[SilentStep]
 public class ThrowExceptionIfStep : IFlowStep
 {
     private readonly Func<IFlowContext, bool> _condition;

@@ -3,6 +3,8 @@ using FFlow.Core;
 
 namespace FFlow.Steps.Shell;
 
+[StepName("Shell Command Execution")]
+[StepTags("shell")]
 public class RunCommandStep : FlowStep
 {
     public string Command { get; set; } = string.Empty;

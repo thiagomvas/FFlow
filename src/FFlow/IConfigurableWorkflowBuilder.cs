@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+/// <summary>
+/// Represents a workflow builder that allows configuration of workflow options.
+/// </summary>
 public interface IConfigurableWorkflowBuilder
 {
     /// <summary>

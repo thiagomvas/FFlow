@@ -1,6 +1,47 @@
 # Passing Data
 You can pass data between steps in your workflow using the `IFlowContext` or manually setting the values. The context allows you to store and retrieve data as key-value pairs, enabling communication between different steps.
 
+## Configuring which context to use
+There are a few ways to configure the context that will be used in your workflow. 
+
+### Using `UseContext(IFlowContext context)`
+You can pass an instance of `IFlowContext` to the `UseContext` method when building your workflow. This allows you to use a custom context implementation or a specific instance of a context.
+
+```csharp
+var customContext = new CustomFlowContext();
+var workflow = new FFlowBuilder()
+    .UseContext(customContext)
+    .StartWith<StepOne>()
+    .Then<StepTwo>()
+    .Build();
+```
+
+### Using `UseContext<T>()`
+You can also specify a context type using the `UseContext<T>()` method. This will create an instance of the specified context type for your workflow.
+
+```csharp
+var workflow = new FFlowBuilder()
+    .UseContext<MyCustomFlowContext>() // MyCustomFlowContext implements IFlowContext
+    .StartWith<StepOne>()
+    .Then<StepTwo>()
+    .Build();
+```
+
+### Through dependency injection
+If you are using dependency injection, you can register your context implementation and then use it in your workflow. FFlow will automatically resolve the context from the service provider. Do keep in mind you still need to use `UseContext<T>()` to specify the type of context you want to use.
+
+```csharp
+services.AddScoped<IFlowContext, MyCustomFlowContext>();
+var workflow = new FFlowBuilder(services.BuildServiceProvider())
+    .UseContext<MyCustomFlowContext>() // Specify the context type
+    .StartWith<StepOne>()
+    .Then<StepTwo>()
+    .Build();
+```
+
+> [!NOTE]
+> Since the context is returned after executing the workflow, you **have to** call any methods responsible for persisting the context data after the workflow execution, such as `SaveChangesAsync()` or similar methods in your context implementation.
+
 ## Using the Context inside the step
 
 Using `IFlowContext` is the recommended approach because it ensures seamless integration with other components and implementations within FFlow. This allows the library to manage data flow and state consistently and transparently across the entire workflow.

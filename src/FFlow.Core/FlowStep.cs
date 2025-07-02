@@ -6,15 +6,23 @@ namespace FFlow.Core;
 /// Provides a simplified mechanism for implementing <see cref="IFlowStep"/> by
 /// delegating the step logic to the <see cref="ExecuteAsync"/> method.
 /// </summary>
-public abstract class FlowStep : IFlowStep, IRetryableFlowStep, ICompensableStep
+public abstract class FlowStep : IFlowStep, IRetryableFlowStep, ICompensableStep, ISkippableStep
 {
     private IRetryPolicy? _retryPolicy;
+    private Func<IFlowContext, bool>? _skipOn;
     
     /// <inheritdoc />
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         if (context == null) throw new ArgumentNullException(nameof(context));
+        
         context.SetInputFor(this, context.GetLastOutput<object>());
+        
+        if (_skipOn?.Invoke(context) == true)
+        {
+            return Task.CompletedTask;
+        }
+        
         if (_retryPolicy != null)
         {
             return _retryPolicy.ExecuteAsync(() => ExecuteAsync(context, cancellationToken), cancellationToken);
@@ -41,4 +49,8 @@ public abstract class FlowStep : IFlowStep, IRetryableFlowStep, ICompensableStep
     {
         return Task.CompletedTask;
     }
+    
+    public void SetSkipCondition(Func<IFlowContext, bool> skipCondition) => 
+        _skipOn = skipCondition ?? throw new ArgumentNullException(nameof(skipCondition));
+    
 }

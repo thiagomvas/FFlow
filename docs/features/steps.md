@@ -154,3 +154,99 @@ var workflow = new FFlowBuilder()
     .Build();
 ```
 
+
+
+## Templating step configurations
+You can implement templates for steps by configuring an `IStepTemplateRegistry` and passing it to the FFlowBuilder. By default, if no registry is passed, the builder uses the lazy instance of `StepTemplateRegistry` through `StepTemplateRegistry.Instance`. If you wish to have the templates apply globally either pass the instance of the registry through DI or configure the singleton instance.
+
+Templating and input configuration will always follow the following order:
+```mermaid
+flowchart LR
+    A["Property Initializers<br/>(Default Step Values)"]
+    B["Overridden Defaults"]
+    C["UseTemplate() Applied"]
+    D["Input() Calls (Final Overrides)"]
+
+    A --> B
+    B --> C
+    C --> D
+```
+
+This means that if you have a default configuration for a step, it will be applied first, then the template will override it, and finally, any input calls will set the input for the step.
+
+You can override the default configuration for steps by using the `OverrideTemplate` in the registry, like so:
+
+```csharp
+registry.OverrideDefaults<HelloStep>(step => step.Name = "Default Name");
+```
+
+To use templates, you can register them in the `StepTemplateRegistry` and then apply them to steps in your workflow. Here's an example of how to create a template for a step and use it in a workflow:
+
+```csharp
+StepTemplateRegistry.RegisterTemplate<InitialStep>("MyTemplate", step => step.Name = "John Doe");
+
+var workflow = new FFlowBuilder()
+    .StartWith<InitialStep>()
+    .UseTemplate("MyTemplate") // Use a template for the step
+    .Input<InitialStep>(step => step.Name = "Jane Doe") // Set input for the step
+    .Then<NextStep>()
+    .Finally<FinalStep>()
+    .Build();
+```
+
+The order of execution is irrelevant, as the template will be applied during configuration, while input calls are applied during execution. This means that you can use templates to define default configurations for your steps, and then override them with specific inputs when needed.
+
+For more information, see the [API Reference](~/api/FFlow.StepTemplateRegistry.yml).
+
+## Extending steps with additional functionality
+You can extend steps with additional functionality by implementing the respective interfaces. The builder and workflow classes will automatically use the implementations when applicable.
+
+> [!NOTE]
+> If you inherit from `FlowStep` when defining custom steps, all the interfaces below will already be implemented as virtual methods that you can then override.
+
+### Retry Policies
+You can create retry policies defined by `IRetryPolicy` and inject them into an `IRetryableStep` with `SetRetryPolicy`. This allows you to define how many times a step should be retried in case of failure, and under what conditions.
+
+Here is an example of a custom retry policy that retries a step a fixed number of times with a delay between retries:
+
+```csharp
+public class FixedDelayRetryPolicy : IRetryPolicy
+{
+    private readonly int _maxRetries;
+    private readonly TimeSpan _delay;
+    public FixedDelayRetryPolicy(int maxRetries, TimeSpan delay)
+    {
+        _maxRetries = maxRetries;
+        _delay = delay;
+    }
+    public async Task ExecuteAsync(Func<Task> action, CancellationToken cancellationToken = default)
+    {
+        for (int i = 0; i < _maxRetries; i++)
+        {
+            try
+            {
+                await action();
+                return;
+            }
+            catch
+            {
+                if (i == _maxRetries - 1) throw;
+                await Task.Delay(_delay, cancellationToken);
+            }
+        }
+    }
+}
+```
+
+> [!TIP]
+> The RetryPolicies class provides a set of common retry policies that you can use out of the box, such as `RetryPolicies.FixedDelay` and `RetryPolicies.ExponentialBackoff`.
+
+### Skippable Steps
+Implementing `ISkippableStep` allows you to define steps that can be skipped based on certain conditions. This is useful for workflows where some steps may not be necessary depending on the context.
+
+It is up to the developer on how and when, during the execution, the step should be skipped. `FlowStep` skips any and all operations other than setting the input for said step by default.
+
+### Compensable Steps
+Implementing `ICompensableStep` allows you to define steps that can be compensated if a previous step fails. This is useful for workflows where you need to roll back changes made by previous steps in case of an error.
+
+For detailed information on compensable steps, refer to the [Compensation documentation](./compensation.md).

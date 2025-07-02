@@ -90,8 +90,8 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
         return Delegate.If<TTrue, TFalse>(condition);
     }
 
-    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IConfigurableStepBuilder> then,
-        Func<IConfigurableStepBuilder>? otherwise = null)
+    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then,
+        Func<IWorkflowBuilder>? otherwise = null)
     {
         return Delegate.If(condition, then, otherwise);
     }
@@ -131,13 +131,13 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
     }
 
     public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector,
-        Func<IConfigurableStepBuilder> action)
+        Func<IWorkflowBuilder> action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }
 
     public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector,
-        Func<IConfigurableStepBuilder> action)
+        Func<IWorkflowBuilder> action)
     {
         return Delegate.ForEach(itemsSelector, action);
     }

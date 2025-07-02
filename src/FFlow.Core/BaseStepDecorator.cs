@@ -1,5 +1,8 @@
 namespace FFlow.Core;
 
+/// <summary>
+/// A base class for implementing decorators for flow steps.
+/// </summary>
 public abstract class BaseStepDecorator : IFlowStep
 {
     protected readonly IFlowStep _innerStep;

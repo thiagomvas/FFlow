@@ -4,6 +4,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+/// <summary>
+/// A builder for configuring flow steps within a workflow.
+/// </summary>
 public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuilder
 {
     protected override IWorkflowBuilder Delegate { get; }
@@ -13,11 +16,16 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
 
     private readonly List<Action<IFlowContext>> _inputSetters = new();
     private readonly List<Action<IFlowContext>> _outputWriters = new();
-    
-    public FlowStepBuilder(IWorkflowBuilder workflowBuilder, IFlowStep step)
+    private readonly IStepTemplateRegistry? _templateRegistry;
+
+    public FlowStepBuilder(IWorkflowBuilder workflowBuilder, IFlowStep step, IStepTemplateRegistry? templateRegistry)
     {
         Delegate = workflowBuilder;
         _step = step ?? throw new ArgumentNullException(nameof(step));
+        _templateRegistry = templateRegistry;
+    }
+    public FlowStepBuilder(IWorkflowBuilder workflowBuilder, IFlowStep step) : this(workflowBuilder, step, null)
+    {
     }
 
     public IConfigurableStepBuilder Input<TStep>(Action<TStep> setValues) where TStep : class, IFlowStep
@@ -137,6 +145,49 @@ public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuild
         else
         {
             throw new InvalidOperationException($"The step type '{_step.GetType().Name}' does not support retry policies.");
+        }
+
+        return this;
+    }
+
+    public IConfigurableStepBuilder SkipOn(Func<IFlowContext, bool> skipOn)
+    {
+        if (skipOn is null)
+        {
+            throw new ArgumentNullException(nameof(skipOn));
+        }
+
+        if (_step is FlowStep flowStep)
+        {
+            flowStep.SetSkipCondition(skipOn);
+        }
+        else
+        {
+            throw new InvalidOperationException($"The step type '{_step.GetType().Name}' does not support skipping logic.");
+        }
+
+        return this;
+    }
+
+    public IConfigurableStepBuilder UseTemplate(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Template name cannot be null or empty.", nameof(name));
+        }
+
+        if (_templateRegistry is null)
+        {
+            throw new InvalidOperationException("Template registry is not available.");
+        }
+
+        if (_templateRegistry.TryGetTemplate(_step.GetType(), name, out var configure))
+        {
+            configure(_step);
+        }
+        else
+        {
+            throw new KeyNotFoundException($"Template '{name}' not found in the registry.");
         }
 
         return this;

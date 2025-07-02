@@ -1,0 +1,6 @@
+@FFlow.Samples.BasicServer_HostAddress = http://localhost:5133
+
+GET {{FFlow.Samples.BasicServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

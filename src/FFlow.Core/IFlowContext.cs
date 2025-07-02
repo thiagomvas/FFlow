@@ -56,6 +56,13 @@ public interface IFlowContext
     TOutput? GetOutputFor<TStep, TOutput>() where TStep : class, IFlowStep;
 
     /// <summary>
+    /// Gets the output for the specified step type.
+    /// </summary>
+    /// <param name="stepType">The type of step to get the output for</param>
+    /// <returns>The output for said step, if present</returns>
+    object? GetOutputFor(Type stepType);
+
+    /// <summary>
     /// Gets a value associated with the specified key.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>

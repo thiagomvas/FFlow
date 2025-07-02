@@ -2,6 +2,8 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Workflow Continuation")]
+[StepTags("built-in")]
 public class WorkflowContinuationStep : FlowStep
 {
     private readonly IWorkflowDefinition _workflowDefinition;

@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.0"></a>
+## [1.0.0](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0) (2025-07-02)
+
+### Features
+
+* Add attributes to attaching metadata to steps ([a0b1b2f](https://www.github.com/thiagomvas/FFlow/commit/a0b1b2fad7f73549f5ad0552b31ff25921df06e5))
+* Add basic single time flow scheduling ([6310369](https://www.github.com/thiagomvas/FFlow/commit/631036908a15810a7d78d32750312a14ed515377))
+* Add Cron support ([18ab007](https://www.github.com/thiagomvas/FFlow/commit/18ab007b90f3a24b6aafc75973f973db04ee9526))
+* Add default pipeline logger for easy logging in cicd scripts ([03d3092](https://www.github.com/thiagomvas/FFlow/commit/03d309213fd3873fcf9255cb869727d526329236))
+* Add file based schedule store ([9190a05](https://www.github.com/thiagomvas/FFlow/commit/9190a0578021d9614467f5f65a7be903278b2d7c))
+* Add generic Flow Step Builder for less verbose step configuration ([43a69ff](https://www.github.com/thiagomvas/FFlow/commit/43a69ffe7530a5afd4bb9ac3b56f882577132cb6))
+* Add recurring job support ([cc6d9cf](https://www.github.com/thiagomvas/FFlow/commit/cc6d9cfcd1229a4b06bb41ac7cddd9944bcd10fb))
+* Add reference to executing workflow in flow context using SetSingleValue ([1594d08](https://www.github.com/thiagomvas/FFlow/commit/1594d087011452ea1729a6a98ff82471342358ac))
+* Add Scheduler Options ([898d162](https://www.github.com/thiagomvas/FFlow/commit/898d162b1fc13f9522486722bd7dd23640ca8161))
+* Add SilentStep attribute ([0549799](https://www.github.com/thiagomvas/FFlow/commit/0549799060ea7f1eb89ea46256257efef281a79c))
+* Add step skipping support ([1669987](https://www.github.com/thiagomvas/FFlow/commit/166998766ba373270043e548841075ae7a6dbc41))
+* Add step templating through a Template Registry ([fa5a552](https://www.github.com/thiagomvas/FFlow/commit/fa5a5521f54c1b51c4c5d70392e4c52c6369a3e7))
+* Add StepTags attribute ([853881c](https://www.github.com/thiagomvas/FFlow/commit/853881c4fb907f254d783be1c1f7c28f78a9c630))
+* Add workflow schedule building extension ([1fcc2e1](https://www.github.com/thiagomvas/FFlow/commit/1fcc2e111c88efe53a805495c9b10ee410fe13a6))
+
+### Bug Fixes
+
+* Make input parameter optional for IWorkflow.RunAsync ([aaa3f93](https://www.github.com/thiagomvas/FFlow/commit/aaa3f9300fe1e54969e2ea0ae329da6ab0e9efe5))
+* Remove context id from metric listener to prevent spam ([0d0e9e5](https://www.github.com/thiagomvas/FFlow/commit/0d0e9e59622abd3390d5834a38c690bfdc0c6945))
+* Require store registration instead of automatically registering the store. ([dc5413d](https://www.github.com/thiagomvas/FFlow/commit/dc5413d4ff39a2d32c2b860aa270cd4b2e4531b6))
+* Schedule Runner no longer waits polling time when the next workflow is due sooner ([e1562d5](https://www.github.com/thiagomvas/FFlow/commit/e1562d5e6859c7e29f8972fe72d41ef6a48dd079))
+* Schedule Runner options are now correctly injected ([41cb90a](https://www.github.com/thiagomvas/FFlow/commit/41cb90a1e41b8dda06039226d0120b52e3c16920))
+* Use correct factory signature for If and ForEach overloads ([6ca9d73](https://www.github.com/thiagomvas/FFlow/commit/6ca9d7355b4841a8cb3e9103d7808265c9658325))
+
 <a name="1.0.0-alpha.3"></a>
 ## [1.0.0-alpha.3](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0-alpha.3) (2025-06-24)
 

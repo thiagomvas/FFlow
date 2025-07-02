@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Switch Case")]
+[StepTags("built-in")]
+[SilentStep]
 public class SwitchStep : FlowStep
 {
     private readonly List<SwitchCase> _switches = new List<SwitchCase>();

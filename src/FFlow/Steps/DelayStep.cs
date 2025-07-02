@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Delay")]
+[StepTags("built-in")]
+[SilentStep]
 public class DelayStep : IFlowStep
 {
     private readonly TimeSpan _delay;

@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Delegate")]
+[StepTags("built-in")]
+[SilentStep]
 public class DelegateFlowStep : FlowStep
 {
     private readonly AsyncFlowAction _action;

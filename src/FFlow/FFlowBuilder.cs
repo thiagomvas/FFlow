@@ -10,12 +10,43 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
     private IFlowStep? _finalizer;
     private IServiceProvider? _serviceProvider;
     private Type? _contextType = typeof(InMemoryFFLowContext);
-    private IFlowContext? _contextInstance = null;
+    private IFlowContext? _contextInstance;
+    private readonly IStepTemplateRegistry? _templateRegistry;
     
-    public FFlowBuilder(IServiceProvider? serviceProvider = null)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FFlowBuilder"/> class.
+    /// </summary>
+    /// <param name="serviceProvider">
+    /// The service provider to resolve dependencies for steps and context.
+    /// </param>
+    /// <param name="templateRegistry">
+    /// The registry for step templates, allowing for default configurations and overrides.
+    /// </param>
+    /// <remarks>
+    /// When <paramref name="templateRegistry"/> is <c>null</c>, it will use <see cref="StepTemplateRegistry.Instance">the singleton instance</see> for <see cref="StepTemplateRegistry"/>.
+    /// </remarks>
+    public FFlowBuilder(IServiceProvider? serviceProvider, IStepTemplateRegistry? templateRegistry = null)
     {
         _serviceProvider = serviceProvider;
         _options = new();
+        _templateRegistry = templateRegistry;
+        if (_templateRegistry is null)
+        {
+            _templateRegistry = StepTemplateRegistry.Instance;
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FFlowBuilder"/> class.
+    /// </summary>
+    /// <param name="serviceProvider">
+    /// The service provider to resolve dependencies for steps and context.
+    /// </param>
+    public FFlowBuilder(IServiceProvider? serviceProvider = null) : 
+        this(serviceProvider, 
+            (IStepTemplateRegistry?) serviceProvider?.GetService(typeof(IStepTemplateRegistry)))
+    {
+        
     }
 
     public IConfigurableStepBuilder AddStep(IFlowStep step)
@@ -23,14 +54,14 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         if (step == null) throw new ArgumentNullException(nameof(step));
         
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
-        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
+        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder StartWith(AsyncFlowAction setupAction)
@@ -39,7 +70,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(setupAction);
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder StartWith(SyncFlowAction setupAction)
@@ -54,14 +85,14 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(asyncAction);
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Then<TStep>() where TStep : class, IFlowStep
     {
-        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
+        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Then(AsyncFlowAction setupAction)
@@ -70,7 +101,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(setupAction);
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Then(SyncFlowAction setupAction)
@@ -85,14 +116,14 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(asyncAction);
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Finally<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);
         _finalizer = step;
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Finally(AsyncFlowAction setupAction)
@@ -101,7 +132,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(setupAction);
         _finalizer = step;
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Finally(SyncFlowAction setupAction)
@@ -116,7 +147,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(asyncAction);
         _finalizer = step;
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then, AsyncFlowAction? otherwise = null)
@@ -134,14 +165,14 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         
-        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);;
+        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);
         IFlowStep? falseStep = null;
         
         if (otherwise != null)
@@ -151,7 +182,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then, SyncFlowAction? otherwise = null)
@@ -159,62 +190,62 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         if (then == null) throw new ArgumentNullException(nameof(then));
         
-        var trueStep = new DelegateFlowStep(new AsyncFlowAction((context, cancellationToken) =>
+        var trueStep = new DelegateFlowStep((context, cancellationToken) =>
         {
             then(context, cancellationToken);
             return Task.CompletedTask;
-        }));
+        });
         
         IFlowStep? falseStep = null;
         
         if (otherwise != null)
         {
-            falseStep = new DelegateFlowStep(new AsyncFlowAction((context, cancellationToken) =>
+            falseStep = new DelegateFlowStep((context, cancellationToken) =>
             {
                 otherwise(context, cancellationToken);
                 return Task.CompletedTask;
-            }));
+            });
         }
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         
-        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);;
+        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);
         IFlowStep? falseStep = null;
         
         if (otherwise != null)
         {
-            falseStep = new DelegateFlowStep(new AsyncFlowAction((context, cancellationToken) =>
+            falseStep = new DelegateFlowStep((context, cancellationToken) =>
             {
                 otherwise(context, cancellationToken);
                 return Task.CompletedTask;
-            }));
+            });
         }
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If<TTrue, TFalse>(Func<IFlowContext, bool> condition) where TTrue : class, IFlowStep where TFalse : class, IFlowStep
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         
-        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);;
-        var falseStep = Internals.GetOrCreateStep<TFalse>(_serviceProvider);;
-        
+        var trueStep = Internals.GetOrCreateStep<TTrue>(_serviceProvider);
+        var falseStep = Internals.GetOrCreateStep<TFalse>(_serviceProvider);
+
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
-    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IConfigurableStepBuilder> then, Func<IConfigurableStepBuilder>? otherwise = null)
+    public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then, Func<IWorkflowBuilder>? otherwise = null)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         if (then == null) throw new ArgumentNullException(nameof(then));
@@ -231,7 +262,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, AsyncFlowAction action)
@@ -241,7 +272,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep(itemsSelector, new DelegateFlowStep(action));
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action) where TItem : class
@@ -251,7 +282,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep<TItem>(itemsSelector, new DelegateFlowStep(action));
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, SyncFlowAction action)
@@ -267,7 +298,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep(itemsSelector, new DelegateFlowStep(asyncAction));
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action) where TItem : class
@@ -283,7 +314,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep<TItem>(itemsSelector, new DelegateFlowStep(asyncAction));
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector) where TStepIterator : class, IFlowStep
@@ -292,7 +323,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep(itemsSelector, Internals.GetOrCreateStep<TStepIterator>(_serviceProvider));
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TStepIterator, TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector) where TStepIterator : class, IFlowStep
@@ -301,10 +332,10 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep<TItem>(itemsSelector, Internals.GetOrCreateStep<TStepIterator>(_serviceProvider));
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
-    public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IConfigurableStepBuilder> action)
+    public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IWorkflowBuilder> action)
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         if (action == null) throw new ArgumentNullException(nameof(action));
@@ -312,10 +343,10 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var builder = action();
         var step = new ForEachStep(itemsSelector, new BuilderStep(builder));
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
-    public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, Func<IConfigurableStepBuilder> action)
+    public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, Func<IWorkflowBuilder> action)
     {
         if (itemsSelector == null) throw new ArgumentNullException(nameof(itemsSelector));
         if (action == null) throw new ArgumentNullException(nameof(action));
@@ -323,7 +354,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var builder = action();
         var step = new ForEachStep<TItem>(itemsSelector, new BuilderStep(builder));
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ContinueWith<TWorkflowDefinition>() where TWorkflowDefinition : class, IWorkflowDefinition
@@ -337,7 +368,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new WorkflowContinuationStep(workflowDefinition);
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Switch(Action<ISwitchCaseBuilder> caseBuilder)
@@ -350,7 +381,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var step = switchCaseBuilder.Build();
         
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IWorkflowBuilder Fork(ForkStrategy strategy, params Func<IWorkflowBuilder>[] forks)
@@ -381,7 +412,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
 
     public IWorkflowBuilder OnAnyError<TStep>() where TStep : class, IFlowStep
     {
-        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);;
+        var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);
         _errorHandler = step ?? throw new InvalidOperationException($"Could not create instance of {typeof(TStep).Name}");
         return this;
     }
@@ -440,7 +471,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentException("Message cannot be null or empty.", nameof(message));
 
-        var exception = (TException)Activator.CreateInstance(typeof(TException), message)
+        var exception = (TException)Activator.CreateInstance(typeof(TException), message)!
                         ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
 
         var step = new ThrowExceptionStep(exception);
@@ -464,7 +495,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be null or empty.", nameof(message));
         
-        var exception = (TException)Activator.CreateInstance(typeof(TException), message)
+        var exception = (TException)Activator.CreateInstance(typeof(TException), message)!
                         ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
         
         var step = new ThrowExceptionIfStep(condition, exception);
@@ -500,6 +531,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var context = _contextInstance
                       ?? _serviceProvider?.GetService(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext
                       ?? Activator.CreateInstance(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext;
+        
         var result = new Workflow(_steps, context!, _options);
         
         if (_errorHandler != null)
@@ -520,5 +552,29 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         _options ??= new WorkflowOptions();
         configure(_options);
         return this;
+    }
+    
+    private FlowStepBuilder CreateStepBuilder(IFlowStep step)
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        
+        if (_templateRegistry.TryGetOverridenDefaults(step.GetType(), out var configure))
+        {
+            configure(step);
+        }
+        
+        return new FlowStepBuilder(this, step, _templateRegistry);
+    }
+    
+    private FlowStepBuilder<TStep> CreateStepBuilder<TStep>(TStep step) where TStep : class, IFlowStep
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        
+        if (_templateRegistry.TryGetOverridenDefaults(typeof(TStep), out var configure))
+        {
+            configure(step);
+        }
+        
+        return new FlowStepBuilder<TStep>(this, step, _templateRegistry);
     }
 }

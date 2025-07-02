@@ -3,6 +3,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+/// <summary>
+/// In memory implementation of <see cref="IWorkflowMetadataStore"/>.
+/// </summary>
 public class InMemoryMetadataStore : IWorkflowMetadataStore
 {
     private readonly ConcurrentDictionary<string, object?> _data = new();

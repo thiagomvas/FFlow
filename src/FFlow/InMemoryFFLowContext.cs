@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+/// <summary>
+/// In memory implementation of <see cref="IFlowContext"/>.
+/// </summary>
 public class InMemoryFFLowContext : IFlowContext
 {
     private readonly Dictionary<string, object> _values = new();
@@ -61,6 +64,15 @@ public class InMemoryFFLowContext : IFlowContext
             return result;
         }
         return default;
+    }
+
+    public object? GetOutputFor(Type stepType)
+    {
+        if (_outputs.TryGetValue(stepType, out var output))
+        {
+            return output;
+        }
+        return null;
     }
 
     public T? GetValue<T>(string key, T defaultValue = default) 
