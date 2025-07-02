@@ -154,6 +154,50 @@ var workflow = new FFlowBuilder()
     .Build();
 ```
 
+
+
+## Templating step configurations
+You can implement templates for steps by configuring an `IStepTemplateRegistry` and passing it to the FFlowBuilder. By default, if no registry is passed, the builder uses the lazy instance of `StepTemplateRegistry` through `StepTemplateRegistry.Instance`. If you wish to have the templates apply globally either pass the instance of the registry through DI or configure the singleton instance.
+
+Templating and input configuration will always follow the following order:
+```mermaid
+flowchart LR
+    A["Property Initializers<br/>(Default Step Values)"]
+    B["Overridden Defaults"]
+    C["UseTemplate() Applied"]
+    D["Input() Calls (Final Overrides)"]
+
+    A --> B
+    B --> C
+    C --> D
+```
+
+This means that if you have a default configuration for a step, it will be applied first, then the template will override it, and finally, any input calls will set the input for the step.
+
+You can override the default configuration for steps by using the `OverrideTemplate` in the registry, like so:
+
+```csharp
+registry.OverrideDefaults<HelloStep>(step => step.Name = "Default Name");
+```
+
+To use templates, you can register them in the `StepTemplateRegistry` and then apply them to steps in your workflow. Here's an example of how to create a template for a step and use it in a workflow:
+
+```csharp
+StepTemplateRegistry.RegisterTemplate<InitialStep>("MyTemplate", step => step.Name = "John Doe");
+
+var workflow = new FFlowBuilder()
+    .StartWith<InitialStep>()
+    .UseTemplate("MyTemplate") // Use a template for the step
+    .Input<InitialStep>(step => step.Name = "Jane Doe") // Set input for the step
+    .Then<NextStep>()
+    .Finally<FinalStep>()
+    .Build();
+```
+
+The order of execution is irrelevant, as the template will be applied during configuration, while input calls are applied during execution. This means that you can use templates to define default configurations for your steps, and then override them with specific inputs when needed.
+
+For more information, see the [API Reference](~/api/FFlow.StepTemplateRegistry.yml).
+
 ## Extending steps with additional functionality
 You can extend steps with additional functionality by implementing the respective interfaces. The builder and workflow classes will automatically use the implementations when applicable.
 
