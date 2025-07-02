@@ -8,6 +8,8 @@ namespace FFlow.Steps.DotNet;
 /// Executes the <c>dotnet restore</c> command for a specified project or solution.
 /// Throws if no project or solution is specified or if the restore fails.
 /// </summary>
+[StepName(".NET Restore")]
+[StepTags("dotnet")]
 public class DotnetRestoreStep : IFlowStep
 {
 

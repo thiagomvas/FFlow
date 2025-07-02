@@ -6,6 +6,8 @@ namespace FFlow.Steps.DotNet;
 /// Executes the <c>dotnet publish</c> command for a specified project or solution.
 /// Throws if no project or solution is specified or if the publish fails.
 /// </summary>
+[StepName(".NET Publish")]
+[StepTags("dotnet")]
 public class DotnetPublishStep : IFlowStep
 {
     /// <summary>The project or solution file to publish.</summary>

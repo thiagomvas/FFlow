@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Output Setter")]
+[StepTags("built-in")]
+[SilentStep]
 internal class OutputSetterStep : IFlowStep
 {
     private readonly List<Action<IFlowContext>> _outputWriters = new();

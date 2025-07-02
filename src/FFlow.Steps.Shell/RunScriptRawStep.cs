@@ -3,6 +3,8 @@ using FFlow.Core;
 
 namespace FFlow.Steps.Shell;
 
+[StepName("Shell Script Execution")]
+[StepTags("shell")]
 public class RunScriptRawStep : FlowStep
 {
     public string Script { get; set; } = string.Empty;

@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("If Condition")]
+[StepTags("built-in")]
+[SilentStep]
 public class IfStep : FlowStep
 {
     private readonly Func<IFlowContext, bool> _condition;

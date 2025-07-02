@@ -6,6 +6,8 @@ namespace FFlow.Steps.DotNet;
 /// <summary>
 /// A workflow step that executes the <c>dotnet build</c> command to build a .NET project or solution.
 /// </summary>
+[StepName(".NET Build")]
+[StepTags("dotnet")]
 public class DotnetBuildStep : IFlowStep
 {
     

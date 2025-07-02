@@ -3,6 +3,9 @@ using FFlow.Extensions;
 
 namespace FFlow;
 
+[StepName("Fork")]
+[StepTags("built-in")]
+[SilentStep]
 public class ForkStep : IFlowStep
 {
     private readonly Func<IWorkflowBuilder>[] _forks;

@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Input Setter")]
+[StepTags("built-in")]
+[SilentStep]
 internal class InputSetterStep : IFlowStep
 {
     private readonly List<Action<IFlowContext>> _inputSetters = new();

@@ -2,6 +2,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("Builder")]
+[StepTags("built-in")]
+[SilentStep]
 public class BuilderStep : ForwardingWorkflowBuilder, IFlowStep
 {
     private readonly IWorkflowBuilder _workflowBuilder;

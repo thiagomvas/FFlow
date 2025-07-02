@@ -7,6 +7,8 @@ namespace FFlow.Steps.DotNet;
 /// Executes the <c>dotnet run</c> command for a specified project or solution.
 /// Throws if no project or solution is specified or if the run fails.
 /// </summary>
+[StepName(".NET Run")]
+[StepTags("dotnet")]
 public class DotnetRunStep : IFlowStep
 {
     /// <summary>Target architecture (e.g., x64, x86, arm).</summary>

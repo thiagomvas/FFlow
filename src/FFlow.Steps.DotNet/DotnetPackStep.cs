@@ -7,6 +7,8 @@ namespace FFlow.Steps.DotNet;
 /// A workflow step that executes the <c>dotnet pack</c> command to generate NuGet packages
 /// from a specified .NET project or solution.
 /// </summary>
+[StepName(".NET Pack")]
+[StepTags("dotnet")]
 public class DotnetPackStep : IFlowStep
 {
     

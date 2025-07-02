@@ -3,6 +3,9 @@ using FFlow.Core;
 
 namespace FFlow;
 
+[StepName("For Each")]
+[StepTags("built-in")]
+[SilentStep]
 public class ForEachStep : ForEachStep<object>
 {
     public ForEachStep(Func<IFlowContext, IEnumerable> itemsSelector, IFlowStep itemAction)

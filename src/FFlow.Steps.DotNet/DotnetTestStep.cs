@@ -8,6 +8,8 @@ namespace FFlow.Steps.DotNet;
 /// Executes the <c>dotnet test</c> command for a specified project or solution.
 /// Throws if no project or solution is specified or if the run fails.
 /// </summary>
+[StepName(".NET Test")]
+[StepTags("dotnet")]
 public class DotnetTestStep : IFlowStep
 {
     
