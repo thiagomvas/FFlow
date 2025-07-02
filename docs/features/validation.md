@@ -7,7 +7,6 @@ FFlow provides validation utilites through the `FFlow.Validation` package, which
 dotnet add package FFlow.Validation
 ```
 
-
 ## Built-in Validation Steps
 FFlow provides built-in validation steps that can be used to validate data within your workflow. These steps can be used to check if the data meets certain criteria before proceeding with the workflow execution.
 ```csharp
@@ -29,9 +28,10 @@ public class CustomValidationStep : FlowStep
     public async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         // Custom validation logic
-        if (!context.ContainsKey("key1") || context.Get<string>("key1") == null)
+        var value = context.GetValue<string>("key1");
+        if (string.IsNullOrEmpty(value) || value.Length < 5)
         {
-            throw new ValidationException("key1 is required and cannot be null.");
+            throw new FlowValidationException("The value for 'key1' must be at least 5 characters long.");
         }
 
         // Simulate async work
@@ -112,9 +112,11 @@ internal class MinLengthStep : FlowStep
         if (context == null) throw new ArgumentNullException(nameof(context));
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (!context.TryGet<string>(_key, out var value) || value == null)
+        var value = context.GetValue<string>(_key);
+
+        if (string.IsNullOrWhiteSpace(value))
         {
-            throw new FlowValidationException($"Key '{_key}' is missing or not a string.");
+            throw new FlowValidationException($"Key '{_key}' is missing or empty.");
         }
 
         if (value.Length < _minLength)
