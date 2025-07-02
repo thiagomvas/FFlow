@@ -1,5 +1,6 @@
 ﻿using FFlow;
 using FFlow.Demo;
+using FFlow.Steps.DotNet;
 
 var registry = new StepTemplateRegistry();
 registry.OverrideDefaults<HelloStep>(step => step.Name = "Default Name");
@@ -10,5 +11,6 @@ var flow = new FFlowBuilder(null, registry)
     .Input<HelloStep>(step => step.Name = "Jane Doe")
     .UseTemplate("john")
     .Build();
-    
-await flow.RunAsync("", CancellationToken.None);
+
+var ctx = await flow.RunAsync("", CancellationToken.None);
+
