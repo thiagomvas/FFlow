@@ -64,4 +64,6 @@ using System.Linq.Expressions;
         public IConfigurableStepBuilder WithRetryPolicy(IRetryPolicy policy);
         
         public IConfigurableStepBuilder SkipOn(Func<IFlowContext, bool> skipOn);
+
+        public IConfigurableStepBuilder UseTemplate(string name);
     }

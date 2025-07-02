@@ -11,11 +11,24 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
     private IServiceProvider? _serviceProvider;
     private Type? _contextType = typeof(InMemoryFFLowContext);
     private IFlowContext? _contextInstance;
+    private readonly IStepTemplateRegistry? _templateRegistry;
     
-    public FFlowBuilder(IServiceProvider? serviceProvider = null)
+    public FFlowBuilder(IServiceProvider? serviceProvider, IStepTemplateRegistry? templateRegistry = null)
     {
         _serviceProvider = serviceProvider;
         _options = new();
+        _templateRegistry = templateRegistry;
+        if (_templateRegistry is null)
+        {
+            _templateRegistry = StepTemplateRegistry.Instance;
+        }
+    }
+
+    public FFlowBuilder(IServiceProvider? serviceProvider = null) : 
+        this(serviceProvider, 
+            (IStepTemplateRegistry?) serviceProvider?.GetService(typeof(IStepTemplateRegistry)))
+    {
+        
     }
 
     public IConfigurableStepBuilder AddStep(IFlowStep step)
@@ -23,14 +36,14 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         if (step == null) throw new ArgumentNullException(nameof(step));
         
         _steps.Add(step);
-        return new FlowStepBuilder(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder StartWith<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);
         _steps.Add(step);
-        return new FlowStepBuilder<TStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder StartWith(AsyncFlowAction setupAction)
@@ -39,7 +52,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(setupAction);
         _steps.Add(step);
-        return new FlowStepBuilder<DelegateFlowStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder StartWith(SyncFlowAction setupAction)
@@ -54,14 +67,14 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(asyncAction);
         _steps.Add(step);
-        return new FlowStepBuilder<DelegateFlowStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Then<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);
         _steps.Add(step);
-        return new FlowStepBuilder<TStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Then(AsyncFlowAction setupAction)
@@ -70,7 +83,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(setupAction);
         _steps.Add(step);
-        return new FlowStepBuilder<DelegateFlowStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Then(SyncFlowAction setupAction)
@@ -85,14 +98,14 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(asyncAction);
         _steps.Add(step);
-        return new FlowStepBuilder<DelegateFlowStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Finally<TStep>() where TStep : class, IFlowStep
     {
         var step = Internals.GetOrCreateStep<TStep>(_serviceProvider);
         _finalizer = step;
-        return new FlowStepBuilder<TStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Finally(AsyncFlowAction setupAction)
@@ -101,7 +114,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(setupAction);
         _finalizer = step;
-        return new FlowStepBuilder<DelegateFlowStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Finally(SyncFlowAction setupAction)
@@ -116,7 +129,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new DelegateFlowStep(asyncAction);
         _finalizer = step;
-        return new FlowStepBuilder<DelegateFlowStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, AsyncFlowAction then, AsyncFlowAction? otherwise = null)
@@ -134,7 +147,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder<IfStep>(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If<TTrue>(Func<IFlowContext, bool> condition, AsyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
@@ -151,7 +164,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder<IfStep>(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, SyncFlowAction then, SyncFlowAction? otherwise = null)
@@ -178,7 +191,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder<IfStep>(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If<TTrue>(Func<IFlowContext, bool> condition, SyncFlowAction? otherwise = null) where TTrue : class, IFlowStep
@@ -199,7 +212,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder<IfStep>(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If<TTrue, TFalse>(Func<IFlowContext, bool> condition) where TTrue : class, IFlowStep where TFalse : class, IFlowStep
@@ -211,7 +224,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
 
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder<IfStep>(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder If(Func<IFlowContext, bool> condition, Func<IWorkflowBuilder> then, Func<IWorkflowBuilder>? otherwise = null)
@@ -231,7 +244,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var ifStep = new IfStep(condition, trueStep, falseStep);
         _steps.Add(ifStep);
-        return new FlowStepBuilder<IfStep>(this, ifStep);
+        return CreateStepBuilder(ifStep);
     }
 
     public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, AsyncFlowAction action)
@@ -241,7 +254,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep(itemsSelector, new DelegateFlowStep(action));
         _steps.Add(step);
-        return new FlowStepBuilder<ForEachStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, AsyncFlowAction action) where TItem : class
@@ -251,7 +264,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep<TItem>(itemsSelector, new DelegateFlowStep(action));
         _steps.Add(step);
-        return new FlowStepBuilder<ForEachStep<TItem>>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, SyncFlowAction action)
@@ -267,7 +280,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep(itemsSelector, new DelegateFlowStep(asyncAction));
         _steps.Add(step);
-        return new FlowStepBuilder<ForEachStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, SyncFlowAction action) where TItem : class
@@ -283,7 +296,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep<TItem>(itemsSelector, new DelegateFlowStep(asyncAction));
         _steps.Add(step);
-        return new FlowStepBuilder<ForEachStep<TItem>>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TStepIterator>(Func<IFlowContext, IEnumerable<object>> itemsSelector) where TStepIterator : class, IFlowStep
@@ -292,7 +305,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep(itemsSelector, Internals.GetOrCreateStep<TStepIterator>(_serviceProvider));
         _steps.Add(step);
-        return new FlowStepBuilder<ForEachStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TStepIterator, TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector) where TStepIterator : class, IFlowStep
@@ -301,7 +314,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new ForEachStep<TItem>(itemsSelector, Internals.GetOrCreateStep<TStepIterator>(_serviceProvider));
         _steps.Add(step);
-        return new FlowStepBuilder<ForEachStep<TItem>>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach(Func<IFlowContext, IEnumerable<object>> itemsSelector, Func<IWorkflowBuilder> action)
@@ -312,7 +325,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var builder = action();
         var step = new ForEachStep(itemsSelector, new BuilderStep(builder));
         _steps.Add(step);
-        return new FlowStepBuilder<ForEachStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ForEach<TItem>(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, Func<IWorkflowBuilder> action)
@@ -323,7 +336,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var builder = action();
         var step = new ForEachStep<TItem>(itemsSelector, new BuilderStep(builder));
         _steps.Add(step);
-        return new FlowStepBuilder<ForEachStep<TItem>>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder ContinueWith<TWorkflowDefinition>() where TWorkflowDefinition : class, IWorkflowDefinition
@@ -337,7 +350,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         var step = new WorkflowContinuationStep(workflowDefinition);
         _steps.Add(step);
-        return new FlowStepBuilder<WorkflowContinuationStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IConfigurableStepBuilder Switch(Action<ISwitchCaseBuilder> caseBuilder)
@@ -350,7 +363,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var step = switchCaseBuilder.Build();
         
         _steps.Add(step);
-        return new FlowStepBuilder<SwitchStep>(this, step);
+        return CreateStepBuilder(step);
     }
 
     public IWorkflowBuilder Fork(ForkStrategy strategy, params Func<IWorkflowBuilder>[] forks)
@@ -500,6 +513,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         var context = _contextInstance
                       ?? _serviceProvider?.GetService(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext
                       ?? Activator.CreateInstance(_contextType ?? typeof(InMemoryFFLowContext)) as IFlowContext;
+        
         var result = new Workflow(_steps, context!, _options);
         
         if (_errorHandler != null)
@@ -520,5 +534,29 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         _options ??= new WorkflowOptions();
         configure(_options);
         return this;
+    }
+    
+    private FlowStepBuilder CreateStepBuilder(IFlowStep step)
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        
+        if (_templateRegistry.TryGetOverridenDefaults(step.GetType(), out var configure))
+        {
+            configure(step);
+        }
+        
+        return new FlowStepBuilder(this, step, _templateRegistry);
+    }
+    
+    private FlowStepBuilder<TStep> CreateStepBuilder<TStep>(TStep step) where TStep : class, IFlowStep
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        
+        if (_templateRegistry.TryGetOverridenDefaults(typeof(TStep), out var configure))
+        {
+            configure(step);
+        }
+        
+        return new FlowStepBuilder<TStep>(this, step, _templateRegistry);
     }
 }

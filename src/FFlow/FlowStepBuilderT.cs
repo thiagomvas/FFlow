@@ -10,6 +10,11 @@ namespace FFlow;
 public class FlowStepBuilder<TStep> : FlowStepBuilder
     where TStep : class, IFlowStep
 {
+    public FlowStepBuilder(IWorkflowBuilder workflowBuilder, TStep step, IStepTemplateRegistry? templateRegistry)
+        : base(workflowBuilder, step, templateRegistry)
+    {
+        
+    }
     /// <summary>
     /// Initializes a new instance of the <see cref="FlowStepBuilder{TStep}"/> class.
     /// </summary>
