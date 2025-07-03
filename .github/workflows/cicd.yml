@@ -24,4 +24,6 @@ jobs:
           dotnet-quality: 'preview'
 
       - name: Run deploy pipeline
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: dotnet run pipelines/push-to-nuget.cs

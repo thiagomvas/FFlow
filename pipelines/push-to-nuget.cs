@@ -6,12 +6,18 @@ using FFlow.Extensions;
 using FFlow.Steps.DotNet;
 
 await new FFlowBuilder()
-  .WithPipelineLogger()
-  .StartWith((ctx, _) => Console.WriteLine("Initializing Pipeline..."))
-  .DotnetBuild("..")
-  .DotnetTest("..", step => step.NoBuild = true)
-  .ThrowIf<Exception>(ctx => ctx.GetOutputFor<DotnetTestStep, DotnetTestResult>().Failed > 0, "Tests have failed")
-  .DotnetPack("..", step => { step.Configuration = "Release", step.Output = "nupkgs" })
-  .DotnetNugetPush("nupkgs")
-  .Build()
-  .RunAsync();
+    .WithPipelineLogger()
+    .StartWith((ctx, _) => ctx.LoadEnvironmentVariables())
+    .DotnetBuild(".")
+    .DotnetTest(".", step => step.NoBuild = true)
+    .ThrowIf<Exception>(ctx => ctx.GetOutputFor<DotnetTestStep, DotnetTestResult>().Failed > 0, "Tests have failed")
+    .DotnetPack(".", step =>
+    {
+        step.Configuration = "Release";
+        step.Output = "nupkgs";
+    })
+    .DotnetNugetPush("nupkgs/")
+    .Input<DotnetNugetPushStep, string>(step => step.ApiKey,  ctx => ctx.GetValue<string>("NUGET_API_KEY"))
+    .Build()
+    .RunAsync();
+
