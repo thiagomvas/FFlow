@@ -8,7 +8,7 @@
   <a href="https://github.com/thiagomvas/FFlow/actions/workflows/cicd.yml">
     <img src="https://github.com/thiagomvas/FFlow/actions/workflows/cicd.yml/badge.svg">
   </a>
-  <a href="https://thiagomvas.dev/FFlow/">
+  <a href="https://fflow.thiagomvas.dev/">
     <img src="https://img.shields.io/badge/Docs-Available-limegreen?style=flat&logo=github">
   </a>
   <a href="https://github.com/thiagomvas/fflow/labels/good%20first%20issue">
