@@ -1,5 +1,5 @@
-#:package FFlow@1.0.0
-#:package FFlow.Steps.DotNet@1.0.0
+#:package FFlow@1.*
+#:package FFlow.Steps.DotNet@1.*
   
 using FFlow;
 using FFlow.Extensions;
@@ -11,7 +11,7 @@ const string solutionPath = ".";
 await new FFlowBuilder()
     .Then((ctx, _) => Console.WriteLine("Starting .NET build..."))
     .DotnetBuild(solutionPath, step => step.Verbosity = "quiet")
-    .Then((ctx, _) => Console.WriteLine($".NET Build completed with exit code: {ctx.GetOutputFor<DotnetBuildStep, DotnetBuildResult>().ExitCode}"))
+    .Then((ctx, _) => Console.WriteLine($".NET Build completed with exit code: {ctx.GetOutputFor<DotnetBuildStep, DotnetBuildResult>()!.ExitCode}"))
     
     .Then((ctx, _) => Console.WriteLine("Starting .NET tests (no build)..."))
     .DotnetTest(solutionPath, step =>
@@ -22,7 +22,7 @@ await new FFlowBuilder()
     
     .Then((ctx, _) =>
     {
-        var output = ctx.GetOutputFor<DotnetTestStep, DotnetTestResult>();
+        var output = ctx.GetOutputFor<DotnetTestStep, DotnetTestResult>()!;
 
         Console.WriteLine("\n=============================");
         Console.WriteLine("       ✅ Test Summary       ");

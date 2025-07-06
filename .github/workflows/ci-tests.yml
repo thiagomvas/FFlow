@@ -25,4 +25,4 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Run test script
-        run: dotnet run pipelines/run-tests.cs
+        run: dotnet run pipelines/run-tests.cs --verbosity quiet
