@@ -16,6 +16,7 @@ var flow = new FFlowBuilder(null, registry)
     {
         var output = ctx.GetDotnetBuildOutput();
         Console.WriteLine(output);
+        Directory.Delete("nupkgs/", true);
     })
     .Build();
 
