@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Steps.Shell", "src\FF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Scheduling", "src\FFlow.Scheduling\FFlow.Scheduling.csproj", "{6CEF6B89-7F5A-4DB8-88FF-C15D2ED22C29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Steps.DotNet.SourceGenerators", "FFlow.Steps.DotNet.SourceGenerators\FFlow.Steps.DotNet.SourceGenerators.csproj", "{7FC50044-A6BC-4A2B-AA88-435304ECECA5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFlow.Steps.DotNet.SourceGenerators", "src\FFlow.Steps.DotNet.SourceGenerators\FFlow.Steps.DotNet.SourceGenerators.csproj", "{7FC50044-A6BC-4A2B-AA88-435304ECECA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

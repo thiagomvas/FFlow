@@ -46,7 +46,7 @@ public class FlowContextExtensionsGenerator : IIncrementalGenerator
     static string GenerateExtension(DotnetStepType step)
     {
         var stepClass = step.StepClass;
-        var methodName = $"Get{stepClass.Replace("Step", "")}Output"; // or customize if you want
+        var methodName = $"Get{stepClass.Replace("Step", "")}Output";
         var resultClass = stepClass.Replace("Step", "Result");
 
         var sb = new StringBuilder();
@@ -57,6 +57,11 @@ public class FlowContextExtensionsGenerator : IIncrementalGenerator
         sb.AppendLine();
         sb.AppendLine("public static partial class IFlowContextExtensions");
         sb.AppendLine("{");
+        sb.AppendLine("    /// <summary>");
+        sb.AppendLine($"    /// Gets the output result of the <see cref=\"{stepClass}\"/> step.");
+        sb.AppendLine("    /// </summary>");
+        sb.AppendLine("    /// <param name=\"context\">The flow context instance.</param>");
+        sb.AppendLine($"    /// <returns>The <see cref=\"{resultClass}\"/> associated with the step.</returns>");
         sb.AppendLine($"    public static {resultClass} {methodName}(this IFlowContext context)");
         sb.AppendLine("    {");
         sb.AppendLine($"        return context.GetOutputFor<{stepClass}, {resultClass}>();");
@@ -65,5 +70,6 @@ public class FlowContextExtensionsGenerator : IIncrementalGenerator
 
         return sb.ToString();
     }
+
 }
 

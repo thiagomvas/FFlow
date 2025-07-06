@@ -11,6 +11,7 @@ var flow = new FFlowBuilder(null, registry)
     .WithPipelineLogger()
     .StartWith<HelloStep>()
     .Input<HelloStep>(step => step.Name = "Jane Doe")
+    .DotnetBuild(".")
     .Finally((ctx, _) => 
     {
         var output = ctx.GetDotnetBuildOutput();
