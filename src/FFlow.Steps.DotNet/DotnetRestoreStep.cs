@@ -10,6 +10,7 @@ namespace FFlow.Steps.DotNet;
 /// </summary>
 [StepName(".NET Restore")]
 [StepTags("dotnet")]
+[DotnetStep("projectOrSolution", "ProjectOrSolution")]
 public class DotnetRestoreStep : IFlowStep
 {
 

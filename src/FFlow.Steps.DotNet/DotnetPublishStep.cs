@@ -8,6 +8,7 @@ namespace FFlow.Steps.DotNet;
 /// </summary>
 [StepName(".NET Publish")]
 [StepTags("dotnet")]
+[DotnetStep("projectOrSolution", "ProjectOrSolution")]
 public class DotnetPublishStep : IFlowStep
 {
     /// <summary>The project or solution file to publish.</summary>

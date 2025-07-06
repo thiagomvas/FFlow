@@ -10,7 +10,7 @@ namespace FFlow;
 public class FlowStepBuilder : ForwardingWorkflowBuilder, IConfigurableStepBuilder
 {
     protected override IWorkflowBuilder Delegate { get; }
-    private readonly IFlowStep _step;
+    protected readonly IFlowStep _step;
     private IFlowStep? _inputSetterStep;
     private IFlowStep? _outputSetterStep;
 

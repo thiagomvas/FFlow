@@ -9,6 +9,7 @@ namespace FFlow.Steps.DotNet;
 /// </summary>
 [StepName(".NET Pack")]
 [StepTags("dotnet")]
+[DotnetStep("projectOrSolution", "ProjectOrSolution")]
 public class DotnetPackStep : IFlowStep
 {
     

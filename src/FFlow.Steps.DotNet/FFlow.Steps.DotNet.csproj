@@ -12,16 +12,16 @@
         <Authors>thiagomvas</Authors>
         <Version>1.0.0</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeXmlDocumentation>true</IncludeXmlDocumentation>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
     </PropertyGroup>
-
-    <ItemGroup>
-        <None Include="$(OutputPath)$(AssemblyName).xml" pack="true" packagePath="\" />
-    </ItemGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\..\FFlow.Steps.DotNet.SourceGenerators\FFlow.Steps.DotNet.SourceGenerators.csproj"
+                        OutputItemType="Analyzer"
+                        ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
     </ItemGroup>
 

@@ -11,6 +11,11 @@ var flow = new FFlowBuilder(null, registry)
     .WithPipelineLogger()
     .StartWith<HelloStep>()
     .Input<HelloStep>(step => step.Name = "Jane Doe")
+    .Finally((ctx, _) => 
+    {
+        var output = ctx.GetDotnetBuildOutput();
+        Console.WriteLine(output);
+    })
     .Build();
 
 var ctx = await flow.RunAsync("", CancellationToken.None);

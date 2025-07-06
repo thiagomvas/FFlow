@@ -10,6 +10,7 @@ namespace FFlow.Steps.DotNet;
 /// </summary>
 [StepName(".NET Test")]
 [StepTags("dotnet")]
+[DotnetStep("projectOrSolution", "ProjectOrSolution")]
 public class DotnetTestStep : IFlowStep
 {
     
