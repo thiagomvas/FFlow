@@ -49,4 +49,13 @@ namespace FFlow.Core;
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous compensation operation, returning the resulting <see cref="IFlowContext"/>.</returns>
         Task<IFlowContext> CompensateAsync(CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// Stops the workflow gracefully, which stops any executions. This will not cancel the current execution but will prevent new executions from starting.
+        /// </summary>
+        /// <remarks>
+        /// Finalizers and error handlers will still be executed if they are defined, however, forked or parallel steps will still run.
+        /// If you wish to stop the parallel steps as well, simply cancel the cancellation token passed to the workflow execution method.
+        /// </remarks>
+        void StopGracefully();
     }

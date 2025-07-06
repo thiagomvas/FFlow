@@ -16,6 +16,7 @@ public class Workflow : IWorkflow
     private IFlowStep? _finalizer;
     private readonly WorkflowOptions? _options;
     private readonly IWorkflowMetadataStore? _metadataStore;
+    private bool _isStopped;
     public IWorkflowMetadataStore? MetadataStore { get; internal set; }
 
     public Workflow(IReadOnlyList<IFlowStep> steps, IFlowContext context, WorkflowOptions? options = null,
@@ -115,6 +116,11 @@ public class Workflow : IWorkflow
                 }
 
                 eventListener?.OnStepCompleted(step, _context);
+                
+                if (_isStopped)
+                {
+                    break;
+                }
             }
 
             if (_options?.StepTimeout is not null)
@@ -185,4 +191,6 @@ public class Workflow : IWorkflow
         }
         return _context;
     }
+
+    public void StopGracefully() => _isStopped = true;
 }
