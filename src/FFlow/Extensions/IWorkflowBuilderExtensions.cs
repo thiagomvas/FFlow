@@ -64,5 +64,44 @@ public static class IWorkflowBuilderExtensions
 
         return builder.AddStep(new StopExecutionIfStep(condition));
     }
+    
+    /// <summary>
+    /// Adds a step to log a message to the console.
+    /// </summary>
+    /// <param name="builder">The workflow builder to add the step to.</param>
+    /// <param name="message">The message to write to the console</param>
+    /// <returns>The same <see cref="IWorkflowBuilder"/> for further configuration.</returns>
+    public static IWorkflowBuilder LogToConsole(
+        this IWorkflowBuilder builder,
+        string message)
+    {
+        if (builder is null)
+            throw new ArgumentNullException(nameof(builder));
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message cannot be null or whitespace.", nameof(message));
+
+        return builder.AddStep(new LogToConsoleStep(message));
+    }
+    
+    /// <summary>
+    /// Adds a step to log a message to the console.
+    /// </summary>
+    /// <param name="builder">The workflow builder to add the step to.</param>
+    /// <param name="messageFactory">The message factory to create a message to write to the console</param>
+    /// <returns>The same <see cref="IWorkflowBuilder"/> for further configuration.</returns>
+    public static IWorkflowBuilder LogToConsole(
+        this IWorkflowBuilder builder,
+        Func<IFlowContext, string> messageFactory)
+    {
+        if (builder is null)
+            throw new ArgumentNullException(nameof(builder));
+        if (messageFactory is null)
+            throw new ArgumentNullException(nameof(messageFactory));
+
+        builder.Then<LogToConsoleStep>()
+            .Input<LogToConsoleStep, string>(step => step.Message, ctx => messageFactory(ctx));
+        
+        return builder;
+    }
 
 }

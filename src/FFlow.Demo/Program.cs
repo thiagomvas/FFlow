@@ -4,21 +4,23 @@ using FFlow.Extensions;
 using FFlow.Steps.DotNet;
 
 var registry = new StepTemplateRegistry();
-registry.OverrideDefaults<HelloStep>(step => step.Name = "Default Name");
-registry.RegisterTemplate<HelloStep>("john", step => step.Name = "John Doe");
-
 var flow = new FFlowBuilder(null, registry)
-    .WithPipelineLogger()
-    .StartWith<HelloStep>()
-    .Input<HelloStep>(step => step.Name = "Jane Doe")
-    .DotnetBuild(".")
+    .DotnetBuild("/home/thiagomv/Src/FFlow/FFlow.sln")
+    .LogToConsole(ctx => $".NET Build completed with exit code: {ctx.GetDotnetBuildOutput().ExitCode}")
+    .DotnetTest("/home/thiagomv/Src/FFlow/FFlow.sln", step => step.NoBuild = true)
     .Finally((ctx, _) => 
     {
-        var output = ctx.GetDotnetBuildOutput();
-        Console.WriteLine(output);
-        Directory.Delete("nupkgs/", true);
+        var output = ctx.GetDotnetTestOutput();
+        Console.WriteLine("Test Results:");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"Passed: {output.Passed}");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"Failed: {output.Failed}");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"Skipped: {output.Skipped}");
+        Console.ResetColor();
     })
     .Build();
 
-var ctx = await flow.RunAsync("", CancellationToken.None);
+var ctx = await flow.RunAsync();
 
