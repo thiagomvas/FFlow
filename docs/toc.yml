@@ -5,6 +5,8 @@ items:
         href: overview/introduction.md
       - name: Getting Started
         href: overview/getting-started.md
+      - name: Github Actions
+        href: overview/github-actions.md
   - name: Features
     items:
       - name: Steps
