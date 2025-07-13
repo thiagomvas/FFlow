@@ -2,10 +2,12 @@ namespace FFlow.Cli;
 
 public class CommandBuilder
 {
-    public Dictionary<string, string> OptionDescriptions { get; } = new();
-
-    public void AddOption(string name, string description = "")
+    private readonly List<CommandOption> _options = new();
+    
+    public void AddOption(string name, string description, string shortName = "")
     {
-        OptionDescriptions[name] = description;
+        _options.Add(new CommandOption(name, description, shortName));
     }
+    
+    private readonly record struct CommandOption(string Name, string Description, string ShortName = "");
 }
