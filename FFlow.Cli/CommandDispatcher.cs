@@ -56,11 +56,39 @@ public class CommandDispatcher
 
                 options[opt] = val!;
             }
+            else if (arg.StartsWith("-"))
+            {
+                var opt = arg[1..];
+                string? val = null;
+
+                if (opt.Length > 1 && opt[1] == '=')
+                {
+                    val = opt.Substring(2);
+                    opt = opt[0].ToString();
+                }
+                else if (index + 1 < args.Length && !args[index + 1].StartsWith('-'))
+                {
+                    val = args[++index];
+                }
+                else
+                {
+                    val = "true"; // flag option
+                }
+
+                options[opt] = val!;
+            }
             else
             {
                 positionalArgs.Add(arg);
             }
         }
+        
+        if(options.ContainsKey("h") || options.ContainsKey("h"))
+        {
+            currentCommand.DisplayHelp();
+            return 0;
+        }
+        
 
         return currentCommand.Execute(positionalArgs, options);
     }

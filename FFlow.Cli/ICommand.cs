@@ -7,4 +7,5 @@ public interface ICommand
     List<ICommand> Subcommands { get; }
     void Configure(CommandBuilder builder);
     int Execute(List<string> positionalArgs, Dictionary<string, string> options);
+    void DisplayHelp();
 }
