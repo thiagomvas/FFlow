@@ -41,9 +41,8 @@ public partial class DoctorCommand : ICommand
                 result.Details
             );
         }
-
         AnsiConsole.Write(table);
-        AnsiConsole.Write(new Rule().RuleStyle("grey"));
+        AnsiConsole.Markup("\n[grey]NOTE: If the image isn't available locally, it will be installed when running a pipeline.[/]\n");
 
         return 0;
     }
@@ -52,8 +51,6 @@ public partial class DoctorCommand : ICommand
     {
         var options = new Dictionary<string, (string Description, string? ShortName)>
         {
-            { "check-docker", ("Check Docker installation.", null) },
-            { "check-dotnet", ("Check .NET 10 SDK installation.", null) },
             { "help", ("Show this help message.", "h") }
         };
 
@@ -176,7 +173,7 @@ public partial class DoctorCommand : ICommand
             {
                 if (major > 10 || (major == 10 && minor >= 0))
                 {
-                    return new CheckResult("Dotnet SDK", "OK", $"Found SDK version {major}.{minor}");
+                    return new CheckResult(".NET SDK", "OK", $"Found SDK version {major}.{minor}");
                 }
                 else if (major == 9)
                 {
@@ -187,11 +184,11 @@ public partial class DoctorCommand : ICommand
 
         if (foundDotnet9)
         {
-            return new CheckResult("Dotnet SDK", "Warning",
+            return new CheckResult(".NET SDK", "Warning",
                 "FFlow supports only project-based workflows on .NET SDK 9.x.");
         }
 
-        return new CheckResult("Dotnet SDK", "Missing", "FFlow requires .NET SDK 10.0 or higher.");
+        return new CheckResult(".NET SDK", "Missing", "FFlow requires .NET SDK 10.0 or higher.");
     }
 
 
