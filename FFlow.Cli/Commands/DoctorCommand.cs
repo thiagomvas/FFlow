@@ -47,6 +47,19 @@ public partial class DoctorCommand : ICommand
         return 0;
     }
 
+    public void DisplayHelp()
+    {
+        var options = new Dictionary<string, (string Description, string? ShortName)>
+        {
+            { "check-docker", ("Check Docker installation.", null) },
+            { "check-dotnet", ("Check .NET 10 SDK installation.", null) },
+            { "help", ("Show this help message.", "h") }
+        };
+        
+        HelpHelper.ShowHelp(Name, Description, null, options.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Description));
+    }
+
+
     private static CheckResult CheckDocker()
     {
         var process = new Process
