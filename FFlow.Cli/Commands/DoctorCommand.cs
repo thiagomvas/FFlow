@@ -25,6 +25,7 @@ public partial class DoctorCommand : ICommand
             {
                 results.Add(CheckDotnetSdk());
                 results.Add(CheckDocker());
+                results.Add(CheckDockerImage());
             });
 
         var table = new Table()
@@ -107,6 +108,11 @@ public partial class DoctorCommand : ICommand
             versionDetails = "FFlow requires Docker 20.0 or higher for optimal performance.";
         }
 
+        return new CheckResult("Docker", versionStatus, $"{versionDetails}.");
+    }
+    
+    private static CheckResult CheckDockerImage()
+    {
         var dockerImage = Internals.DockerImage;
 
         var processImage = new Process
@@ -128,12 +134,12 @@ public partial class DoctorCommand : ICommand
 
         if (string.IsNullOrEmpty(imageId))
         {
-            return new CheckResult("Docker", "Warning",
-                $"{versionDetails} But required image '{dockerImage}' is not installed locally.");
+            return new CheckResult("Docker Image", "Warning", $"Image '{dockerImage}' is not installed locally.");
         }
 
-        return new CheckResult("Docker", versionStatus, $"{versionDetails}; Image '{dockerImage}' found locally.");
+        return new CheckResult("Docker Image", "OK", $"Image '{dockerImage}' is present.");
     }
+
 
     private static CheckResult CheckDotnetSdk()
     {
