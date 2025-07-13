@@ -8,4 +8,5 @@ public static class Internals
         { "Shell Commands", "FFlow.Steps.Shell" },
     };
     
+    public const string DockerImage = "mcr.microsoft.com/dotnet/sdk:10.0-preview";
 }

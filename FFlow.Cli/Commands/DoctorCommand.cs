@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace FFlow.Cli.Commands;
+
 public partial class DoctorCommand : ICommand
 {
     public string Name => "doctor";
@@ -55,14 +56,15 @@ public partial class DoctorCommand : ICommand
             { "check-dotnet", ("Check .NET 10 SDK installation.", null) },
             { "help", ("Show this help message.", "h") }
         };
-        
-        HelpHelper.ShowHelp(Name, Description, null, options.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Description));
+
+        HelpHelper.ShowHelp(Name, Description, null,
+            options.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Description));
     }
 
 
     private static CheckResult CheckDocker()
     {
-        var process = new Process
+        var processVersion = new Process
         {
             StartInfo = new ProcessStartInfo
             {
@@ -75,35 +77,67 @@ public partial class DoctorCommand : ICommand
             }
         };
 
-        process.Start();
-        string output = process.StandardOutput.ReadToEnd();
-        process.WaitForExit();
+        processVersion.Start();
+        string outputVersion = processVersion.StandardOutput.ReadToEnd();
+        processVersion.WaitForExit();
 
-        if (string.IsNullOrWhiteSpace(output))
+        if (string.IsNullOrWhiteSpace(outputVersion))
         {
             return new CheckResult("Docker", "Missing", "FFlow requires Docker to run.");
         }
 
         var versionPattern = VersionPattern();
-        var match = versionPattern.Match(output);
+        var match = versionPattern.Match(outputVersion);
 
-        if (match.Success &&
-            int.TryParse(match.Groups[1].Value, out int major) &&
-            int.TryParse(match.Groups[2].Value, out int minor))
+        if (!match.Success ||
+            !int.TryParse(match.Groups[1].Value, out int major) ||
+            !int.TryParse(match.Groups[2].Value, out int minor))
         {
-            if (major >= 20)
-            {
-                return new CheckResult("Docker", "OK", $"Found Docker version {major}.{minor}");
-            }
-            else
-            {
-                return new CheckResult("Docker", "Warning", "FFlow requires Docker 20.0 or higher for optimal performance.");
-            }
+            return new CheckResult("Docker", "Missing", "Unable to determine Docker version.");
         }
 
-        return new CheckResult("Docker", "Missing", "FFlow requires Docker to run.");
+        string versionStatus;
+        string versionDetails;
+
+        if (major >= 20)
+        {
+            versionStatus = "OK";
+            versionDetails = $"Found Docker version {major}.{minor}";
+        }
+        else
+        {
+            versionStatus = "Warning";
+            versionDetails = "FFlow requires Docker 20.0 or higher for optimal performance.";
+        }
+
+        var dockerImage = Internals.DockerImage;
+
+        var processImage = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "docker",
+                Arguments = $"images -q {dockerImage}",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            }
+        };
+
+        processImage.Start();
+        string imageId = processImage.StandardOutput.ReadToEnd().Trim();
+        processImage.WaitForExit();
+
+        if (string.IsNullOrEmpty(imageId))
+        {
+            return new CheckResult("Docker", "Warning",
+                $"{versionDetails} But required image '{dockerImage}' is not installed locally.");
+        }
+
+        return new CheckResult("Docker", versionStatus, $"{versionDetails}; Image '{dockerImage}' found locally.");
     }
-    
+
     private static CheckResult CheckDotnetSdk()
     {
         var process = new Process
@@ -153,7 +187,8 @@ public partial class DoctorCommand : ICommand
 
         if (foundDotnet9)
         {
-            return new CheckResult("Dotnet SDK", "Warning", "FFlow supports only project-based workflows on .NET SDK 9.x.");
+            return new CheckResult("Dotnet SDK", "Warning",
+                "FFlow supports only project-based workflows on .NET SDK 9.x.");
         }
 
         return new CheckResult("Dotnet SDK", "Missing", "FFlow requires .NET SDK 10.0 or higher.");
@@ -170,10 +205,9 @@ public partial class DoctorCommand : ICommand
             _ => $"[grey]{status}[/]"
         };
     }
-    
+
     private record CheckResult(string Name, string Status, string Details);
 
     [GeneratedRegex(@"(\d+)\.(\d+)\.\d+")]
     private static partial Regex VersionPattern();
 }
-

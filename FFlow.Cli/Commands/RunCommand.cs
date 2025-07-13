@@ -36,7 +36,7 @@ public class RunCommand : ICommand
 
         AnsiConsole.MarkupLine($"[grey]Starting container and running [italic]{fileName}[/]...[/]");
 
-        var dockerImage = "mcr.microsoft.com/dotnet/sdk:10.0-preview";
+        var dockerImage = Internals.DockerImage;
 
         var dockerArgs = $"run --rm -v \"{workDir}:/app\" -w /app {dockerImage} dotnet run {fileName}";
 
