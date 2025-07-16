@@ -30,7 +30,8 @@ public class RootCommand : ICommand
         var commands = new Dictionary<string, string>
         {
             { "doctor", "Run diagnostics on the FFlow CLI environment." },
-            { "help", "Show help information." }
+            { "init", "Interactively initializes a new FFlow workflow project." },
+            { "run", "Runs a C# file inside the official .NET 10 SDK Docker container." },
         };
         
         HelpHelper.ShowHelp(Name, Description, commands, options);

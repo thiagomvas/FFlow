@@ -5,17 +5,13 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PublishTrimmed>true</PublishTrimmed>
-        <TrimmerDefaultAction>link</TrimmerDefaultAction>
-        <PublishAot>true</PublishAot>
         <InvariantGlobalization>true</InvariantGlobalization>
-        <StripSymbols>true</StripSymbols>
-        <IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
-
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>fflow</ToolCommandName>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Spectre.Console" Version="0.50.0" />
+        <PackageReference Include="Spectre.Console" Version="0.50.0" />
     </ItemGroup>
 
 </Project>
