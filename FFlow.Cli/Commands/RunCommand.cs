@@ -52,16 +52,32 @@ public class RunCommand : ICommand
 
         try
         {
-            using var process = Process.Start(psi);
-            string stdout = process!.StandardOutput.ReadToEnd();
-            string stderr = process.StandardError.ReadToEnd();
+            using var process = new Process() { StartInfo = psi };
+
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    // Use Spectre.Console to write the line (escaping markup)
+                    var safeLine = e.Data.Replace("[", "[[").Replace("]", "]]");
+                    AnsiConsole.MarkupLine(safeLine);
+                }
+            };
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    var safeLine = e.Data.Replace("[", "[[").Replace("]", "]]");
+                    AnsiConsole.MarkupLine($"[red]Error:[/] {safeLine}");
+                }
+            };
+
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
             process.WaitForExit();
-
-            if (!string.IsNullOrWhiteSpace(stdout))
-                AnsiConsole.WriteLine(stdout);
-
-            if (!string.IsNullOrWhiteSpace(stderr))
-                AnsiConsole.MarkupLine($"[red]Error:[/] {stderr}");
 
             return process.ExitCode;
         }
