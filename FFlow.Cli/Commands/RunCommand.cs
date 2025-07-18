@@ -22,19 +22,80 @@ public class RunCommand : ICommand
             return 1;
         }
 
-        var filePath = positionalArgs[0];
-
-        if (!File.Exists(filePath))
+        var scriptPath = Path.GetFullPath(positionalArgs[0]);
+        if (!File.Exists(scriptPath))
         {
-            AnsiConsole.MarkupLine($"[red]Error:[/] File not found: {filePath}");
+            AnsiConsole.MarkupLine($"[red]Error:[/] Script file not found: {scriptPath}");
             return 1;
         }
 
-        var absPath = Path.GetFullPath(filePath);
-        var workDir = Path.GetDirectoryName(absPath)!;
-        var fileName = Path.GetFileName(absPath);
-        var dockerImage = Internals.DockerImage;
-        var dockerArgs = $"run --rm -v \"{workDir}:/app\" -w /app {dockerImage} dotnet run {fileName}";
+        string? rootDir = null;
+        var hasRoot = options.TryGetValue("root", out var rootOption);
+        if (hasRoot)
+        {
+            rootDir = Path.GetFullPath(rootOption);
+            if (!Directory.Exists(rootDir))
+            {
+                AnsiConsole.MarkupLine($"[red]Error:[/] Root directory does not exist: {rootDir}");
+                return 1;
+            }
+        }
+
+        var guid = Guid.NewGuid().ToString("N");
+        var tempFolder = $"/tmp/.{guid}";
+        var containerScriptPath = hasRoot && IsSubPathOf(scriptPath, rootDir)
+            ? $"{tempFolder}/{Path.GetRelativePath(rootDir!, scriptPath).Replace("\\", "/")}"
+            : $"{tempFolder}/{Path.GetFileName(scriptPath)}";
+
+        var dockerArgs = new List<string>
+        {
+            "run", "--rm"
+        };
+
+        if (hasRoot)
+            dockerArgs.Add($"-v \"{rootDir}:/mnt/root:rw\"");
+
+        dockerArgs.Add($"-v \"{scriptPath}:/mnt/script/{Path.GetFileName(scriptPath)}:ro\"");
+
+        if (options.TryGetValue("include", out var includeVal))
+        {
+            var includes =
+                includeVal.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            foreach (var include in includes)
+            {
+                var fullInclude = Path.GetFullPath(include);
+                if (!File.Exists(fullInclude) && !Directory.Exists(fullInclude))
+                {
+                    AnsiConsole.MarkupLine($"[yellow]Warning:[/] Include path not found: {include}");
+                    continue;
+                }
+
+                if (hasRoot && IsSubPathOf(fullInclude, rootDir!))
+                    continue;
+
+                var target = $"/mnt/include/{Path.GetFileName(fullInclude)}";
+                dockerArgs.Add($"-v \"{fullInclude}:{target}:ro\"");
+            }
+        }
+
+        dockerArgs.Add("-w /mnt");
+
+        dockerArgs.Add(Internals.DockerImage);
+
+        // Copy root + script into isolated /tmp folder, then run it
+        var runScript = $"""
+                             mkdir -p "{tempFolder}";
+                             {(hasRoot ? $"cp -r /mnt/root/* \"{tempFolder}/\";" : "")}
+                             cp "/mnt/script/{Path.GetFileName(scriptPath)}" "{containerScriptPath}";
+                             cd root
+                             dotnet run --verbosity quiet "{containerScriptPath}"
+                         """;
+
+        dockerArgs.Add("sh");
+        dockerArgs.Add("-c");
+        dockerArgs.Add($"\"{runScript}\"");
+
+        var dockerArgsStr = string.Join(" ", dockerArgs);
 
         int exitCode = 1;
         bool startedExecution = false;
@@ -47,18 +108,18 @@ public class RunCommand : ICommand
                 var psi = new ProcessStartInfo
                 {
                     FileName = "docker",
-                    Arguments = dockerArgs,
+                    Arguments = dockerArgsStr,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 };
 
-                using var process = new Process() { StartInfo = psi };
+                using var process = new Process { StartInfo = psi };
 
                 void OnOutput(object sender, DataReceivedEventArgs e)
                 {
-                    if (!string.IsNullOrEmpty(e.Data))
+                    if (!string.IsNullOrWhiteSpace(e.Data))
                     {
                         if (!startedExecution)
                         {
@@ -68,14 +129,14 @@ public class RunCommand : ICommand
                             startedExecution = true;
                         }
 
-                        var safeLine = e.Data.Replace("[", "[[").Replace("]", "]]");
-                        AnsiConsole.MarkupLine(safeLine);
+                        var safe = e.Data.Replace("[", "[[").Replace("]", "]]");
+                        AnsiConsole.MarkupLine(safe);
                     }
                 }
 
                 void OnError(object sender, DataReceivedEventArgs e)
                 {
-                    if (!string.IsNullOrEmpty(e.Data))
+                    if (!string.IsNullOrWhiteSpace(e.Data))
                     {
                         if (!startedExecution)
                         {
@@ -85,8 +146,8 @@ public class RunCommand : ICommand
                             startedExecution = true;
                         }
 
-                        var safeLine = e.Data.Replace("[", "[[").Replace("]", "]]");
-                        AnsiConsole.MarkupLine($"[red]Error:[/] {safeLine}");
+                        var safe = e.Data.Replace("[", "[[").Replace("]", "]]");
+                        AnsiConsole.MarkupLine($"[red]Error:[/] {safe}");
                     }
                 }
 
@@ -101,7 +162,6 @@ public class RunCommand : ICommand
 
                 if (!startedExecution)
                 {
-                    // No output at all, mark status as done
                     ctx.Status("No output from container.");
                     ctx.Spinner(Spinner.Known.Arrow);
                     ctx.SpinnerStyle(Style.Parse("grey"));
@@ -114,12 +174,24 @@ public class RunCommand : ICommand
     }
 
 
+    private static bool IsSubPathOf(string path, string baseDir)
+    {
+        var normalizedPath =
+            Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) +
+            Path.DirectorySeparatorChar;
+        var normalizedBase =
+            Path.GetFullPath(baseDir).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) +
+            Path.DirectorySeparatorChar;
+        return normalizedPath.StartsWith(normalizedBase, StringComparison.OrdinalIgnoreCase);
+    }
+
     public void DisplayHelp()
     {
-        AnsiConsole.MarkupLine("[bold]Usage:[/] fflow run <file.cs>");
+        AnsiConsole.MarkupLine("[bold]Usage:[/] fflow run <file.cs> [--include=path1,path2,...] [--root=dir]");
         AnsiConsole.MarkupLine("");
         AnsiConsole.MarkupLine("Runs the specified C# file inside the official .NET 10 SDK Docker container.");
-        AnsiConsole.MarkupLine("The folder containing the file is mounted inside the container.");
-        AnsiConsole.MarkupLine("The container is removed automatically after execution.");
+        AnsiConsole.MarkupLine("Mounts --root directory as /app if specified.");
+        AnsiConsole.MarkupLine("If script is outside --root, mounts script folder separately.");
+        AnsiConsole.MarkupLine("Includes are mounted inside /app unless inside root or script folder.");
     }
 }
