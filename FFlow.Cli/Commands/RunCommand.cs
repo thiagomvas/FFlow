@@ -33,60 +33,86 @@ public class RunCommand : ICommand
         var absPath = Path.GetFullPath(filePath);
         var workDir = Path.GetDirectoryName(absPath)!;
         var fileName = Path.GetFileName(absPath);
-
-        AnsiConsole.MarkupLine($"[grey]Starting container and running [italic]{fileName}[/]...[/]");
-
         var dockerImage = Internals.DockerImage;
-
         var dockerArgs = $"run --rm -v \"{workDir}:/app\" -w /app {dockerImage} dotnet run {fileName}";
 
-        var psi = new ProcessStartInfo
-        {
-            FileName = "docker",
-            Arguments = dockerArgs,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
+        int exitCode = 1;
+        bool startedExecution = false;
 
-        try
-        {
-            using var process = new Process() { StartInfo = psi };
-
-            process.OutputDataReceived += (sender, e) =>
+        AnsiConsole.Status()
+            .Spinner(Spinner.Known.Dots)
+            .SpinnerStyle(Style.Parse("yellow"))
+            .Start("Setting up Docker container...", ctx =>
             {
-                if (!string.IsNullOrEmpty(e.Data))
+                var psi = new ProcessStartInfo
                 {
-                    // Use Spectre.Console to write the line (escaping markup)
-                    var safeLine = e.Data.Replace("[", "[[").Replace("]", "]]");
-                    AnsiConsole.MarkupLine(safeLine);
-                }
-            };
+                    FileName = "docker",
+                    Arguments = dockerArgs,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                };
 
-            process.ErrorDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
+                using var process = new Process() { StartInfo = psi };
+
+                void OnOutput(object sender, DataReceivedEventArgs e)
                 {
-                    var safeLine = e.Data.Replace("[", "[[").Replace("]", "]]");
-                    AnsiConsole.MarkupLine($"[red]Error:[/] {safeLine}");
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        if (!startedExecution)
+                        {
+                            ctx.Status("Running pipeline...");
+                            ctx.Spinner(Spinner.Known.Line);
+                            ctx.SpinnerStyle(Style.Parse("green"));
+                            startedExecution = true;
+                        }
+
+                        var safeLine = e.Data.Replace("[", "[[").Replace("]", "]]");
+                        AnsiConsole.MarkupLine(safeLine);
+                    }
                 }
-            };
 
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
+                void OnError(object sender, DataReceivedEventArgs e)
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        if (!startedExecution)
+                        {
+                            ctx.Status("Running pipeline...");
+                            ctx.Spinner(Spinner.Known.Line);
+                            ctx.SpinnerStyle(Style.Parse("green"));
+                            startedExecution = true;
+                        }
 
-            process.WaitForExit();
+                        var safeLine = e.Data.Replace("[", "[[").Replace("]", "]]");
+                        AnsiConsole.MarkupLine($"[red]Error:[/] {safeLine}");
+                    }
+                }
 
-            return process.ExitCode;
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.MarkupLine($"[red]Failed to run Docker container:[/] {ex.Message}");
-            return 1;
-        }
+                process.OutputDataReceived += OnOutput;
+                process.ErrorDataReceived += OnError;
+
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                process.WaitForExit();
+
+                if (!startedExecution)
+                {
+                    // No output at all, mark status as done
+                    ctx.Status("No output from container.");
+                    ctx.Spinner(Spinner.Known.Arrow);
+                    ctx.SpinnerStyle(Style.Parse("grey"));
+                }
+
+                exitCode = process.ExitCode;
+            });
+
+        return exitCode;
     }
+
 
     public void DisplayHelp()
     {
