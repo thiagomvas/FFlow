@@ -20,7 +20,7 @@ public static class IWorkflowBuilderExtensions
         });
     }
     
-    public static IWorkflowBuilder UploadFileToSftp(
+    public static IWorkflowBuilder UploadFileViaSftp(
         this IWorkflowBuilder builder,
         string localFilePath,
         string remoteFilePath)
@@ -29,6 +29,18 @@ public static class IWorkflowBuilderExtensions
         {
             LocalFilePath = localFilePath,
             RemoteFilePath = remoteFilePath
+        });
+    }
+    
+    public static IWorkflowBuilder UploadDirectoryViaSftp(
+        this IWorkflowBuilder builder,
+        string localDirectoryPath,
+        string remoteDirectoryPath)
+    {
+        return builder.AddStep(new UploadDirectoryViaSftpStep()
+        {
+            LocalDirectoryPath = localDirectoryPath,
+            RemoteDirectoryPath = remoteDirectoryPath
         });
     }
     
