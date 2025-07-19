@@ -61,5 +61,17 @@ public static class IWorkflowBuilderExtensions
         });
     }
     
+    public static IWorkflowBuilder DownloadDirectoryViaSftp(
+        this IWorkflowBuilder builder,
+        string remoteDirectoryPath,
+        string localDirectoryPath)
+    {
+        return builder.AddStep(new DownloadDirectoryViaSftp()
+        {
+            RemoteDirectory = remoteDirectoryPath,
+            LocalDirectory = localDirectoryPath
+        });
+    }
+    
     
 }
