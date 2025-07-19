@@ -49,5 +49,17 @@ public static class IWorkflowBuilderExtensions
         return builder.AddStep(new DisconnectFromSftpStep());
     }
     
+    public static IWorkflowBuilder DownloadFileViaSftp(
+        this IWorkflowBuilder builder,
+        string remoteFilePath,
+        string localFilePath)
+    {
+        return builder.AddStep(new DownloadFileViaSftpStep()
+        {
+            RemoteFilePath = remoteFilePath,
+            LocalFilePath = localFilePath
+        });
+    }
+    
     
 }
