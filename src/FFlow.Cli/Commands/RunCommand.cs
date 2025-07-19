@@ -187,11 +187,10 @@ public class RunCommand : ICommand
 
     public void DisplayHelp()
     {
-        AnsiConsole.MarkupLine("[bold]Usage:[/] fflow run <file.cs> [--include=path1,path2,...] [--root=dir]");
-        AnsiConsole.MarkupLine("");
-        AnsiConsole.MarkupLine("Runs the specified C# file inside the official .NET 10 SDK Docker container.");
-        AnsiConsole.MarkupLine("Mounts --root directory as /app if specified.");
-        AnsiConsole.MarkupLine("If script is outside --root, mounts script folder separately.");
-        AnsiConsole.MarkupLine("Includes are mounted inside /app unless inside root or script folder.");
+        HelpHelper.ShowHelp(Name, Description, null, new Dictionary<string, string>
+        {
+            { "root", "The root directory to use for the script execution." },
+            { "include", "Comma-separated list of additional files or directories to include in the container." }
+        });
     }
 }
