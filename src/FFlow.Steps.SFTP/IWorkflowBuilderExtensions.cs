@@ -43,6 +43,11 @@ public static class IWorkflowBuilderExtensions
             RemoteDirectoryPath = remoteDirectoryPath
         });
     }
+
+    public static IWorkflowBuilder DisconnectFromSftp(this IWorkflowBuilder builder)
+    {
+        return builder.AddStep(new DisconnectFromSftpStep());
+    }
     
     
 }
