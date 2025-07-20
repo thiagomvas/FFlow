@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.1.0"></a>
+## [1.1.0](https://www.github.com/thiagomvas/fflow/releases/tag/v1.1.0) (2025-07-19)
+
+### Features
+
+* Add --root option to set the root directory for the container ([acc6f68](https://www.github.com/thiagomvas/fflow/commit/acc6f68e57a8f9a4f5de82882fec3d89d8772c74))
+* Add a Create File via SFTP step to create an empty file ([ddd8cd6](https://www.github.com/thiagomvas/fflow/commit/ddd8cd655dc556ee9a8d0fa496cea93a877d74e8))
+* Add Create Directory via FSTP step to create an empty directory ([48e28bb](https://www.github.com/thiagomvas/fflow/commit/48e28bb074ddcdca2b53584c945e42daf266c472))
+* Add Delete Directory via SFTP to delete all the contents inside the directory ([a1ea068](https://www.github.com/thiagomvas/fflow/commit/a1ea06845baa568a0950c4414c46456dba0eff49))
+* Add Delete File via SFTP ([820ebad](https://www.github.com/thiagomvas/fflow/commit/820ebad8ab934c864c9e73e9e91d8d81621dca7a))
+* Add Disconnect from SFTP Step ([c7e769d](https://www.github.com/thiagomvas/fflow/commit/c7e769dc8c98255e1844b98f5c36a004f8a5b8e6))
+* Add doctor command ([5986bd9](https://www.github.com/thiagomvas/fflow/commit/5986bd9af97fa93331f027f353a5d0d0af938c89))
+* Add Download Directory via Sftp step ([8dda4a4](https://www.github.com/thiagomvas/fflow/commit/8dda4a42586fe5e27d6994bb6cb7a4b87552811d))
+* Add Download File via FSTP step ([5e018cd](https://www.github.com/thiagomvas/fflow/commit/5e018cd7cc68a2a8093fe5d687530f812031c05d))
+* Add dynamic status when setting up docker and executing pipeline ([6c340b9](https://www.github.com/thiagomvas/fflow/commit/6c340b9e039ba73834b6d4616176dbaef49796d3))
+* Add extension method to add a step to log into console ([3c96564](https://www.github.com/thiagomvas/fflow/commit/3c96564b3f5472ce298aecc7177803d3d58ee775))
+* Add help and short option name support ([8763673](https://www.github.com/thiagomvas/fflow/commit/87636734ff02251acd7126b2cb2eda73d64b96f8))
+* Add help options for commands ([34bf7ca](https://www.github.com/thiagomvas/fflow/commit/34bf7caaa2097bf0fb4f5f013e947f798be7f5c3))
+* Add help to run ([7cfe36e](https://www.github.com/thiagomvas/fflow/commit/7cfe36ed1fcbd4e445b53ffb0691cf8112dae45a))
+* Add initialization command to create a file-based pipeline ([c34ca44](https://www.github.com/thiagomvas/fflow/commit/c34ca4445d69844c6611763c197ae01f7304a494))
+* Add live logging support to fflow run command ([d0ee94f](https://www.github.com/thiagomvas/fflow/commit/d0ee94f0a1ff2aaa6fb6b7b7eea45158993836cb))
+* Add note about docker image to doctor command ([0566afb](https://www.github.com/thiagomvas/fflow/commit/0566afbcf02d50690f915252d3df3d2a0b7b75da))
+* Add Rename File via SFTP ([7635f43](https://www.github.com/thiagomvas/fflow/commit/7635f43c0a4337ed898cd23a81622811c5e214e7))
+* Add run command to run the workflow isolated in a docker container ([2c8264c](https://www.github.com/thiagomvas/fflow/commit/2c8264c0a509295e2bf94ca002f1123309067da7))
+* Add single file upload via sftp logic ([caea3d6](https://www.github.com/thiagomvas/fflow/commit/caea3d6dc5b66aa6f521ccf9217f675c69f698c2))
+* Add source generators for dotnet step extensions and add IFlowContext.GetDotnet__Output extension methods ([b5ebbaf](https://www.github.com/thiagomvas/fflow/commit/b5ebbaff426ec5d286f3450b83b6500869d3bb54))
+* Add support for stopping the workflow execution without throwing ([6a83d72](https://www.github.com/thiagomvas/fflow/commit/6a83d72338dca863d65e543bff3e795606c5be8a))
+* Add Upload Directory Via Sftp step ([fc068e0](https://www.github.com/thiagomvas/fflow/commit/fc068e0970ab7bf9f10da4cd8c273ca9cb443339))
+* Check for docker image for .NET 10 SDK ([e6bfb4c](https://www.github.com/thiagomvas/fflow/commit/e6bfb4cf6def90d70d978a7306f71f9cb07edb53))
+* Separate docker version and image checks in doctor command ([551a950](https://www.github.com/thiagomvas/fflow/commit/551a950f34fd3ccfd4cde220e8315517d0d52ae8))
+* **dotnet:** Add Dotnet Clean step ([2db2302](https://www.github.com/thiagomvas/fflow/commit/2db2302bb26c41a8af00c80f8235f8ed413ab7a0))
+
+### Bug Fixes
+
+* Dotnet Test step now correctly counts test results when multiple test projects are present ([5e3313e](https://www.github.com/thiagomvas/fflow/commit/5e3313efcf97fbc747c505e84eb71a87c54d389f))
+* UploadDirectoryViaSftp now uploads recursively ([0191591](https://www.github.com/thiagomvas/fflow/commit/01915911d3859b87ae9772fdda52d2492e9eb38d))
+
 <a name="1.0.0"></a>
 ## [1.0.0](https://www.github.com/thiagomvas/FFlow/releases/tag/v1.0.0) (2025-07-02)
 

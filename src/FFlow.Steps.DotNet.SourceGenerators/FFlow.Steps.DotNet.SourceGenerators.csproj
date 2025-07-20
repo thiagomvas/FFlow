@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
+
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <PackageId>YFFlow.Steps.Dotnet.SourceGenerators</PackageId>
+    <Version>1.1.0</Version>
+    <Authors>thiagomvas</Authors>
+    <Description>Source Generators for FFlow.Steps.DotNet</Description>
+    <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeXmlDocumentation>true</IncludeXmlDocumentation>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Package the generator DLL as an analyzer -->
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+</Project>

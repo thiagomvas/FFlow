@@ -10,6 +10,7 @@ namespace FFlow.Steps.DotNet;
 /// </summary>
 [StepName(".NET Push to Nuget")]
 [StepTags("dotnet")]
+[DotnetStep("packagePathOrRoot", "PackagePathOrRoot")]
 public class DotnetNugetPushStep : IFlowStep
 {
     /// <summary>

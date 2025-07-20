@@ -9,6 +9,7 @@ namespace FFlow.Steps.DotNet;
 /// </summary>
 [StepName(".NET Run")]
 [StepTags("dotnet")]
+[DotnetStep("project", "Project")]
 public class DotnetRunStep : IFlowStep
 {
     /// <summary>Target architecture (e.g., x64, x86, arm).</summary>

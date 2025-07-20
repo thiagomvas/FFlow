@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <InvariantGlobalization>true</InvariantGlobalization>
+
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>fflow</ToolCommandName>
+
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>fflow.cli</PackageId>
+        <AssemblyName>fflow.cli</AssemblyName>
+        <Authors>thiagomvas</Authors>
+        <Version>1.1.0</Version>
+        <Description>Command-line interface for FFlow workflows</Description>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn>
+        <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Spectre.Console" Version="0.50.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="$(OutputPath)$(AssemblyName).xml" pack="true" packagePath="\" />
+    </ItemGroup>
+
+</Project>

@@ -10,6 +10,7 @@ namespace FFlow.Steps.DotNet;
 /// </summary>
 [StepName(".NET Test")]
 [StepTags("dotnet")]
+[DotnetStep("projectOrSolution", "ProjectOrSolution")]
 public class DotnetTestStep : IFlowStep
 {
     
@@ -141,17 +142,19 @@ public class DotnetTestStep : IFlowStep
 
     private int ParseTestCount(string output, string key)
     {
-        // Example summary line format:
-        // Passed!  - Failed:     0, Passed:    13, Skipped:     0, Total:    13, Duration: 287 ms - FFlow.Tests.dll (net9.0)
-    
-        // Pattern to extract e.g. "Failed: 0"
         var pattern = $@"{key}:\s*(\d+)";
-        var match = Regex.Match(output, pattern);
-        if (match.Success && int.TryParse(match.Groups[1].Value, out int count))
-            return count;
+        var matches = Regex.Matches(output, pattern);
+        int total = 0;
 
-        return 0;
+        foreach (Match match in matches)
+        {
+            if (int.TryParse(match.Groups[1].Value, out int count))
+                total += count;
+        }
+
+        return total;
     }
+
 
     private string BuildCommand()
     {

@@ -8,6 +8,7 @@ namespace FFlow.Steps.DotNet;
 /// </summary>
 [StepName(".NET Build")]
 [StepTags("dotnet")]
+[DotnetStep("projectOrSolution", "ProjectOrSolution")]
 public class DotnetBuildStep : IFlowStep
 {
     

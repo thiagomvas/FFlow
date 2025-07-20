@@ -76,4 +76,16 @@ public class FlowStepBuilder<TStep> : FlowStepBuilder
     {
         return Output<TStep, TValue>(stepProp, outputWriter);
     }
+    
+    public IConfigurableStepBuilder Configure(
+        Action<TStep> configureAction)
+    {
+        if (configureAction is null)
+        {
+            throw new ArgumentNullException(nameof(configureAction));
+        }
+
+        configureAction((TStep)_step);
+        return this;
+    }
 }

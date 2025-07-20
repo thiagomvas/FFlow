@@ -1,17 +1,11 @@
 ﻿using FFlow;
-using FFlow.Demo;
-using FFlow.Extensions;
-using FFlow.Steps.DotNet;
+using FFlow.Steps.SFTP;
 
 var registry = new StepTemplateRegistry();
-registry.OverrideDefaults<HelloStep>(step => step.Name = "Default Name");
-registry.RegisterTemplate<HelloStep>("john", step => step.Name = "John Doe");
-
 var flow = new FFlowBuilder(null, registry)
-    .WithPipelineLogger()
-    .StartWith<HelloStep>()
-    .Input<HelloStep>(step => step.Name = "Jane Doe")
+    .ConnectToSftp("localhost", 2222, "user", "password")
+    .DownloadDirectoryViaSftp("upload", "/home/thiagomv/sftp_upload")
     .Build();
 
-var ctx = await flow.RunAsync("", CancellationToken.None);
+var ctx = await flow.RunAsync();
 
