@@ -12,7 +12,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
 
     <PackageId>YFFlow.Steps.Dotnet.SourceGenerators</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>thiagomvas</Authors>
     <Description>Source Generators for FFlow.Steps.DotNet</Description>
     <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
