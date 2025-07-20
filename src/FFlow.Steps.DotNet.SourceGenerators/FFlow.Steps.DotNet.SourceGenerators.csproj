@@ -11,7 +11,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeBuildOutput>false</IncludeBuildOutput>
 
-    <PackageId>YFFlow.Steps.Dotnet.SourceGenerators</PackageId>
+    <PackageId>FFlow.Steps.Dotnet.SourceGenerators</PackageId>
     <Version>1.1.0</Version>
     <Authors>thiagomvas</Authors>
     <Description>Source Generators for FFlow.Steps.DotNet</Description>
