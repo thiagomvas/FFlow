@@ -9,6 +9,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
+        <Version>1.1.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
