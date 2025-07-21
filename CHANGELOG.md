@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.1.2"></a>
+## [1.1.2](https://www.github.com/thiagomvas/fflow/releases/tag/v1.1.2) (2025-07-21)
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://www.github.com/thiagomvas/fflow/releases/tag/v1.1.1) (2025-07-21)
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
@@ -10,7 +10,7 @@
             Provides SFTP-related steps and configuration for FFlow workflows, enabling secure file transfers and remote server interactions via SSH.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.1.1</Version>
+        <Version>1.1.2</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
