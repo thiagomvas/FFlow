@@ -11,8 +11,7 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(ctx =>
-            ctx.AddSource("DotnetStepAttribute.g.cs",
-                SourceText.From(SourceGenerationHelper.MarkerAttribute, Encoding.UTF8)));
+            ctx.AddSource("DotnetStepAttribute.g.cs", SourceText.From(SourceGenerationHelper.MarkerAttribute, Encoding.UTF8)));
 
         var stepClasses = context.SyntaxProvider
             .CreateSyntaxProvider(
@@ -23,8 +22,7 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(stepClasses, static (spc, stepType) =>
         {
             var source = GenerateExtensions((DotnetStepType)stepType!);
-            spc.AddSource($"{((DotnetStepType)stepType!).StepName}Extensions.g.cs",
-                SourceText.From(source, Encoding.UTF8));
+            spc.AddSource($"{((DotnetStepType)stepType!).StepName}Extensions.g.cs", SourceText.From(source, Encoding.UTF8));
         });
     }
 
@@ -68,45 +66,42 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
         sb.AppendLine("public static partial class IWorkflowBuilderExtensions");
         sb.AppendLine("{");
 
-        sb.AppendLine($$"""
-                            /// <summary>
-                            /// Adds a <see cref="{{step.StepClass}}"/> to the workflow and allows configuration via delegate.
-                            /// </summary>
-                            /// <param name="builder">The workflow builder.</param>
-                            /// <param name="configure">An action to configure the <see cref="{{step.StepClass}}"/>.</param>
-                            /// <returns>The step builder for further configuration.</returns>
-                            public static IConfigurableStepBuilder {{step.MethodName}}(this IWorkflowBuilder builder,
-                                Action<{{step.StepClass}}> configure)
-                            {
-                                var step = new {{step.StepClass}}();
-                                configure?.Invoke(step);
-                                return builder.AddStep(step);
-                            }
-                        """);
+        sb.AppendLine("/// <summary>");
+        sb.AppendLine($"/// Adds a <see cref=\"{step.StepClass}\"/> to the workflow and allows configuration via delegate.");
+        sb.AppendLine("/// </summary>");
+        sb.AppendLine("/// <param name=\"builder\">The workflow builder.</param>");
+        sb.AppendLine($"/// <param name=\"configure\">An action to configure the <see cref=\"{step.StepClass}\"/>.</param>");
+        sb.AppendLine("/// <returns>The step builder for further configuration.</returns>");
+        sb.AppendLine($"public static IConfigurableStepBuilder {step.MethodName}(this IWorkflowBuilder builder,");
+        sb.AppendLine($"    Action<{step.StepClass}> configure)");
+        sb.AppendLine("{");
+        sb.AppendLine($"    var step = new {step.StepClass}();");
+        sb.AppendLine("    configure?.Invoke(step);");
+        sb.AppendLine("    return builder.AddStep(step);");
+        sb.AppendLine("}");
+
 
         if (!string.IsNullOrEmpty(step.StringParam) && !string.IsNullOrEmpty(step.StringProperty))
         {
-            sb.AppendLine($$"""
-                                /// <summary>
-                                /// Adds a <see cref="{{step.StepClass}}"/> to the workflow for the specified <paramref name="{{step.StringParam}}"/>,
-                                /// and allows optional configuration via delegate.
-                                /// </summary>
-                                /// <param name="builder">The workflow builder.</param>
-                                /// <param name="{{step.StringParam}}">The {{step.StringParam}} value.</param>
-                                /// <param name="configure">An optional action to configure the <see cref="{{step.StepClass}}"/>.</param>
-                                /// <returns>The step builder for further configuration.</returns>
-                                /// <exception cref="ArgumentException">Thrown if <paramref name="{{step.StringParam}}"/> is null or empty.</exception>
-                                public static IConfigurableStepBuilder {{step.MethodName}}(this IWorkflowBuilder builder, string {{step.StringParam}},
-                                    Action<{{step.StepClass}}>? configure = null)
-                                {
-                                    if (string.IsNullOrEmpty({{step.StringParam}}))
-                                        throw new ArgumentException("Value cannot be null or empty.", nameof({{step.StringParam}}));
-
-                                    var step = new {{step.StepClass}} { {{step.StringProperty}} = {{step.StringParam}} };
-                                    configure?.Invoke(step);
-                                    return builder.AddStep(step);
-                                }
-                            """);
+            sb.AppendLine("/// <summary>");
+            sb.AppendLine($"/// Adds a <see cref=\"{step.StepClass}\"/> to the workflow for the specified <paramref name=\"{step.StringParam}\"/>,");
+            sb.AppendLine("/// and allows optional configuration via delegate.");
+            sb.AppendLine("/// </summary>");
+            sb.AppendLine("/// <param name=\"builder\">The workflow builder.</param>");
+            sb.AppendLine($"/// <param name=\"{step.StringParam}\">The {step.StringParam} value.</param>");
+            sb.AppendLine($"/// <param name=\"configure\">An optional action to configure the <see cref=\"{step.StepClass}\"/>.</param>");
+            sb.AppendLine("/// <returns>The step builder for further configuration.</returns>");
+            sb.AppendLine($"/// <exception cref=\"ArgumentException\">Thrown if <paramref name=\"{step.StringParam}\"/> is null or empty.</exception>");
+            sb.AppendLine($"public static IConfigurableStepBuilder {step.MethodName}(this IWorkflowBuilder builder, string {step.StringParam},");
+            sb.AppendLine($"    Action<{step.StepClass}>? configure = null)");
+            sb.AppendLine("{");
+            sb.AppendLine($"    if (string.IsNullOrEmpty({step.StringParam}))");
+            sb.AppendLine($"        throw new ArgumentException(\"Value cannot be null or empty.\", nameof({step.StringParam}));");
+            sb.AppendLine();
+            sb.AppendLine($"    var step = new {step.StepClass} {{ {step.StringProperty} = {step.StringParam} }};");
+            sb.AppendLine("    configure?.Invoke(step);");
+            sb.AppendLine("    return builder.AddStep(step);");
+            sb.AppendLine("}");
         }
 
         sb.AppendLine("}");
