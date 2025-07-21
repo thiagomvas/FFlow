@@ -10,7 +10,7 @@
             Validation library for FFlow workflows, providing rules and constraints to ensure workflow integrity and correctness.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.1.0</Version>
+        <Version>1.1.1</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>

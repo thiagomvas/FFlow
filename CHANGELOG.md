@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.1.1"></a>
+## [1.1.1](https://www.github.com/thiagomvas/fflow/releases/tag/v1.1.1) (2025-07-21)
+
+### Bug Fixes
+
+* Fix source generators not generating code ([7e4ad3b](https://www.github.com/thiagomvas/fflow/commit/7e4ad3bc7c116bfdd7a65377c07b8bacb575f39f))
+* Remove test projects from packaging ([4899887](https://www.github.com/thiagomvas/fflow/commit/4899887f6a2fc1803b6479a22a737a31dad701ef))
+
 <a name="1.1.0"></a>
 ## [1.1.0](https://www.github.com/thiagomvas/fflow/releases/tag/v1.1.0) (2025-07-19)
 
