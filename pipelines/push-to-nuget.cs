@@ -18,10 +18,6 @@ await new FFlowBuilder()
     })
     .DotnetNugetPush("nupkgs/")
     .Input<DotnetNugetPushStep, string>(step => step.ApiKey,  ctx => ctx.GetValue<string>("NUGET_API_KEY"))
-    .Finally((ctx, _) => {
-        Directory.Delete("nupkgs/", true);
-        Console.WriteLine("Deleted artifacts folder.");
-    })
     .Build()
     .RunAsync();
 

@@ -16,18 +16,21 @@
         <Authors>thiagomvas</Authors>
         <Version>1.1.0</Version>
         <Description>Command-line interface for FFlow workflows</Description>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
+        <Version>1.1.0</Version>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <IncludeSymbols>false</IncludeSymbols>
+        <IncludeSource>false</IncludeSource>
+        <DebugType>none</DebugType>
+    </PropertyGroup>
+
 
     <ItemGroup>
         <PackageReference Include="Spectre.Console" Version="0.50.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="$(OutputPath)$(AssemblyName).xml" pack="true" packagePath="\" />
     </ItemGroup>
 
 </Project>
