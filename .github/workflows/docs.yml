@@ -29,6 +29,9 @@ jobs:
       with:
         dotnet-version: 9.x
 
+    - name: Run test script
+      run: dotnet build -c Release
+
     - run: dotnet tool update -g docfx
     - run: docfx ./docfx.json
 

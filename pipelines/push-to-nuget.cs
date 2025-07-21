@@ -11,6 +11,7 @@ await new FFlowBuilder()
     .DotnetBuild(".")
     .DotnetTest(".", step => step.NoBuild = true)
     .ThrowIf<Exception>(ctx => ctx.GetOutputFor<DotnetTestStep, DotnetTestResult>().Failed > 0, "Tests have failed")
+    .DotnetPublish(".", step => step.Configuration = "Release")
     .DotnetPack(".", step =>
     {
         step.Configuration = "Release";
