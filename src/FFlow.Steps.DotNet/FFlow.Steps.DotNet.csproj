@@ -19,8 +19,8 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\FFlow.Steps.DotNet.SourceGenerators\FFlow.Steps.DotNet.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
+        <ProjectReference Include="..\FFlow.Steps.DotNet.SourceGenerators\FFlow.Steps.DotNet.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>
