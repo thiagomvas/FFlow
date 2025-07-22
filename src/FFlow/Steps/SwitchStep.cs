@@ -75,7 +75,7 @@ public class SwitchStep : FlowStep, IDescribableStep
         }
 
         graph.ContinueFromId = rootId;
-        graph.ContinueFromLabel = "Continue with";
+        graph.ExitEdgeLabel = "Continue with";
         
         return graph;
     }

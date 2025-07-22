@@ -53,7 +53,7 @@ public static class IWorkflowBuilderVisualizationExtensions
                     graph.Edges.Add(new WorkflowEdge(previousNode.Id, entryId, nextLabel));
 
                 var lastExit = subgraph.ContinueFrom ?? graph.Nodes.FirstOrDefault(n => n.Id == exitIds.Last());
-                nextLabel = subgraph.ContinueFromLabel;
+                nextLabel = subgraph.ExitEdgeLabel;
                 previousNode = lastExit ?? graph.Nodes.First(n => n.Id == entryId);
             }
 

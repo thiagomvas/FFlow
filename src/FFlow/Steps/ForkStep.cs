@@ -83,7 +83,7 @@ public class ForkStep : IFlowStep, IDescribableStep
                 graph.Edges.Add(new WorkflowEdge(rootId, entryId, $"Branch {idx + 1}"));
             }
             graph.ContinueFromId = rootId;
-            graph.ContinueFromLabel = "Main Thread";
+            graph.ExitEdgeLabel = "Main Thread";
 
             return graph;
         }

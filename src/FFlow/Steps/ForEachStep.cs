@@ -86,7 +86,7 @@ public class ForEachStep<T> : IFlowStep, IDescribableStep
         }
 
         graph.ContinueFromId = rootId;
-        graph.ContinueFromLabel = "Done";
+        graph.ExitEdgeLabel = "Done";
 
         return graph;
     }

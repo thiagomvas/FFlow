@@ -16,8 +16,13 @@ public class WorkflowGraph
     public List<WorkflowEdge> Edges { get; } = new();
     
     public string? ContinueFromId { get; set; }
-    public WorkflowNode? ContinueFrom => Nodes.FirstOrDefault(n => n.Id == ContinueFromId);
-    public string? ContinueFromLabel { get; set; }
+    public WorkflowNode? ContinueFrom
+    {
+        get => Nodes.FirstOrDefault(n => n.Id == ContinueFromId);
+        set => ContinueFromId = value?.Id;
+    }
+
+    public string? ExitEdgeLabel { get; set; }
 
     /// <summary>
     /// Merges a subgraph at the end of the graph.
