@@ -1,0 +1,56 @@
+name: 🚀 Feature Request
+description: Suggest a new feature, improvement, or enhancement to FFlow or its ecosystem.
+labels: [feature, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve FFlow! Please provide as much context as possible so we can evaluate the feature effectively.
+
+  - type: input
+    id: affected-package
+    attributes:
+      label: 📦 Affected Package
+      description: What package(s) does this affect? (e.g., FFlow.Core, FFlow.Steps.SFTP, unsure, etc.)
+      placeholder: FFlow.Core, FFlow.Steps.Shell
+    validations:
+      required: true
+
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 💡 Feature Summary
+      description: Clearly describe the feature or improvement you'd like to see.
+      placeholder: >
+        I would like to be able to add fallback steps that run when a step fails...
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 🤔 Why is this needed?
+      description: Explain the problem this feature solves or the use case it enables.
+      placeholder: >
+        Currently, when a step fails, the workflow stops. I'd like a way to recover...
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 🛠 Proposed Solution (optional)
+      description: If you have a preferred design or example API, include it here.
+      placeholder: >
+        Add `.Catch<TStep>()` to IWorkflowBuilder to define error recovery behavior...
+
+  - type: input
+    id: related-links
+    attributes:
+      label: 🔗 Related Issues / Discussions
+      description: Link to any related issues, discussions, or PRs.
+
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: ✅ Checklist
+      options:
+        - label: I have checked for similar issues before creating this one.
+          required: true
