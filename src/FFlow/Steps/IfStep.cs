@@ -66,7 +66,7 @@ public class IfStep : FlowStep, IDescribableStep
         var rootNode = new WorkflowNode(rootId, metadata.Name);
         graph.Nodes.Add(rootNode);
 
-        var conditionNode = new WorkflowNode($"{rootId}_condition", "Condition");
+        var conditionNode = rootNode;
         graph.Nodes.Add(conditionNode);
 
         graph.Edges.Add(new WorkflowEdge(rootId, conditionNode.Id));
