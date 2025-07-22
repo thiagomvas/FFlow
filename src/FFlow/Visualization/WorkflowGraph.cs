@@ -17,6 +17,7 @@ public class WorkflowGraph
     
     public string? ContinueFromId { get; set; }
     public WorkflowNode? ContinueFrom => Nodes.FirstOrDefault(n => n.Id == ContinueFromId);
+    public string? ContinueFromLabel { get; set; }
 
     /// <summary>
     /// Merges a subgraph at the end of the graph.

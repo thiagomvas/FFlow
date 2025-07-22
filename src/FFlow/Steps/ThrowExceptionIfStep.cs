@@ -50,6 +50,7 @@ public class ThrowExceptionIfStep : IFlowStep, IDescribableStep
         graph.Edges.Add(edge);
 
         graph.ContinueFromId = rootNode.Id;
+        graph.ContinueFromLabel = "Condition is false";
         
         return graph;
     }

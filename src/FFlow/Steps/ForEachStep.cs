@@ -85,8 +85,8 @@ public class ForEachStep<T> : IFlowStep, IDescribableStep
             graph.Edges.Add(new WorkflowEdge(actionNodeId, iteratorNode.Id, "Next"));
         }
 
-        // Exit path from iterator to Done (breaks the loop)
-        graph.Edges.Add(new WorkflowEdge(iteratorNode.Id, doneNode.Id, "Done"));
+        graph.ContinueFromId = rootId;
+        graph.ContinueFromLabel = "Done";
 
         return graph;
     }

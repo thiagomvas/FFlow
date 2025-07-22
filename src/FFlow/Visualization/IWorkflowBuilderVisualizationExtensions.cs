@@ -26,6 +26,7 @@ public static class IWorkflowBuilderVisualizationExtensions
 
         queue.Enqueue(steps.FirstOrDefault() ?? throw new InvalidOperationException("No steps found in the workflow."));
         WorkflowNode? previousNode = null;
+        string? nextLabel = null;
 
         while (queue.Count > 0)
         {
@@ -49,9 +50,10 @@ public static class IWorkflowBuilderVisualizationExtensions
                 var (entryId, exitIds) = graph.Merge(subgraph, $"");
 
                 if (previousNode != null)
-                    graph.Edges.Add(new WorkflowEdge(previousNode.Id, entryId));
+                    graph.Edges.Add(new WorkflowEdge(previousNode.Id, entryId, nextLabel));
 
                 var lastExit = subgraph.ContinueFrom ?? graph.Nodes.FirstOrDefault(n => n.Id == exitIds.Last());
+                nextLabel = subgraph.ContinueFromLabel;
                 previousNode = lastExit ?? graph.Nodes.First(n => n.Id == entryId);
             }
 
@@ -62,9 +64,10 @@ public static class IWorkflowBuilderVisualizationExtensions
 
                 if (previousNode != null)
                 {
-                    graph.Edges.Add(new WorkflowEdge(previousNode.Id, node.Id));
+                    graph.Edges.Add(new WorkflowEdge(previousNode.Id, node.Id, nextLabel));
                 }
 
+                nextLabel = null;
                 previousNode = node;
             }
 

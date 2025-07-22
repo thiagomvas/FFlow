@@ -49,13 +49,8 @@ public class ForkStep : IFlowStep, IDescribableStep
         var metadata = StepMetadataRegistry.Instance.Value.GetMetadata(this.GetType());
 
         rootId ??= metadata.Id;
-        var rootNode = new WorkflowNode(rootId, metadata.Name);
+        var rootNode = new WorkflowNode(rootId, $"Fork - {_forkStrategy}");
         graph.Nodes.Add(rootNode);
-
-        var forkNode = new WorkflowNode($"{rootId}_fork", $"Fork - {_forkStrategy}");
-        graph.Nodes.Add(forkNode);
-        graph.Edges.Add(new WorkflowEdge(rootNode.Id, forkNode.Id));
-
         if (_forkStrategy == ForkStrategy.WaitForAll)
         {
             var mergeNode = new WorkflowNode($"{rootId}_merge", "Join");
@@ -67,7 +62,7 @@ public class ForkStep : IFlowStep, IDescribableStep
                 var subgraph = builder.Describe();
                 var (entryId, exitIds) = graph.Merge(subgraph, $"{rootId}_branch{idx}");
 
-                graph.Edges.Add(new WorkflowEdge(forkNode.Id, entryId, $"Branch {idx + 1}"));
+                graph.Edges.Add(new WorkflowEdge(rootId, entryId, $"Branch {idx + 1}"));
 
                 foreach (var exitId in exitIds)
                 {
@@ -85,12 +80,11 @@ public class ForkStep : IFlowStep, IDescribableStep
                 var subgraph = builder.Describe();
                 var (entryId, exitIds) = graph.Merge(subgraph, $"{rootId}_branch{idx}");
 
-                graph.Edges.Add(new WorkflowEdge(forkNode.Id, entryId, $"Branch {idx + 1}"));
+                graph.Edges.Add(new WorkflowEdge(rootId, entryId, $"Branch {idx + 1}"));
             }
-            var virtualExitNode = new WorkflowNode($"{rootId}_mainthread", "Continue");
-            graph.Nodes.Add(virtualExitNode);
+            graph.ContinueFromId = rootId;
+            graph.ContinueFromLabel = "Main Thread";
 
-            graph.Edges.Add(new WorkflowEdge(forkNode.Id, virtualExitNode.Id, "Main Thread"));
             return graph;
         }
     }
