@@ -46,9 +46,7 @@ public abstract class WorkflowDefinition : IWorkflowDefinition
     /// <returns>The constructed workflow instance.</returns>
     public IWorkflow Build()
     {
-        var builder = new FFlowBuilder(_serviceProvider);
-        OnConfigure(builder);
-        builder.WithOptions(OnConfigureOptions());
+        var builder = CreateBuilder();
         var result = builder.Build();
         if (result is Workflow flow)
         {
@@ -56,6 +54,14 @@ public abstract class WorkflowDefinition : IWorkflowDefinition
         }
 
         return result;
+    }
+
+    public IWorkflowBuilder CreateBuilder()
+    {
+        var builder = new FFlowBuilder(_serviceProvider);
+        OnConfigure(builder);
+        builder.WithOptions(OnConfigureOptions());
+        return builder;
     }
 
     /// <summary>
