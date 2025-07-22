@@ -3,8 +3,18 @@ using FFlow.Visualization;
 
 namespace FFlow.Extensions;
 
+/// <summary>
+/// Contains extension methods for <see cref="IWorkflowBuilder"/> related to visualization.
+/// </summary>
 public static class IWorkflowBuilderVisualizationExtensions
 {
+    /// <summary>
+    /// Describes the current state of the builder as a graph structure.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static WorkflowGraph Describe(this IWorkflowBuilder builder, VisualizationFlags flags = VisualizationFlags.IgnoreInputOutputSetters)
     {
         var graph = new WorkflowGraph();

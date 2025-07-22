@@ -1,10 +1,26 @@
 namespace FFlow.Visualization;
 
+/// <summary>
+/// Represents a workflow using a graph structure.
+/// </summary>
 public class WorkflowGraph
 {
+    /// <summary>
+    /// Gets the node list for the graph.
+    /// </summary>
     public List<WorkflowNode> Nodes { get; } = new();
+    
+    /// <summary>
+    /// Gets the edge list for the graph.
+    /// </summary>
     public List<WorkflowEdge> Edges { get; } = new();
 
+    /// <summary>
+    /// Merges a subgraph at the end of the graph.
+    /// </summary>
+    /// <param name="subGraph">The subgraph to merge.</param>
+    /// <param name="idPrefix">The prefix to add to any nodes merged.</param>
+    /// <returns>A tuple containing the entry node ID and a list of exit node IDs.</returns>
     public (string EntryNodeId, List<string> ExitNodeIds) Merge(WorkflowGraph subGraph, string idPrefix)
     {
         var idMap = new Dictionary<string, string>();
@@ -33,6 +49,10 @@ public class WorkflowGraph
         return (entryId, exitIds);
     }
 
+    /// <summary>
+    /// Converts the graph into a markdown mermaid graph.
+    /// </summary>
+    /// <returns>The mermaid graph representation of this graph.</returns>
     public string ToMermaid()
     {
         var mermaid = new System.Text.StringBuilder("graph TD\n");
