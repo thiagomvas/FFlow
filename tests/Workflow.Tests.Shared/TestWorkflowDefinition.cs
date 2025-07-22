@@ -13,11 +13,16 @@ public class TestWorkflowDefinition : IWorkflowDefinition
     }
     public IWorkflow Build()
     {
+        return CreateBuilder()
+            .Build();
+    }
+
+    public IWorkflowBuilder CreateBuilder()
+    {
         return new FFlowBuilder()
             .StartWith<TestStep>()
             .Then<DelayedStep>()
-            .Then<TestStep>()
-            .Build();
+            .Then<TestStep>();
     }
 
     public IWorkflowMetadataStore MetadataStore { get; } = new InMemoryMetadataStore();
