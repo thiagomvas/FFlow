@@ -17,6 +17,23 @@ public class StepConfigurationTests
         var ctx = await workflow.RunAsync("input", new CancellationTokenSource(2000).Token);
         Assert.That(ctx.GetValue<int>("counter"), Is.EqualTo(2));
     }
+
+    [Test]
+    public async Task ConfigureStepInputs_ShouldWork_WithMultiple()
+    {
+        var workflow = new FFlowBuilder()
+            .StartWith((ctx, _) => ctx.SetValue("increment", 2))
+            .Then<TestStep>()
+            .Input<TestStep, int>(step => step.Increment,
+                ctx => ctx.GetValue<int>("increment"))
+            .Input<TestStep, int>(step => step.Increment,
+                ctx => 5)
+            .Build();
+        
+        var ctx = await workflow.RunAsync("input", new CancellationTokenSource(2000).Token);
+        Assert.That(ctx.GetValue<int>("counter"), Is.EqualTo(5));
+        
+    }
     
     [Test]
     public async Task ConfigureStepInputs_ShouldWork_WithPropSetterAndValue()
