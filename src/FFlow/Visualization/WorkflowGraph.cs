@@ -15,13 +15,23 @@ public class WorkflowGraph
     /// </summary>
     public List<WorkflowEdge> Edges { get; } = new();
     
+    /// <summary>
+    /// Gets or sets the ID of the <see cref="WorkflowNode"/> that subsequent nodes should continue from when merging.
+    /// </summary>
     public string? ContinueFromId { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the <see cref="WorkflowNode"/> that subsequent nodes should continue from when merging.
+    /// </summary>
     public WorkflowNode? ContinueFrom
     {
         get => Nodes.FirstOrDefault(n => n.Id == ContinueFromId);
         set => ContinueFromId = value?.Id;
     }
 
+    /// <summary>
+    /// Gets or sets the label for the <see cref="WorkflowEdge"/> connecting the subsequent nodes to this graph.
+    /// </summary>
     public string? ExitEdgeLabel { get; set; }
 
     /// <summary>
