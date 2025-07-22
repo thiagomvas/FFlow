@@ -10,6 +10,8 @@ public abstract class ForwardingWorkflowBuilder : IWorkflowBuilder
     /// </summary>
     protected abstract IWorkflowBuilder Delegate { get; }
 
+    public IReadOnlyList<IFlowStep> Steps => Delegate.Steps;
+
     public IConfigurableStepBuilder AddStep(IFlowStep step)
     {
         return Delegate.AddStep(step);

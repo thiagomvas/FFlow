@@ -5,6 +5,7 @@ namespace FFlow.Core;
 /// </summary>
 public interface IWorkflowBuilder
 {
+    public IReadOnlyList<IFlowStep> Steps { get; }
     /// <summary>
     /// Adds a step to the workflow.
     /// </summary>
