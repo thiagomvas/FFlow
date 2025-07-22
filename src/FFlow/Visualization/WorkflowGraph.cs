@@ -40,6 +40,11 @@ public class WorkflowGraph
     /// <param name="subGraph">The subgraph to merge.</param>
     /// <param name="idPrefix">The prefix to add to any nodes merged.</param>
     /// <returns>A tuple containing the entry node ID and a list of exit node IDs.</returns>
+    /// <remarks>
+    /// This <b>does not</b> connect the merged graph into the existing graph.
+    /// All it does is create copies of the nodes and edges into the current graph. If you wish
+    /// to connect them, add a <see cref="WorkflowEdge"/> manually.
+    /// </remarks>
     public (string EntryNodeId, List<string> ExitNodeIds) Merge(WorkflowGraph subGraph, string idPrefix, string? mergeIntoId = null)
     {
         var idMap = new Dictionary<string, string>();
