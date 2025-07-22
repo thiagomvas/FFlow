@@ -37,13 +37,17 @@ public class StepMetadataRegistry
     {
         if (stepType is null)
             throw new ArgumentNullException(nameof(stepType), "Step type cannot be null.");
-        
+
         if (!typeof(IFlowStep).IsAssignableFrom(stepType))
             throw new ArgumentException($"Type '{stepType.FullName}' does not implement IFlowStep.", nameof(stepType));
-        
+
+        if (stepType.IsGenericType)
+            stepType = stepType.GetGenericTypeDefinition();
+
         Register(stepType);
         return _metadata[stepType];
     }
+
     public StepMetadata GetMetadata<TStep>() where TStep : IFlowStep => GetMetadata(typeof(TStep));
 
     public IEnumerable<StepMetadata> GetAllMetadata() => _metadata.Values;
