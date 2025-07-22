@@ -67,9 +67,6 @@ public class IfStep : FlowStep, IDescribableStep
         graph.Nodes.Add(rootNode);
 
         var conditionNode = rootNode;
-        graph.Nodes.Add(conditionNode);
-
-        graph.Edges.Add(new WorkflowEdge(rootId, conditionNode.Id));
 
         var mergeNode = new WorkflowNode($"{rootId}_exit", "End If");
         graph.Nodes.Add(mergeNode);

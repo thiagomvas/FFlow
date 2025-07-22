@@ -14,6 +14,9 @@ public class WorkflowGraph
     /// Gets the edge list for the graph.
     /// </summary>
     public List<WorkflowEdge> Edges { get; } = new();
+    
+    public string? ContinueFromId { get; set; }
+    public WorkflowNode? ContinueFrom => Nodes.FirstOrDefault(n => n.Id == ContinueFromId);
 
     /// <summary>
     /// Merges a subgraph at the end of the graph.
@@ -27,7 +30,7 @@ public class WorkflowGraph
 
         foreach (var node in subGraph.Nodes)
         {
-            var newId = $"{idPrefix}_{node.Id}";
+            var newId = string.IsNullOrWhiteSpace(idPrefix) ? node.Id : $"{idPrefix}_{node.Id}";
             idMap[node.Id] = newId;
             Nodes.Add(new WorkflowNode(newId, node.Label));
         }

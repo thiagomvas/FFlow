@@ -46,12 +46,12 @@ public static class IWorkflowBuilderVisualizationExtensions
             if (current is IDescribableStep describable)
             {
                 var subgraph = describable.Describe($"{metadata.Id}{i}");
-                var (entryId, exitIds) = graph.Merge(subgraph, $"step{i}");
+                var (entryId, exitIds) = graph.Merge(subgraph, $"");
 
                 if (previousNode != null)
                     graph.Edges.Add(new WorkflowEdge(previousNode.Id, entryId));
 
-                var lastExit = graph.Nodes.FirstOrDefault(n => n.Id == exitIds.Last());
+                var lastExit = subgraph.ContinueFrom ?? graph.Nodes.FirstOrDefault(n => n.Id == exitIds.Last());
                 previousNode = lastExit ?? graph.Nodes.First(n => n.Id == entryId);
             }
 

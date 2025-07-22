@@ -1,11 +1,12 @@
 using FFlow.Core;
+using FFlow.Visualization;
 
 namespace FFlow;
 
 [StepName("Throw If")]
 [StepTags("built-in")]
 [SilentStep]
-public class ThrowExceptionIfStep : IFlowStep
+public class ThrowExceptionIfStep : IFlowStep, IDescribableStep
 {
     private readonly Func<IFlowContext, bool> _condition;
     private readonly Exception _exception;
@@ -31,5 +32,25 @@ public class ThrowExceptionIfStep : IFlowStep
         context.SetSingleValue(_exception);
         return Task.FromException(_exception);
 
+    }
+
+    public WorkflowGraph Describe(string? rootId = null)
+    {
+        var graph = new WorkflowGraph();
+        var metadata = StepMetadataRegistry.Instance.Value.GetMetadata(this.GetType());
+        
+        rootId ??= metadata.Id;
+        var rootNode = new WorkflowNode(rootId, metadata.Name);
+        graph.Nodes.Add(rootNode);
+        
+        var exceptionNode = new WorkflowNode($"{rootId}_exception", _exception.GetType().Name);
+        graph.Nodes.Add(exceptionNode);
+
+        var edge = new WorkflowEdge(rootId, exceptionNode.Id, "Condition is true");
+        graph.Edges.Add(edge);
+
+        graph.ContinueFromId = rootNode.Id;
+        
+        return graph;
     }
 }

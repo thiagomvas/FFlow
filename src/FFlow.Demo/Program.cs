@@ -6,7 +6,7 @@ using FFlow.Steps.SFTP;
 using FFlow.Steps.DotNet;
 
 var builder = new FFlowBuilder()
-        .StartWith<HelloStep>()
+        .StartWith<HelloStep>().Then<HelloStep>().Then<HelloStep>()
         .Input<HelloStep, string>(step => step.Name, "World")
         .Delay(1000)
         .Then<GoodByeStep>()
@@ -16,7 +16,9 @@ var builder = new FFlowBuilder()
         .Fork(ForkStrategy.FireAndForget,
             () => new FFlowBuilder().LogToConsole("First"),
             () => new FFlowBuilder().LogToConsole("Second"))
-        .ForEach<HelloStep, string>(ctx => ["Hello", "World"]);
+        .ForEach<HelloStep, string>(ctx => ["Hello", "World"])
+        .ThrowIf<ArgumentOutOfRangeException>(_ => false, "Foobar")
+        .Then<HelloStep>();
 
 Console.WriteLine(builder.Describe().ToMermaid());
 
