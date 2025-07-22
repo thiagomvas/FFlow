@@ -11,6 +11,8 @@ namespace FFlow.Core;
         /// <param name="condition">The condition to evaluate for this case.</param>
         /// <returns>An instance of <see cref="IWorkflowBuilder"/> to continue building the workflow.</returns>
         IWorkflowBuilder Case(Func<IFlowContext, bool> condition);
+        
+        IWorkflowBuilder Case(string Name, Func<IFlowContext, bool> condition);
     
         /// <summary>
         /// Adds a case to the switch-case structure with a specified condition and step type.
@@ -19,4 +21,5 @@ namespace FFlow.Core;
         /// <param name="condition">The condition to evaluate for this case.</param>
         /// <returns>An instance of <see cref="IWorkflowBuilder"/> to continue building the workflow.</returns>
         IWorkflowBuilder Case<TStep>(Func<IFlowContext, bool> condition) where TStep : class, IFlowStep;
+        IWorkflowBuilder Case<TStep>(string Name, Func<IFlowContext, bool> condition) where TStep : class, IFlowStep;
     }

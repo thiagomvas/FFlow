@@ -25,7 +25,7 @@ public class WorkflowGraph
     /// <param name="subGraph">The subgraph to merge.</param>
     /// <param name="idPrefix">The prefix to add to any nodes merged.</param>
     /// <returns>A tuple containing the entry node ID and a list of exit node IDs.</returns>
-    public (string EntryNodeId, List<string> ExitNodeIds) Merge(WorkflowGraph subGraph, string idPrefix)
+    public (string EntryNodeId, List<string> ExitNodeIds) Merge(WorkflowGraph subGraph, string idPrefix, string? mergeIntoId = null)
     {
         var idMap = new Dictionary<string, string>();
 
@@ -33,7 +33,7 @@ public class WorkflowGraph
         {
             var newId = string.IsNullOrWhiteSpace(idPrefix) ? node.Id : $"{idPrefix}_{node.Id}";
             idMap[node.Id] = newId;
-            Nodes.Add(new WorkflowNode(newId, node.Label));
+            Nodes.Add(node with { Id = newId });
         }
 
         foreach (var edge in subGraph.Edges)

@@ -1,11 +1,13 @@
 using FFlow.Core;
+using FFlow.Extensions;
+using FFlow.Visualization;
 
 namespace FFlow;
 
 [StepName("Switch Case")]
 [StepTags("built-in")]
 [SilentStep]
-public class SwitchStep : FlowStep
+public class SwitchStep : FlowStep, IDescribableStep
 {
     private readonly List<SwitchCase> _switches = new List<SwitchCase>();
     private IWorkflow _execution;
@@ -52,5 +54,29 @@ public class SwitchStep : FlowStep
         }
         
         return Task.CompletedTask;
+    }
+
+    public WorkflowGraph Describe(string? rootId = null)
+    {
+        var graph = new WorkflowGraph();
+        var metadata = StepMetadataRegistry.Instance.Value.GetMetadata<SwitchStep>();
+        rootId ??= metadata.Id;
+
+        var root = new WorkflowNode(rootId, "Switch");
+        graph.Nodes.Add(root);
+
+        for (int i = 0; i < _switches.Count; i++)
+        {
+            var switchCase = _switches[i];
+            var caseSubgraph = switchCase.Builder?.Describe();
+
+            var (entryNodeId, _) = graph.Merge(caseSubgraph, $"{rootId}_case_{i}");
+            graph.Edges.Add(new WorkflowEdge(rootId, entryNodeId, switchCase.Name));
+        }
+
+        graph.ContinueFromId = rootId;
+        graph.ContinueFromLabel = "Continue with";
+        
+        return graph;
     }
 }

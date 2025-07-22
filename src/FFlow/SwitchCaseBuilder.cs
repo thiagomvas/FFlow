@@ -16,12 +16,14 @@ public class SwitchCaseBuilder : ISwitchCaseBuilder
     /// </summary>
     /// <param name="condition">A predicate that determines when this case is executed.</param>
     /// <returns>An <see cref="IWorkflowBuilder"/> to define the steps for this case.</returns>
-    public IWorkflowBuilder Case(Func<IFlowContext, bool> condition)
+    public IWorkflowBuilder Case(Func<IFlowContext, bool> condition) => Case(string.Empty, condition);
+
+    public IWorkflowBuilder Case(string Name, Func<IFlowContext, bool> condition)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
 
         var builder = new FFlowBuilder(_serviceProvider);
-        _cases.Add(new SwitchCase(condition, builder));
+        _cases.Add(new SwitchCase(condition, builder, Name));
 
         return builder;
     }
@@ -32,13 +34,16 @@ public class SwitchCaseBuilder : ISwitchCaseBuilder
     /// <typeparam name="TStep">The type of the step to start the case with.</typeparam>
     /// <param name="condition">A predicate that determines when this case is executed.</param>
     /// <returns>An <see cref="IWorkflowBuilder"/> to further define the case.</returns>
-    public IWorkflowBuilder Case<TStep>(Func<IFlowContext, bool> condition) where TStep : class, IFlowStep
+    public IWorkflowBuilder Case<TStep>(Func<IFlowContext, bool> condition) where TStep : class, IFlowStep =>
+        Case<TStep>(string.Empty, condition);
+
+    public IWorkflowBuilder Case<TStep>(string Name, Func<IFlowContext, bool> condition) where TStep : class, IFlowStep
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
 
         var builder = new FFlowBuilder(_serviceProvider);
 
-        _cases.Add(new SwitchCase(condition, builder.StartWith<TStep>()));
+        _cases.Add(new SwitchCase(condition, builder.StartWith<TStep>(), Name));
 
         return builder;
     }
