@@ -14,6 +14,11 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
     private readonly IStepTemplateRegistry? _templateRegistry;
     
     /// <summary>
+    /// A read-only list of steps in the workflow builder.
+    /// </summary>
+    public IReadOnlyList<IFlowStep> Steps => _steps.AsReadOnly();
+    
+    /// <summary>
     /// Initializes a new instance of the <see cref="FFlowBuilder"/> class.
     /// </summary>
     /// <param name="serviceProvider">
@@ -543,8 +548,6 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         
         return result;
     }
-
-
     public IWorkflowBuilder WithOptions(Action<WorkflowOptions> configure)
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));

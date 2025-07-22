@@ -1,14 +1,14 @@
 ﻿using FFlow;
+using FFlow.Extensions;
 using FFlow.Steps.SFTP;
 using FFlow.Steps.DotNet;
 
-var registry = new StepTemplateRegistry();
-var flow = new FFlowBuilder(null, registry)
+var builder = (FFlowBuilder)new FFlowBuilder()
     .ConnectToSftp("localhost", 2222, "user", "password")
-    .DownloadDirectoryViaSftp("upload", "/home/thiagomv/sftp_upload")
-    .DotnetBuild(".")
-    .Then((ctx, ct) => ctx.GetDotnetBuildOutput())
-    .Build();
+    .UploadFileViaSftp("/home/thiagomv/memhog.c", "upload/memhog.c")
+    .ThrowIf(_ => false, "This is a test error");
 
-var ctx = await flow.RunAsync();
+Console.WriteLine(builder.Describe().ToMermaid());
+
+await builder.Build().RunAsync();
 
