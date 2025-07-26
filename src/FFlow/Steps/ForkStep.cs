@@ -1,12 +1,13 @@
 using FFlow.Core;
 using FFlow.Extensions;
+using FFlow.Visualization;
 
 namespace FFlow;
 
 [StepName("Fork")]
 [StepTags("built-in")]
 [SilentStep]
-public class ForkStep : IFlowStep
+public class ForkStep : IFlowStep, IDescribableStep
 {
     private readonly Func<IWorkflowBuilder>[] _forks;
     private readonly ForkStrategy _forkStrategy;
@@ -34,7 +35,6 @@ public class ForkStep : IFlowStep
         switch (_forkStrategy)
         {
             case ForkStrategy.FireAndForget:
-                // fire-and-forget but still tracked
                 _ = Task.WhenAll(tasks);
                 break;
             case ForkStrategy.WaitForAll:
@@ -42,4 +42,52 @@ public class ForkStep : IFlowStep
                 break;
         }
     }
+
+    public WorkflowGraph Describe(string? rootId = null)
+    {
+        var graph = new WorkflowGraph();
+        var metadata = StepMetadataRegistry.Instance.Value.GetMetadata(this.GetType());
+
+        rootId ??= metadata.Id;
+        var rootNode = new WorkflowNode(rootId, $"Fork - {_forkStrategy}");
+        graph.Nodes.Add(rootNode);
+        if (_forkStrategy == ForkStrategy.WaitForAll)
+        {
+            var mergeNode = new WorkflowNode($"{rootId}_merge", "Join");
+            graph.Nodes.Add(mergeNode);
+
+            for (int idx = 0; idx < _forks.Length; idx++)
+            {
+                var builder = _forks[idx]();
+                var subgraph = builder.Describe();
+                var (entryId, exitIds) = graph.Merge(subgraph, $"{rootId}_branch{idx}");
+
+                graph.Edges.Add(new WorkflowEdge(rootId, entryId, $"Branch {idx + 1}"));
+
+                foreach (var exitId in exitIds)
+                {
+                    graph.Edges.Add(new WorkflowEdge(exitId, mergeNode.Id));
+                }
+            }
+
+            return graph;
+        }
+        else 
+        {
+            for (int idx = 0; idx < _forks.Length; idx++)
+            {
+                var builder = _forks[idx]();
+                var subgraph = builder.Describe();
+                var (entryId, exitIds) = graph.Merge(subgraph, $"{rootId}_branch{idx}");
+
+                graph.Edges.Add(new WorkflowEdge(rootId, entryId, $"Branch {idx + 1}"));
+            }
+            graph.ContinueFromId = rootId;
+            graph.ExitEdgeLabel = "Main Thread";
+
+            return graph;
+        }
+    }
+
+
 }

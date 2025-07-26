@@ -1,14 +1,13 @@
 ﻿using FFlow;
+using FFlow.Core;
+using FFlow.Demo;
+using FFlow.Extensions;
 using FFlow.Steps.SFTP;
 using FFlow.Steps.DotNet;
 
-var registry = new StepTemplateRegistry();
-var flow = new FFlowBuilder(null, registry)
-    .ConnectToSftp("localhost", 2222, "user", "password")
-    .DownloadDirectoryViaSftp("upload", "/home/thiagomv/sftp_upload")
-    .DotnetBuild(".")
-    .Then((ctx, ct) => ctx.GetDotnetBuildOutput())
-    .Build();
+var builder = new FFlowBuilder()
+        .StartWith<HelloStep>().Then<NoOpStep>().Then<GoodByeStep>();
 
-var ctx = await flow.RunAsync();
+Console.WriteLine(builder.Describe().ToDot());
+
 

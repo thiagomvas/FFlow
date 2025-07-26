@@ -1,4 +1,6 @@
 using FFlow.Core;
+using FFlow.Extensions;
+using FFlow.Visualization;
 
 namespace FFlow;
 
@@ -46,9 +48,7 @@ public abstract class WorkflowDefinition : IWorkflowDefinition
     /// <returns>The constructed workflow instance.</returns>
     public IWorkflow Build()
     {
-        var builder = new FFlowBuilder(_serviceProvider);
-        OnConfigure(builder);
-        builder.WithOptions(OnConfigureOptions());
+        var builder = CreateBuilder();
         var result = builder.Build();
         if (result is Workflow flow)
         {
@@ -56,6 +56,29 @@ public abstract class WorkflowDefinition : IWorkflowDefinition
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Creates a new workflow builder instance with the configured options.
+    /// </summary>
+    /// <returns>Creates a configured builder based on this definition.</returns>
+    public IWorkflowBuilder CreateBuilder()
+    {
+        var builder = new FFlowBuilder(_serviceProvider);
+        OnConfigure(builder);
+        builder.WithOptions(OnConfigureOptions());
+        return builder;
+    }
+    
+    /// <summary>
+    /// Describes the workflow as a graph structure.
+    /// </summary>
+    /// <param name="flags"></param>
+    /// <returns></returns>
+    public WorkflowGraph Describe(VisualizationFlags flags = VisualizationFlags.IgnoreInputOutputSetters)
+    {
+        var builder = CreateBuilder();
+        return builder.Describe(flags);
     }
 
     /// <summary>

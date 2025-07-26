@@ -23,6 +23,8 @@ items:
         href: features/validation.md
       - name: Compensation
         href: features/compensation.md
+      - name: Visualization
+        href: features/visualization.md
   - name: Extensions
     items:
       - name: Observability
