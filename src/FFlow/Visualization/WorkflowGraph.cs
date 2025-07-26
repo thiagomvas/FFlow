@@ -63,6 +63,12 @@ public class WorkflowGraph
                 idMap[edge.To],
                 edge.Label));
         }
+        
+        if (!string.IsNullOrWhiteSpace(mergeIntoId))
+        {
+            var firstNodeId = idMap[subGraph.Nodes.First().Id];
+            Edges.Add(new WorkflowEdge(mergeIntoId, firstNodeId, ExitEdgeLabel));
+        }
 
         string entryId = idMap[subGraph.Nodes.First().Id];
         var exitIds = subGraph.Nodes
