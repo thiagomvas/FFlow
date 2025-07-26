@@ -117,14 +117,12 @@ public class WorkflowGraph
         sb.AppendLine("digraph WorkflowGraph {");
         sb.AppendLine("  rankdir=TD;"); 
 
-        // Define nodes with labels
         foreach (var node in Nodes)
         {
             var label = node.Label.Replace("\"", "\\\""); // Escape quotes
             sb.AppendLine($"  \"{node.Id}\" [label=\"{label}\"];");
         }
 
-        // Define edges with optional labels
         foreach (var edge in Edges)
         {
             if (string.IsNullOrEmpty(edge.Label))

@@ -8,6 +8,6 @@ using FFlow.Steps.DotNet;
 var builder = new FFlowBuilder()
         .StartWith<HelloStep>().Then<NoOpStep>().Then<GoodByeStep>();
 
-Console.WriteLine(builder.Describe().ToMermaid());
+Console.WriteLine(builder.Describe().ToDot());
 
 
