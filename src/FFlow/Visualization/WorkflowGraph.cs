@@ -100,5 +100,38 @@ public class WorkflowGraph
 
         return mermaid.ToString();
     }
+    
+    /// <summary>
+    /// Converts the graph into a DOT graph format string.
+    /// </summary>
+    /// <returns>A string representing the graph in the DOT language format.</returns>
+    public string ToDot()
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("digraph WorkflowGraph {");
+        sb.AppendLine("  rankdir=TD;"); 
+
+        // Define nodes with labels
+        foreach (var node in Nodes)
+        {
+            var label = node.Label.Replace("\"", "\\\""); // Escape quotes
+            sb.AppendLine($"  \"{node.Id}\" [label=\"{label}\"];");
+        }
+
+        // Define edges with optional labels
+        foreach (var edge in Edges)
+        {
+            if (string.IsNullOrEmpty(edge.Label))
+                sb.AppendLine($"  \"{edge.From}\" -> \"{edge.To}\";");
+            else
+            {
+                var label = edge.Label.Replace("\"", "\\\"");
+                sb.AppendLine($"  \"{edge.From}\" -> \"{edge.To}\" [label=\"{label}\"];");
+            }
+        }
+
+        sb.AppendLine("}");
+        return sb.ToString();
+    }
 
 }
