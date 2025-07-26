@@ -6,6 +6,8 @@ namespace FFlow.Steps.SFTP;
 /// <summary>
 /// Represents a workflow step to delete a file on an SFTP server.
 /// </summary>
+[StepName("Delete File via SFTP")]
+[StepTags("sftp")]
 public class DeleteFileViaSftpStep : FlowStep
 {
     /// <summary>
