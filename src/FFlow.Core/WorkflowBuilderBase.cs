@@ -3,7 +3,6 @@ namespace FFlow.Core;
 public abstract class WorkflowBuilderBase
 {
     private readonly List<IFlowStep> _steps = new();
-    private IServiceProvider? _serviceProvider;
     private IStepTemplateRegistry? _stepTemplateRegistry;
     private IFlowContext? _flowContext;
     private Type? _contextType;
@@ -12,18 +11,7 @@ public abstract class WorkflowBuilderBase
 
     public abstract IWorkflow Build();
     
-    protected IServiceProvider? ServiceProvider
-    {
-        get => _serviceProvider;
-        set
-        {
-            if (_serviceProvider is not null && value is not null && _serviceProvider != value)
-                throw new InvalidOperationException("ServiceProvider has already been set and cannot be changed.");
-            _serviceProvider = value;
-        }
-    }
-    
-    protected IStepTemplateRegistry? StepTemplateRegistry
+    public virtual IStepTemplateRegistry? StepTemplateRegistry
     {
         get => _stepTemplateRegistry;
         set
@@ -34,7 +22,7 @@ public abstract class WorkflowBuilderBase
         }
     }
     
-    protected IFlowContext? FlowContext
+    public virtual IFlowContext? FlowContext
     {
         get => _flowContext;
         set
@@ -45,7 +33,7 @@ public abstract class WorkflowBuilderBase
         }
     }
     
-    protected Type? ContextType
+    public virtual Type? ContextType
     {
         get => _contextType;
         set
@@ -56,18 +44,15 @@ public abstract class WorkflowBuilderBase
         }
     }
 
-    public virtual IConfigurableStepBuilder AddStep<TStep>(TStep step)
-        where TStep : IFlowStep
+    public virtual void AddStep(IFlowStep step)
     {
         if (step is null)
             throw new ArgumentNullException(nameof(step));
 
         _steps.Add(step);
-        return CreateConfigurableBuilder(step);
     }
 
-    public virtual IConfigurableStepBuilder InsertStepAt<TStep>(int index, TStep step)
-        where TStep : IFlowStep
+    public virtual void InsertStepAt(int index, IFlowStep step)
     {
         if (step is null)
             throw new ArgumentNullException(nameof(step));
@@ -75,11 +60,9 @@ public abstract class WorkflowBuilderBase
             throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the range of the steps list.");
 
         _steps.Insert(index, step);
-        return CreateConfigurableBuilder(step);
     }
 
-    public virtual IConfigurableStepBuilder ReplaceStep<TStep>(int index, TStep step)
-        where TStep : IFlowStep
+    public virtual void ReplaceStep(int index, IFlowStep step)
     {
         if (step is null)
             throw new ArgumentNullException(nameof(step));
@@ -87,21 +70,14 @@ public abstract class WorkflowBuilderBase
             throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the range of the steps list.");
 
         _steps[index] = step;
-        return CreateConfigurableBuilder(step);
     }
     
-    public virtual IConfigurableStepBuilder RemoveStepAt(int index)
+    public virtual void RemoveStepAt(int index)
     {
         if (index < 0 || index >= _steps.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the range of the steps list.");
 
         var step = _steps[index];
         _steps.RemoveAt(index);
-        return CreateConfigurableBuilder(step);
     }
-    
-
-
-    protected abstract IConfigurableStepBuilder CreateConfigurableBuilder<TStep>(TStep step)
-        where TStep : IFlowStep;
 }
