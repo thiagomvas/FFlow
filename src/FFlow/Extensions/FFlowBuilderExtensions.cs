@@ -304,6 +304,26 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
+    public static nFFlowBuilder Stop(this nFFlowBuilder builder)
+    {
+        var step = new StopExecutionStep();
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder StopIf(this nFFlowBuilder builder, Func<IFlowContext, bool> condition)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+
+        var step = new StopExecutionIfStep(condition);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    
+    
+    
+    
     internal static TStep ResolveAndConfigure<TStep>(
         this nFFlowBuilder builder,
         StepConfigurator<TStep>? configure = null)
