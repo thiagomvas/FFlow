@@ -383,7 +383,6 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
         if (caseBuilder == null) throw new ArgumentNullException(nameof(caseBuilder));
         
         var switchCaseBuilder = new SwitchCaseBuilder { _serviceProvider = _serviceProvider };
-        caseBuilder(switchCaseBuilder);
         
         var step = switchCaseBuilder.Build();
         
