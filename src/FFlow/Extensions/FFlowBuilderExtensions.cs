@@ -183,9 +183,127 @@ public static class FFlowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+
+    public static nFFlowBuilder If<TTrue>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+
+        if (!builder.TryResolveStep(out IfStep? trueStep))
+            throw new InvalidOperationException(
+                $"Could not resolve step of type {typeof(IfStep).Name} from the service provider.");
+        var step = new IfStep(condition, trueStep);
+        builder.AddStep(step);
+        return builder;
+    }
     
+    public static nFFlowBuilder If<TTrue, TFalse>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition)
+        where TTrue : class, IFlowStep
+        where TFalse : class, IFlowStep
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
 
+        if (!builder.TryResolveStep<TTrue>(out var trueStep))
+            throw new InvalidOperationException(
+                $"Could not resolve step of type {typeof(TTrue).Name} from the service provider.");
+        if (!builder.TryResolveStep<TFalse>(out var falseStep))
+            throw new InvalidOperationException(
+                $"Could not resolve step of type {typeof(TFalse).Name} from the service provider.");
 
+        var step = new IfStep(condition, trueStep, falseStep);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder If<TTrue, TFalse>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+        StepConfigurator<TTrue>? trueStepConfigurator = null,
+        StepConfigurator<TFalse>? falseStepConfigurator = null)
+        where TTrue : class, IFlowStep
+        where TFalse : class, IFlowStep
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+
+        var trueStep = builder.ResolveAndConfigure(trueStepConfigurator);
+        var falseStep = builder.ResolveAndConfigure(falseStepConfigurator);
+
+        var step = new IfStep(condition, trueStep, falseStep);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder If<TTrue>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+        StepConfigurator<TTrue>? trueStepConfigurator = null)
+        where TTrue : class, IFlowStep
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+
+        var trueStep = builder.ResolveAndConfigure(trueStepConfigurator);
+
+        if (!builder.TryResolveStep(out IfStep? falseStep))
+            throw new InvalidOperationException(
+                $"Could not resolve step of type {typeof(IfStep).Name} from the service provider.");
+
+        var step = new IfStep(condition, trueStep, falseStep);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder If(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+        AsyncFlowAction trueStepAction, AsyncFlowAction? falseStepAction = null)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (trueStepAction == null) throw new ArgumentNullException(nameof(trueStepAction));
+
+        var trueStep = new DelegateFlowStep(trueStepAction);
+        var falseStep = falseStepAction != null ? new DelegateFlowStep(falseStepAction) : null;
+
+        var step = new IfStep(condition, trueStep, falseStep);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder If(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+        Action<IFlowContext> trueStepAction, Action<IFlowContext>? falseStepAction = null)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (trueStepAction == null) throw new ArgumentNullException(nameof(trueStepAction));
+
+        var trueStep = new DelegateFlowStep((ctx, ct) => Task.Run(() => trueStepAction(ctx), ct));
+        var falseStep = falseStepAction != null
+            ? new DelegateFlowStep((ctx, ct) => Task.Run(() => falseStepAction(ctx), ct))
+            : null;
+
+        var step = new IfStep(condition, trueStep, falseStep);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder If(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+        Action stepAction, Action<IFlowContext>? falseStepAction = null)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (stepAction == null) throw new ArgumentNullException(nameof(stepAction));
+
+        var trueStep = new DelegateFlowStep((_, ct) => Task.Run(stepAction, ct));
+        var falseStep = falseStepAction != null
+            ? new DelegateFlowStep((ctx, ct) => Task.Run(() => falseStepAction(ctx), ct))
+            : null;
+
+        var step = new IfStep(condition, trueStep, falseStep);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder If(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+        IFlowStep trueStep, IFlowStep? falseStep = null)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (trueStep == null) throw new ArgumentNullException(nameof(trueStep));
+
+        var step = new IfStep(condition, trueStep, falseStep);
+        builder.AddStep(step);
+        return builder;
+    }
+    
     internal static TStep ResolveAndConfigure<TStep>(
         this nFFlowBuilder builder,
         StepConfigurator<TStep>? configure = null)
