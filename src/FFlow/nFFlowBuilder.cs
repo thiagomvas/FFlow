@@ -10,6 +10,7 @@ public class nFFlowBuilder : WorkflowBuilderBase
     private IFlowStep? _finalizer;
     private IFlowStep? _starter;
     private readonly IServiceProvider? _serviceProvider;
+    public IServiceProvider Services => _serviceProvider;
     public nFFlowBuilder(IServiceProvider? serviceProvider = null)
     {
         _serviceProvider = serviceProvider;
