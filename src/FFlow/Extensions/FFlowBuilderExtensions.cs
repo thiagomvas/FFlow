@@ -333,10 +333,55 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
+    public static nFFlowBuilder Throw(this nFFlowBuilder builder, string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message cannot be null or whitespace.", nameof(message));
+
+        var step = new ThrowExceptionStep(message);
+        builder.AddStep(step);
+        return builder;
+    }
     
+    public static nFFlowBuilder Throw<TException>(this nFFlowBuilder builder, string message)
+        where TException : Exception
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message cannot be null or whitespace.", nameof(message));
+
+        var exception = (TException)Activator.CreateInstance(typeof(TException), message)!
+                        ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
+
+        var step = new ThrowExceptionStep(exception);
+        builder.AddStep(step);
+        return builder;
+    }
     
+    public static nFFlowBuilder ThrowIf(this nFFlowBuilder builder, Func<IFlowContext, bool> condition, string message)
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message cannot be null or whitespace.", nameof(message));
+
+        var step = new ThrowExceptionIfStep(condition, message);
+        builder.AddStep(step);
+        return builder;
+    }
     
-    
+    public static nFFlowBuilder ThrowIf<TException>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition, string message)
+        where TException : Exception
+    {
+        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message cannot be null or whitespace.", nameof(message));
+
+        var exception = (TException)Activator.CreateInstance(typeof(TException), message)!
+                        ?? throw new InvalidOperationException($"Could not create instance of {typeof(TException)} with message.");
+
+        var step = new ThrowExceptionIfStep(condition, exception);
+        builder.AddStep(step);
+        return builder;
+    }
     
     internal static TStep ResolveAndConfigure<TStep>(
         this nFFlowBuilder builder,
