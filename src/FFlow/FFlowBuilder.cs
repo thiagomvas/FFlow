@@ -371,6 +371,8 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
             throw new InvalidOperationException($"Could not create instance of {typeof(TWorkflowDefinition).Name}");
         }
         
+        
+        
         var step = new WorkflowContinuationStep(workflowDefinition);
         _steps.Add(step);
         return CreateStepBuilder(step);
@@ -391,7 +393,7 @@ public class FFlowBuilder : IWorkflowBuilder, IConfigurableWorkflowBuilder
 
     public IWorkflowBuilder Fork(ForkStrategy strategy, params Func<IWorkflowBuilder>[] forks)
     {
-        var step = new ForkStep(strategy, forks);
+        var step = new ForkStep(strategy, []);
         _steps.Add(step);
         return this;
     }

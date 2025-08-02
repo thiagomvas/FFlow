@@ -164,6 +164,26 @@ public static class FFlowBuilderExtensions
         return builder.Delay(TimeSpan.FromMilliseconds(milliseconds));
     }
     
+    public static nFFlowBuilder Fork(this nFFlowBuilder builder, params Func<IWorkflow>[] workflowFactories)
+    {
+        if (workflowFactories == null || workflowFactories.Length == 0)
+            throw new ArgumentNullException(nameof(workflowFactories), "At least one workflow must be provided.");
+
+        var step = new ForkStep(ForkStrategy.FireAndForget, workflowFactories);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder Fork(this nFFlowBuilder builder, ForkStrategy strategy, params Func<IWorkflow>[] workflowFactories)
+    {
+        if (workflowFactories == null || workflowFactories.Length == 0)
+            throw new ArgumentNullException(nameof(workflowFactories), "At least one workflow must be provided.");
+
+        var step = new ForkStep(strategy, workflowFactories);
+        builder.AddStep(step);
+        return builder;
+    }
+    
 
 
     internal static TStep ResolveAndConfigure<TStep>(

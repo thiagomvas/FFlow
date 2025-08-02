@@ -9,10 +9,10 @@ namespace FFlow;
 [SilentStep]
 public class ForkStep : IFlowStep, IDescribableStep
 {
-    private readonly Func<IWorkflowBuilder>[] _forks;
+    private readonly Func<IWorkflow>[] _forks;
     private readonly ForkStrategy _forkStrategy;
 
-    public ForkStep(ForkStrategy strategy, Func<IWorkflowBuilder>[] forks)
+    public ForkStep(ForkStrategy strategy, Func<IWorkflow>[] forks)
     {
         _forks = forks;
         _forkStrategy = strategy;
@@ -22,7 +22,7 @@ public class ForkStep : IFlowStep, IDescribableStep
     {
         var tasks = _forks.Select(f =>
         {
-            var task = f().Build()
+            var task = f()
                 .SetContext(context.Fork())
                 .RunAsync(context.GetLastInput<object>(), cancellationToken);
 
@@ -58,8 +58,9 @@ public class ForkStep : IFlowStep, IDescribableStep
 
             for (int idx = 0; idx < _forks.Length; idx++)
             {
-                var builder = _forks[idx]();
-                var subgraph = builder.Describe();
+                var workflow = (Workflow) _forks[idx]();
+                if (workflow is null) continue;
+                var subgraph = workflow.Graph;
                 var (entryId, exitIds) = graph.Merge(subgraph, $"{rootId}_branch{idx}");
 
                 graph.Edges.Add(new WorkflowEdge(rootId, entryId, $"Branch {idx + 1}"));
@@ -76,8 +77,9 @@ public class ForkStep : IFlowStep, IDescribableStep
         {
             for (int idx = 0; idx < _forks.Length; idx++)
             {
-                var builder = _forks[idx]();
-                var subgraph = builder.Describe();
+                var workflow = (Workflow) _forks[idx]();
+                if (workflow is null) continue;
+                var subgraph = workflow.Graph;
                 var (entryId, exitIds) = graph.Merge(subgraph, $"{rootId}_branch{idx}");
 
                 graph.Edges.Add(new WorkflowEdge(rootId, entryId, $"Branch {idx + 1}"));
