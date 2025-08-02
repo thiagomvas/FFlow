@@ -145,6 +145,25 @@ public static class FFlowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    public static nFFlowBuilder Delay(this nFFlowBuilder builder, TimeSpan delay)
+    {
+        if (delay <= TimeSpan.Zero)
+            throw new ArgumentOutOfRangeException(nameof(delay), "Delay must be greater than zero.");
+
+        var step = new DelayStep(delay);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    public static nFFlowBuilder Delay(this nFFlowBuilder builder, int milliseconds)
+    {
+        if (milliseconds <= 0)
+            throw new ArgumentOutOfRangeException(nameof(milliseconds), "Delay must be greater than zero.");
+
+        return builder.Delay(TimeSpan.FromMilliseconds(milliseconds));
+    }
+    
 
 
     internal static TStep ResolveAndConfigure<TStep>(
