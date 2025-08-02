@@ -81,6 +81,54 @@ public static class FFlowBuilderExtensions
         ArgumentNullException.ThrowIfNull(step);
         return builder.Then(new DelegateFlowStep((_, ct) => Task.Run(step, ct)));
     }
+    
+    public static nFFlowBuilder Finally<TStep>(this nFFlowBuilder builder, TStep step)
+        where TStep : IFlowStep
+    {
+        if (step == null) throw new ArgumentNullException(nameof(step));
+        return builder.WithFinalizer(step);
+    }
+    
+    public static nFFlowBuilder Finally<TStep>(this nFFlowBuilder builder)
+        where TStep : class, IFlowStep
+    {
+        var step = builder.ResolveAndConfigure<TStep>();
+        return builder.WithFinalizer(step);
+    }
+    
+    public static nFFlowBuilder Finally<TStep>(this nFFlowBuilder builder, Action<TStep> configure)
+        where TStep : class, IFlowStep
+    {
+        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        return builder.Finally<TStep>((step, _) => configure(step));
+    }
+    
+    public static nFFlowBuilder Finally<TStep>(this nFFlowBuilder builder, StepConfigurator<TStep> configure) 
+        where TStep : class, IFlowStep
+    {
+        var step = builder.ResolveAndConfigure(configure);
+        return builder.WithFinalizer(step);
+    }
+    
+    public static nFFlowBuilder Finally(this nFFlowBuilder builder, AsyncFlowAction step)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        return builder.Finally(new DelegateFlowStep(step));
+    }
+    
+    public static nFFlowBuilder Finally(this nFFlowBuilder builder, Action<IFlowContext> step)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        return builder.Finally(new DelegateFlowStep((ctx, ct) => Task.Run(() => step(ctx), ct)));
+    }
+    
+    public static nFFlowBuilder Finally(this nFFlowBuilder builder, Action step)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        return builder.Finally(new DelegateFlowStep((_, ct) => Task.Run(step, ct)));
+    }
+    
+    
     internal static TStep ResolveAndConfigure<TStep>(
         this nFFlowBuilder builder,
         StepConfigurator<TStep>? configure = null)
