@@ -21,6 +21,6 @@ public class DelegateFlowStep : FlowStep
         if (context == null) throw new ArgumentNullException(nameof(context));
         if (_action == null) throw new InvalidOperationException("Action must be set.");
         
-        return _action(context, cancellationToken);
+        return Task.Run(() => _action.Invoke(context, cancellationToken));
     }
 }

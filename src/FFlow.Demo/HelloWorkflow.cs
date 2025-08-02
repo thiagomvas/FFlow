@@ -16,14 +16,14 @@ public class HelloWorkflow : WorkflowDefinition
             .SetDescription("A simple workflow that greets the world and then says goodbye.");
     }
 
-    public override void OnConfigure(IWorkflowBuilder builder)
+    public override void OnConfigure(WorkflowBuilderBase builder)
     {
         builder
             .StartWith<HelloStep>()
-            .Input<HelloStep, string>(step => step.Name, "World")
+            .Input<HelloStep>((step, _) => step.Name = "Hello, World")
             .Delay(1000)
             .Then<GoodByeStep>()
-            .Input<GoodByeStep, string>(step => step.Name, "World");
+            .Input<GoodByeStep>((step, _) => step.Name = "Goodbye, World");
     }
 
     public override Action<WorkflowOptions> OnConfigureOptions()

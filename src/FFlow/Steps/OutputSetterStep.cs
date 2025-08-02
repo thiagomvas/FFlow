@@ -7,7 +7,7 @@ namespace FFlow;
 [SilentStep]
 internal class OutputSetterStep : IFlowStep
 {
-    private readonly List<Action<IFlowContext>> _outputWriters = new();
+    internal readonly List<Action<IFlowContext>> _outputWriters = new();
 
     public OutputSetterStep(IEnumerable<Action<IFlowContext>> outputWriters)
     {

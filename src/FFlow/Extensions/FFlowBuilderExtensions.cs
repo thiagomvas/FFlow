@@ -4,39 +4,82 @@ namespace FFlow.Extensions;
 
 public static class FFlowBuilderExtensions
 {
-    public static nFFlowBuilder WithStarter<TStep>(this nFFlowBuilder builder)
+    public static WorkflowBuilderBase StartWith<TStep>(this WorkflowBuilderBase builder)
         where TStep : class, IFlowStep
     {
-        if (!builder.TryResolveStep<TStep>(out var step))
-            throw new InvalidOperationException(
-                $"Could not resolve step of type {typeof(TStep).Name} from the service provider.");
-        return builder.WithStarter(step);
+        var step = builder.ResolveAndConfigure<TStep>();
+        if (builder is nFFlowBuilder flowBuilder)
+        {
+            flowBuilder.WithStarter(step);
+            return flowBuilder;
+        }
+        else
+        {
+            builder.AddStep(step);
+            return builder;
+        }
+        
     }
-
-    public static nFFlowBuilder StartWith<TStep>(this nFFlowBuilder builder, Action<TStep> configure)
+    public static WorkflowBuilderBase StartWith<TStep>(this WorkflowBuilderBase builder, Action<TStep> configure)
         where TStep : class, IFlowStep
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
         return builder.StartWith<TStep>((step, _) => configure(step));
     }
 
-    public static nFFlowBuilder StartWith<TStep>(this nFFlowBuilder builder, StepConfigurator<TStep> configure)
+    public static WorkflowBuilderBase StartWith<TStep>(this WorkflowBuilderBase builder, StepConfigurator<TStep> configure)
         where TStep : class, IFlowStep
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
         var step = builder.ResolveAndConfigure(configure);
-        return builder.WithStarter(step);
+        if (builder is nFFlowBuilder flowBuilder)
+        {
+            flowBuilder.WithStarter(step);
+            return flowBuilder;
+        }
+        else
+        {
+            builder.AddStep(step);
+            return builder;
+        }
     }
 
 
-    public static nFFlowBuilder StartWith<TStep>(this nFFlowBuilder builder, TStep step)
+    public static WorkflowBuilderBase StartWith<TStep>(this WorkflowBuilderBase builder, TStep step)
         where TStep : IFlowStep
     {
         if (step == null) throw new ArgumentNullException(nameof(step));
-        return builder.WithStarter(step);
+        if (builder is nFFlowBuilder flowBuilder)
+        {
+            flowBuilder.WithStarter(step);
+            return flowBuilder;
+        }
+        else
+        {
+            builder.AddStep(step);
+            return builder;
+        }
+    }
+    
+    public static WorkflowBuilderBase StartWith(this WorkflowBuilderBase builder, AsyncFlowAction step)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        return builder.StartWith(new DelegateFlowStep(step));
+    }
+    
+    public static WorkflowBuilderBase StartWith(this WorkflowBuilderBase builder, Action<IFlowContext> step)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        return builder.StartWith(new DelegateFlowStep((ctx, ct) => Task.Run(() => step(ctx), ct)));
+    }
+    
+    public static WorkflowBuilderBase StartWith(this WorkflowBuilderBase builder, Action step)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        return builder.StartWith(new DelegateFlowStep((_, ct) => Task.Run(step, ct)));
     }
 
-    public static nFFlowBuilder Then<TStep>(this nFFlowBuilder builder, TStep step)
+    public static WorkflowBuilderBase Then<TStep>(this WorkflowBuilderBase builder, TStep step)
         where TStep : IFlowStep
     {
         if (step == null) throw new ArgumentNullException(nameof(step));
@@ -44,7 +87,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
 
-    public static nFFlowBuilder Then<TStep>(this nFFlowBuilder builder)
+    public static WorkflowBuilderBase Then<TStep>(this WorkflowBuilderBase builder)
         where TStep : class, IFlowStep
     {
         var step = builder.ResolveAndConfigure<TStep>();
@@ -52,14 +95,14 @@ public static class FFlowBuilderExtensions
         return builder;
     }
 
-    public static nFFlowBuilder Then<TStep>(this nFFlowBuilder builder, Action<TStep> configure)
+    public static WorkflowBuilderBase Then<TStep>(this WorkflowBuilderBase builder, Action<TStep> configure)
         where TStep : class, IFlowStep
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
         return builder.Then<TStep>((step, _) => configure(step));
     }
 
-    public static nFFlowBuilder Then<TStep>(this nFFlowBuilder builder, StepConfigurator<TStep> configure)
+    public static WorkflowBuilderBase Then<TStep>(this WorkflowBuilderBase builder, StepConfigurator<TStep> configure)
         where TStep : class, IFlowStep
     {
         var step = builder.ResolveAndConfigure(configure);
@@ -67,74 +110,101 @@ public static class FFlowBuilderExtensions
         return builder;
     }
 
-    public static nFFlowBuilder Then(this nFFlowBuilder builder, AsyncFlowAction step)
+    public static WorkflowBuilderBase Then(this WorkflowBuilderBase builder, AsyncFlowAction step)
     {
         ArgumentNullException.ThrowIfNull(step);
         return builder.Then(new DelegateFlowStep(step));
     }
 
-    public static nFFlowBuilder Then(this nFFlowBuilder builder, Action<IFlowContext> step)
+    public static WorkflowBuilderBase Then(this WorkflowBuilderBase builder, Action<IFlowContext> step)
     {
         ArgumentNullException.ThrowIfNull(step);
         return builder.Then(new DelegateFlowStep((ctx, ct) => Task.Run(() => step(ctx), ct)));
     }
 
-    public static nFFlowBuilder Then(this nFFlowBuilder builder, Action step)
+    public static WorkflowBuilderBase Then(this WorkflowBuilderBase builder, Action step)
     {
         ArgumentNullException.ThrowIfNull(step);
         return builder.Then(new DelegateFlowStep((_, ct) => Task.Run(step, ct)));
     }
 
-    public static nFFlowBuilder Finally<TStep>(this nFFlowBuilder builder, TStep step)
+    public static WorkflowBuilderBase Finally<TStep>(this WorkflowBuilderBase builder, TStep step)
         where TStep : IFlowStep
     {
         if (step == null) throw new ArgumentNullException(nameof(step));
-        return builder.WithFinalizer(step);
+        if (builder is nFFlowBuilder flowBuilder)
+        {
+            flowBuilder.WithStarter(step);
+            return flowBuilder;
+        }
+        else
+        {
+            builder.AddStep(step);
+            return builder;
+        }
     }
 
-    public static nFFlowBuilder Finally<TStep>(this nFFlowBuilder builder)
+    public static WorkflowBuilderBase Finally<TStep>(this WorkflowBuilderBase builder)
         where TStep : class, IFlowStep
     {
         var step = builder.ResolveAndConfigure<TStep>();
-        return builder.WithFinalizer(step);
+        if (builder is nFFlowBuilder flowBuilder)
+        {
+            flowBuilder.WithStarter(step);
+            return flowBuilder;
+        }
+        else
+        {
+            builder.AddStep(step);
+            return builder;
+        }
     }
 
-    public static nFFlowBuilder Finally<TStep>(this nFFlowBuilder builder, Action<TStep> configure)
+    public static WorkflowBuilderBase Finally<TStep>(this WorkflowBuilderBase builder, Action<TStep> configure)
         where TStep : class, IFlowStep
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
         return builder.Finally<TStep>((step, _) => configure(step));
     }
 
-    public static nFFlowBuilder Finally<TStep>(this nFFlowBuilder builder, StepConfigurator<TStep> configure)
+    public static WorkflowBuilderBase Finally<TStep>(this WorkflowBuilderBase builder, StepConfigurator<TStep> configure)
         where TStep : class, IFlowStep
     {
         var step = builder.ResolveAndConfigure(configure);
-        return builder.WithFinalizer(step);
+        if (builder is nFFlowBuilder flowBuilder)
+        {
+            flowBuilder.WithStarter(step);
+            return flowBuilder;
+        }
+        else
+        {
+            builder.AddStep(step);
+            return builder;
+        }
     }
 
-    public static nFFlowBuilder Finally(this nFFlowBuilder builder, AsyncFlowAction step)
+    public static WorkflowBuilderBase Finally(this WorkflowBuilderBase builder, AsyncFlowAction step)
     {
         ArgumentNullException.ThrowIfNull(step);
         return builder.Finally(new DelegateFlowStep(step));
     }
 
-    public static nFFlowBuilder Finally(this nFFlowBuilder builder, Action<IFlowContext> step)
+    public static WorkflowBuilderBase Finally(this WorkflowBuilderBase builder, Action<IFlowContext> step)
     {
         ArgumentNullException.ThrowIfNull(step);
         return builder.Finally(new DelegateFlowStep((ctx, ct) => Task.Run(() => step(ctx), ct)));
     }
 
-    public static nFFlowBuilder Finally(this nFFlowBuilder builder, Action step)
+    public static WorkflowBuilderBase Finally(this WorkflowBuilderBase builder, Action step)
     {
         ArgumentNullException.ThrowIfNull(step);
         return builder.Finally(new DelegateFlowStep((_, ct) => Task.Run(step, ct)));
     }
 
-    public static nFFlowBuilder ContinueWith<TWorkflowDefinition>(this nFFlowBuilder builder)
+    public static WorkflowBuilderBase ContinueWith<TWorkflowDefinition>(this WorkflowBuilderBase builder)
         where TWorkflowDefinition : class, IWorkflowDefinition
     {
-        var workflowDefinition = builder.Services?.GetService(typeof(TWorkflowDefinition)) as TWorkflowDefinition
+        var workflowDefinition = ((nFFlowBuilder)builder)?.Services?.GetService(typeof(TWorkflowDefinition)) as TWorkflowDefinition
                                  ?? Activator.CreateInstance<TWorkflowDefinition>();
         if (workflowDefinition == null)
         {
@@ -146,7 +216,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder Delay(this nFFlowBuilder builder, TimeSpan delay)
+    public static WorkflowBuilderBase Delay(this WorkflowBuilderBase builder, TimeSpan delay)
     {
         if (delay <= TimeSpan.Zero)
             throw new ArgumentOutOfRangeException(nameof(delay), "Delay must be greater than zero.");
@@ -156,7 +226,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder Delay(this nFFlowBuilder builder, int milliseconds)
+    public static WorkflowBuilderBase Delay(this WorkflowBuilderBase builder, int milliseconds)
     {
         if (milliseconds <= 0)
             throw new ArgumentOutOfRangeException(nameof(milliseconds), "Delay must be greater than zero.");
@@ -164,7 +234,7 @@ public static class FFlowBuilderExtensions
         return builder.Delay(TimeSpan.FromMilliseconds(milliseconds));
     }
     
-    public static nFFlowBuilder Fork(this nFFlowBuilder builder, params Func<IWorkflow>[] workflowFactories)
+    public static WorkflowBuilderBase Fork(this WorkflowBuilderBase builder, params Func<IWorkflow>[] workflowFactories)
     {
         if (workflowFactories == null || workflowFactories.Length == 0)
             throw new ArgumentNullException(nameof(workflowFactories), "At least one workflow must be provided.");
@@ -174,7 +244,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder Fork(this nFFlowBuilder builder, ForkStrategy strategy, params Func<IWorkflow>[] workflowFactories)
+    public static WorkflowBuilderBase Fork(this WorkflowBuilderBase builder, ForkStrategy strategy, params Func<IWorkflow>[] workflowFactories)
     {
         if (workflowFactories == null || workflowFactories.Length == 0)
             throw new ArgumentNullException(nameof(workflowFactories), "At least one workflow must be provided.");
@@ -184,11 +254,11 @@ public static class FFlowBuilderExtensions
         return builder;
     }
 
-    public static nFFlowBuilder If<TTrue>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition)
+    public static WorkflowBuilderBase If<TTrue>(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
 
-        if (!builder.TryResolveStep(out IfStep? trueStep))
+        if (builder is not nFFlowBuilder flowBuilder || !flowBuilder.TryResolveStep(out IfStep? trueStep))
             throw new InvalidOperationException(
                 $"Could not resolve step of type {typeof(IfStep).Name} from the service provider.");
         var step = new IfStep(condition, trueStep);
@@ -196,16 +266,16 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder If<TTrue, TFalse>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition)
+    public static WorkflowBuilderBase If<TTrue, TFalse>(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition)
         where TTrue : class, IFlowStep
         where TFalse : class, IFlowStep
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
 
-        if (!builder.TryResolveStep<TTrue>(out var trueStep))
+        if (builder is not nFFlowBuilder flowBuilder || !flowBuilder.TryResolveStep<TTrue>(out var trueStep))
             throw new InvalidOperationException(
                 $"Could not resolve step of type {typeof(TTrue).Name} from the service provider.");
-        if (!builder.TryResolveStep<TFalse>(out var falseStep))
+        if (!flowBuilder.TryResolveStep<TFalse>(out var falseStep))
             throw new InvalidOperationException(
                 $"Could not resolve step of type {typeof(TFalse).Name} from the service provider.");
 
@@ -214,7 +284,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder If<TTrue, TFalse>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+    public static WorkflowBuilderBase If<TTrue, TFalse>(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition,
         StepConfigurator<TTrue>? trueStepConfigurator = null,
         StepConfigurator<TFalse>? falseStepConfigurator = null)
         where TTrue : class, IFlowStep
@@ -230,24 +300,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder If<TTrue>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
-        StepConfigurator<TTrue>? trueStepConfigurator = null)
-        where TTrue : class, IFlowStep
-    {
-        if (condition == null) throw new ArgumentNullException(nameof(condition));
-
-        var trueStep = builder.ResolveAndConfigure(trueStepConfigurator);
-
-        if (!builder.TryResolveStep(out IfStep? falseStep))
-            throw new InvalidOperationException(
-                $"Could not resolve step of type {typeof(IfStep).Name} from the service provider.");
-
-        var step = new IfStep(condition, trueStep, falseStep);
-        builder.AddStep(step);
-        return builder;
-    }
-    
-    public static nFFlowBuilder If(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+    public static WorkflowBuilderBase If(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition,
         AsyncFlowAction trueStepAction, AsyncFlowAction? falseStepAction = null)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -261,7 +314,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder If(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+    public static WorkflowBuilderBase If(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition,
         Action<IFlowContext> trueStepAction, Action<IFlowContext>? falseStepAction = null)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -277,7 +330,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder If(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+    public static WorkflowBuilderBase If(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition,
         Action stepAction, Action<IFlowContext>? falseStepAction = null)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -293,7 +346,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder If(this nFFlowBuilder builder, Func<IFlowContext, bool> condition,
+    public static WorkflowBuilderBase If(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition,
         IFlowStep trueStep, IFlowStep? falseStep = null)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -304,14 +357,14 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder Stop(this nFFlowBuilder builder)
+    public static WorkflowBuilderBase Stop(this WorkflowBuilderBase builder)
     {
         var step = new StopExecutionStep();
         builder.AddStep(step);
         return builder;
     }
     
-    public static nFFlowBuilder StopIf(this nFFlowBuilder builder, Func<IFlowContext, bool> condition)
+    public static WorkflowBuilderBase StopIf(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
 
@@ -320,11 +373,11 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder Switch(this nFFlowBuilder builder, Action<SwitchCaseBuilder> caseBuilder)
+    public static WorkflowBuilderBase Switch(this WorkflowBuilderBase builder, Action<SwitchCaseBuilder> caseBuilder)
     {
         if (caseBuilder == null) throw new ArgumentNullException(nameof(caseBuilder));
         
-        var switchCaseBuilder = new SwitchCaseBuilder { _serviceProvider = builder.Services };
+        var switchCaseBuilder = new SwitchCaseBuilder { _serviceProvider = ((nFFlowBuilder)builder)?.Services ?? null };
         caseBuilder(switchCaseBuilder);
         
         var step = switchCaseBuilder.Build();
@@ -333,7 +386,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder Throw(this nFFlowBuilder builder, string message)
+    public static WorkflowBuilderBase Throw(this WorkflowBuilderBase builder, string message)
     {
         if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentException("Message cannot be null or whitespace.", nameof(message));
@@ -343,7 +396,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder Throw<TException>(this nFFlowBuilder builder, string message)
+    public static WorkflowBuilderBase Throw<TException>(this WorkflowBuilderBase builder, string message)
         where TException : Exception
     {
         if (string.IsNullOrWhiteSpace(message))
@@ -357,7 +410,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder ThrowIf(this nFFlowBuilder builder, Func<IFlowContext, bool> condition, string message)
+    public static WorkflowBuilderBase ThrowIf(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition, string message)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
         if (string.IsNullOrWhiteSpace(message))
@@ -368,7 +421,7 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
-    public static nFFlowBuilder ThrowIf<TException>(this nFFlowBuilder builder, Func<IFlowContext, bool> condition, string message)
+    public static WorkflowBuilderBase ThrowIf<TException>(this WorkflowBuilderBase builder, Func<IFlowContext, bool> condition, string message)
         where TException : Exception
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -383,12 +436,19 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
+    public static WorkflowBuilderBase LogToConsole(this WorkflowBuilderBase builder, string message)
+    {
+        var step = new LogToConsoleStep(message);
+        builder.AddStep(step);
+        return builder;
+    }
+    
     internal static TStep ResolveAndConfigure<TStep>(
-        this nFFlowBuilder builder,
+        this WorkflowBuilderBase builder,
         StepConfigurator<TStep>? configure = null)
         where TStep : class, IFlowStep
     {
-        if (!builder.TryResolveStep(out TStep? step))
+        if (builder is not nFFlowBuilder flowBuilder || !flowBuilder.TryResolveStep(out TStep? step))
             throw new InvalidOperationException(
                 $"Could not resolve step of type {typeof(TStep).Name} from the service provider.");
 

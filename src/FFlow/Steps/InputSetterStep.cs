@@ -7,9 +7,9 @@ namespace FFlow;
 [SilentStep]
 internal class InputSetterStep : IFlowStep
 {
-    private readonly IEnumerable<Action<IFlowContext>> _inputSetters;
+    internal readonly List<Action<IFlowContext>> _inputSetters;
     
-    public InputSetterStep(IEnumerable<Action<IFlowContext>> inputSetters)
+    public InputSetterStep(List<Action<IFlowContext>> inputSetters)
     {
         _inputSetters = inputSetters ?? throw new ArgumentNullException(nameof(inputSetters), "Input setters cannot be null.");
     }
