@@ -320,6 +320,20 @@ public static class FFlowBuilderExtensions
         return builder;
     }
     
+    public static nFFlowBuilder Switch(this nFFlowBuilder builder, Action<SwitchCaseBuilder> caseBuilder)
+    {
+        if (caseBuilder == null) throw new ArgumentNullException(nameof(caseBuilder));
+        
+        var switchCaseBuilder = new SwitchCaseBuilder { _serviceProvider = builder.Services };
+        caseBuilder(switchCaseBuilder);
+        
+        var step = switchCaseBuilder.Build();
+        
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    
     
     
     
