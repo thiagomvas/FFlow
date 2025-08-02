@@ -1,6 +1,5 @@
 namespace FFlow.Core;
 
-
 /// <summary>
 /// Represents the base class for all workflow steps in the FFlow library.
 /// Provides a simplified mechanism for implementing <see cref="IFlowStep"/> by
@@ -10,26 +9,35 @@ public abstract class FlowStep : IFlowStep, IRetryableFlowStep, ICompensableStep
 {
     private IRetryPolicy? _retryPolicy;
     private Func<IFlowContext, bool>? _skipOn;
-    
+    public Action<FlowStep, IFlowContext> OnBeforeRun { get; set; } = (_, _) => { };
+    public Action<FlowStep, IFlowContext> OnAfterRun { get; set; } = (_, _) => { };
+
     /// <inheritdoc />
-    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         if (context == null) throw new ArgumentNullException(nameof(context));
-        
+
         context.SetInputFor(this, context.GetLastOutput<object>());
-        
+        OnBeforeRun.Invoke(this, context);
+
         if (_skipOn?.Invoke(context) == true)
         {
-            return Task.CompletedTask;
+            return;
         }
-        
+
         if (_retryPolicy != null)
         {
-            return _retryPolicy.ExecuteAsync(() => ExecuteAsync(context, cancellationToken), cancellationToken);
+            await _retryPolicy.ExecuteAsync(() => ExecuteAsync(context, cancellationToken), cancellationToken);
         }
-        return ExecuteAsync(context, cancellationToken);
+        else
+        {
+            await ExecuteAsync(context, cancellationToken);
+        }
+
+        OnAfterRun.Invoke(this, context);
     }
-        
+
+
     /// <summary>
     /// When implemented in a derived class, contains the asynchronous logic
     /// for the workflow step.
@@ -49,8 +57,7 @@ public abstract class FlowStep : IFlowStep, IRetryableFlowStep, ICompensableStep
     {
         return Task.CompletedTask;
     }
-    
-    public void SetSkipCondition(Func<IFlowContext, bool> skipCondition) => 
+
+    public void SetSkipCondition(Func<IFlowContext, bool> skipCondition) =>
         _skipOn = skipCondition ?? throw new ArgumentNullException(nameof(skipCondition));
-    
 }

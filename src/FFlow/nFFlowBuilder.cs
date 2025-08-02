@@ -44,22 +44,23 @@ public class nFFlowBuilder : WorkflowBuilderBase
         return this;
     }
     
-    public bool TryAddStepResolved<TStep>(out TStep? step) where TStep : IFlowStep
+    internal bool TryResolveStep<TStep>(out TStep? step) where TStep : class, IFlowStep
     {
         step = default;
-        if (_serviceProvider == null)
-        {
-            return false;
-        }
 
         try
         {
-            step = (TStep?) _serviceProvider.GetService(typeof(TStep));
+            step = _serviceProvider?.GetService(typeof(TStep)) as TStep;
+
             if (step == null)
             {
-                return false;
+                // Try parameterless constructor as fallback
+                var ctor = typeof(TStep).GetConstructor(Type.EmptyTypes);
+                if (ctor == null) return false;
+
+                step = Activator.CreateInstance<TStep>()!;
             }
-            AddStep(step);
+
             return true;
         }
         catch
@@ -67,6 +68,14 @@ public class nFFlowBuilder : WorkflowBuilderBase
             return false;
         }
     }
+    
+    public bool TryAddStepResolved<TStep>(out TStep? step) where TStep : class, IFlowStep
+    {
+        if (!TryResolveStep(out step)) return false;
+        AddStep(step!);
+        return true;
+    }
+
 
     public override IWorkflow Build()
     {
