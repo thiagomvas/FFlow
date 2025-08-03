@@ -10,7 +10,7 @@ public class VisualizationTests
     [Test]
     public void Describe_ShouldGenerateGraphInCorrectOrder()
     {
-        var builder = new nFFlowBuilder()
+        var builder = new FFlowBuilder()
             .StartWith<TestStep>()
             .Then<DelayedStep>()
             .Then<CompensableStep>();
@@ -30,7 +30,7 @@ public class VisualizationTests
     [Test]
     public void Describe_ShouldUseMetadataAttributes()
     {
-        var builder = new nFFlowBuilder()
+        var builder = new FFlowBuilder()
             .StartWith<StepWithMetadata>();
 
         var graph = builder.Describe();

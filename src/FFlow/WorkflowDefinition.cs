@@ -64,7 +64,7 @@ public abstract class WorkflowDefinition : IWorkflowDefinition
     /// <returns>Creates a configured builder based on this definition.</returns>
     public WorkflowBuilderBase CreateBuilder()
     {
-        var builder = new nFFlowBuilder(_serviceProvider);
+        var builder = new FFlowBuilder(_serviceProvider);
         OnConfigure(builder);
         builder.WithOptions(OnConfigureOptions());
         return builder;

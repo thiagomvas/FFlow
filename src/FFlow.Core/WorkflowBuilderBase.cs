@@ -48,6 +48,9 @@ public abstract class WorkflowBuilderBase
     {
         if (step is null)
             throw new ArgumentNullException(nameof(step));
+        
+        if (StepTemplateRegistry is not null && StepTemplateRegistry.TryGetOverridenDefaults(step.GetType(), out var configure))
+            configure(step);
 
         _steps.Add(step);
     }
@@ -59,6 +62,9 @@ public abstract class WorkflowBuilderBase
         if (index < 0 || index > _steps.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the range of the steps list.");
 
+        if (StepTemplateRegistry is not null && StepTemplateRegistry.TryGetOverridenDefaults(step.GetType(), out var configure))
+            configure(step);
+        
         _steps.Insert(index, step);
     }
 
@@ -69,6 +75,10 @@ public abstract class WorkflowBuilderBase
         if (index < 0 || index >= _steps.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the range of the steps list.");
 
+        
+        if (StepTemplateRegistry is not null && StepTemplateRegistry.TryGetOverridenDefaults(step.GetType(), out var configure))
+            configure(step);
+        
         _steps[index] = step;
     }
     
@@ -80,4 +90,6 @@ public abstract class WorkflowBuilderBase
         var step = _steps[index];
         _steps.RemoveAt(index);
     }
+    
+    public abstract void SetErrorHandlingStep(IFlowStep step);
 }

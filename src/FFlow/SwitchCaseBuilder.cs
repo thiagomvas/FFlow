@@ -17,13 +17,13 @@ public class SwitchCaseBuilder
     /// </summary>
     /// <param name="condition">A predicate that determines when this case is executed.</param>
     /// <returns>An <see cref="IWorkflowBuilder"/> to define the steps for this case.</returns>
-    public nFFlowBuilder Case(Func<IFlowContext, bool> condition) => Case(string.Empty, condition);
+    public FFlowBuilder Case(Func<IFlowContext, bool> condition) => Case(string.Empty, condition);
 
-    public nFFlowBuilder Case(string Name, Func<IFlowContext, bool> condition)
+    public FFlowBuilder Case(string Name, Func<IFlowContext, bool> condition)
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
 
-        var builder = new nFFlowBuilder(_serviceProvider);
+        var builder = new FFlowBuilder(_serviceProvider);
         _cases.Add(new SwitchCase(condition, builder, Name));
 
         return builder;
@@ -35,14 +35,14 @@ public class SwitchCaseBuilder
     /// <typeparam name="TStep">The type of the step to start the case with.</typeparam>
     /// <param name="condition">A predicate that determines when this case is executed.</param>
     /// <returns>An <see cref="IWorkflowBuilder"/> to further define the case.</returns>
-    public nFFlowBuilder Case<TStep>(Func<IFlowContext, bool> condition) where TStep : class, IFlowStep =>
+    public FFlowBuilder Case<TStep>(Func<IFlowContext, bool> condition) where TStep : class, IFlowStep =>
         Case<TStep>(string.Empty, condition);
 
-    public nFFlowBuilder Case<TStep>(string Name, Func<IFlowContext, bool> condition) where TStep : class, IFlowStep
+    public FFlowBuilder Case<TStep>(string Name, Func<IFlowContext, bool> condition) where TStep : class, IFlowStep
     {
         if (condition == null) throw new ArgumentNullException(nameof(condition));
 
-        var builder = new nFFlowBuilder(_serviceProvider);
+        var builder = new FFlowBuilder(_serviceProvider);
 
         _cases.Add(new SwitchCase(condition, builder.Then<TStep>(), Name));
 

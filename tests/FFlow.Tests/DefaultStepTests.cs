@@ -14,11 +14,10 @@ public class DefaultStepTests
             .StartWith((ctx, ct) =>
             {
                 ctx.SetValue("items", items);
-                return Task.CompletedTask;
             })
             .ForEach(ctx => ctx.GetValue<IEnumerable<int>>("items", []), () =>
             {
-                return new FFlowBuilder().StartWith<TestStep>();
+                return new FFlowBuilder().Then<TestStep>();
             })
             .Build();
         
@@ -137,8 +136,6 @@ public class DefaultStepTests
             {
                 var ex = ctx.GetSingleValue<Exception>();
                 Assert.That(ex, Is.Not.Null);
-                
-                return Task.CompletedTask;
             })
             .Build();
         
@@ -163,8 +160,6 @@ public class DefaultStepTests
             {
                 var ex = ctx.GetSingleValue<Exception>();
                 Assert.That(ex, Is.Not.Null);
-
-                return Task.CompletedTask;
             })
             .Build();
         

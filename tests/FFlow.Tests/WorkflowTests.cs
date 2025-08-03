@@ -72,7 +72,6 @@ public class WorkflowTests
             {
                 // Log the exception or handle it
                 exceptionHandled = true;
-                return Task.CompletedTask; // Continue execution
             })
             .Build();
 
@@ -169,7 +168,7 @@ public class WorkflowTests
             .StartWith<TestStep>()
             .Throw<InvalidOperationException>("Simulated error")
             .Then<TestStep>()
-            .OnAnyError((_, _) => Task.CompletedTask)
+            .OnAnyError((_, _) => { })
             .Build();
 
         await workflow.RunAsync(null);
@@ -193,7 +192,6 @@ public class WorkflowTests
             .Finally((ctx, ct) =>
             {
                 ctx.SetValue("finalized", true);
-                return Task.CompletedTask;
             })
             .Build();
 
@@ -211,7 +209,6 @@ public class WorkflowTests
             .Finally((ctx, ct) =>
             {
                 ctx.SetValue("finalized", true);
-                return Task.CompletedTask;
             })
             .OnAnyError((_, _) => { })
             .Build();

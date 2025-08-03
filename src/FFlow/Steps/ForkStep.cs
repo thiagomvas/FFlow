@@ -17,6 +17,13 @@ public class ForkStep : IFlowStep, IDescribableStep
         _forks = forks;
         _forkStrategy = strategy;
     }
+    
+    public ForkStep(ForkStrategy strategy, Func<WorkflowBuilderBase>[] forks)
+    {
+        // Bit of a hack to use both builder factories and direct workflow factories
+        _forks = forks.Select(f => (Func<IWorkflow>)(() => f().Build())).ToArray(); 
+        _forkStrategy = strategy;
+    }
 
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
