@@ -17,7 +17,7 @@ public class WorkflowContinuationStep : FlowStep, IDescribableStep
 
     protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         _execution = _workflowDefinition.Build().SetContext(context);
         return _execution.RunAsync(context.GetLastInput<object>(), cancellationToken);

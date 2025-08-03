@@ -10,10 +10,7 @@ public class InMemoryFlowScheduleStore : IFlowScheduleStore
     
     public Task AddAsync(ScheduledWorkflow workflow, CancellationToken cancellationToken = default)
     {
-        if (workflow == null)
-        {
-            throw new ArgumentNullException(nameof(workflow));
-        }
+        ArgumentNullException.ThrowIfNull(workflow);
 
         _scheduledWorkflows.Add(workflow);
         return Task.CompletedTask;
@@ -35,10 +32,7 @@ public class InMemoryFlowScheduleStore : IFlowScheduleStore
 
     public Task RemoveAsync(ScheduledWorkflow workflow, CancellationToken cancellationToken = default)
     {
-        if (workflow == null)
-        {
-            throw new ArgumentNullException(nameof(workflow));
-        }
+        ArgumentNullException.ThrowIfNull(workflow);
 
         _scheduledWorkflows.Remove(workflow);
         return Task.CompletedTask;

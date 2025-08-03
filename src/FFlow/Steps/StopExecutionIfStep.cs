@@ -14,7 +14,7 @@ internal class StopExecutionIfStep : FlowStep
     }
     protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         cancellationToken.ThrowIfCancellationRequested();
 
         if (_condition(context))

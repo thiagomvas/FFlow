@@ -46,9 +46,8 @@ public abstract class WorkflowBuilderBase
 
     public virtual void AddStep(IFlowStep step)
     {
-        if (step is null)
-            throw new ArgumentNullException(nameof(step));
-        
+        ArgumentNullException.ThrowIfNull(step);
+
         if (StepTemplateRegistry is not null && StepTemplateRegistry.TryGetOverridenDefaults(step.GetType(), out var configure))
             configure(step);
 
@@ -57,8 +56,7 @@ public abstract class WorkflowBuilderBase
 
     public virtual void InsertStepAt(int index, IFlowStep step)
     {
-        if (step is null)
-            throw new ArgumentNullException(nameof(step));
+        ArgumentNullException.ThrowIfNull(step);
         if (index < 0 || index > _steps.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the range of the steps list.");
 
@@ -70,8 +68,7 @@ public abstract class WorkflowBuilderBase
 
     public virtual void ReplaceStep(int index, IFlowStep step)
     {
-        if (step is null)
-            throw new ArgumentNullException(nameof(step));
+        ArgumentNullException.ThrowIfNull(step);
         if (index < 0 || index >= _steps.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the range of the steps list.");
 

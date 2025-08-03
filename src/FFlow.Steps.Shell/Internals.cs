@@ -5,7 +5,7 @@ internal static class Internals
 {
     public static string InjectContext(string original, IFlowContext context)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         if (string.IsNullOrEmpty(original)) return original;
 
         var result = new System.Text.StringBuilder(original);

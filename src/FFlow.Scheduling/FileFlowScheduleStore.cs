@@ -73,7 +73,7 @@ public class FileFlowScheduleStore : IFlowScheduleStore
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="workflow"/> is null.</exception>
     public async Task AddAsync(ScheduledWorkflow workflow, CancellationToken cancellationToken = default)
     {
-        if (workflow == null) throw new ArgumentNullException(nameof(workflow));
+        ArgumentNullException.ThrowIfNull(workflow);
 
         await _semaphore.WaitAsync(cancellationToken);
         try
@@ -133,7 +133,7 @@ public class FileFlowScheduleStore : IFlowScheduleStore
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="workflow"/> is null.</exception>
     public async Task RemoveAsync(ScheduledWorkflow workflow, CancellationToken cancellationToken = default)
     {
-        if (workflow == null) throw new ArgumentNullException(nameof(workflow));
+        ArgumentNullException.ThrowIfNull(workflow);
 
         await _semaphore.WaitAsync(cancellationToken);
         try

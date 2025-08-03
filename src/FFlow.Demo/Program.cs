@@ -6,8 +6,8 @@ using FFlow.Steps.SFTP;
 using FFlow.Steps.DotNet;
 
 var builder = new FFlowBuilder()
-    .DotnetBuild(".");
+    .ForEach<int, HelloStep>(_ => [1, 2, 3], (item, step) => step.Name = $"Hello {item}");
 
-Console.WriteLine(builder.Describe().ToDot());
+await builder.Build().RunAsync();
 
 

@@ -13,7 +13,7 @@ public class HelloStep : IFlowStep
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         var input = context.GetValue<string>("name") ?? context.GetLastOutput<string>();
         

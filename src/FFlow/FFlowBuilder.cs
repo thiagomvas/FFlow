@@ -46,7 +46,7 @@ public class FFlowBuilder : WorkflowBuilderBase
     
     public virtual FFlowBuilder WithOptions(Action<WorkflowOptions> configure)
     {
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        ArgumentNullException.ThrowIfNull(configure);
         _options ??= new WorkflowOptions();
         configure(_options);
         return this;

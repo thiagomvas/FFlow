@@ -13,8 +13,8 @@ public static class FFlowBuilderExtensions
     /// <returns>The same <see cref="FFlowBuilder"/> instance.</returns>
     public static FFlowBuilder UseMetrics<TSink>(this FFlowBuilder builder, TSink metricsSink) where TSink : class, IMetricsSink
     {
-        if (builder == null) throw new ArgumentNullException(nameof(builder));
-        if (metricsSink == null) throw new ArgumentNullException(nameof(metricsSink));
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(metricsSink);
 
         builder.WithOptions(options =>
         {

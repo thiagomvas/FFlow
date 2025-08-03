@@ -17,8 +17,8 @@ public class SwitchStep : FlowStep, IDescribableStep
     }
     protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
-        if(_switches == null) throw new ArgumentNullException(nameof(_switches));
+        ArgumentNullException.ThrowIfNull(context);
+        if (_switches == null) throw new ArgumentNullException(nameof(_switches));
         cancellationToken.ThrowIfCancellationRequested();
         
         foreach (var switchCase in _switches)
@@ -39,7 +39,7 @@ public class SwitchStep : FlowStep, IDescribableStep
 
     public override Task CompensateAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         if (_switches == null) throw new ArgumentNullException(nameof(_switches));
         cancellationToken.ThrowIfCancellationRequested();
         

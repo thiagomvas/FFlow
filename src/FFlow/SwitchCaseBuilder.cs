@@ -21,7 +21,7 @@ public class SwitchCaseBuilder
 
     public FFlowBuilder Case(string Name, Func<IFlowContext, bool> condition)
     {
-        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        ArgumentNullException.ThrowIfNull(condition);
 
         var builder = new FFlowBuilder(_serviceProvider);
         _cases.Add(new SwitchCase(condition, builder, Name));
@@ -40,7 +40,7 @@ public class SwitchCaseBuilder
 
     public FFlowBuilder Case<TStep>(string Name, Func<IFlowContext, bool> condition) where TStep : class, IFlowStep
     {
-        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        ArgumentNullException.ThrowIfNull(condition);
 
         var builder = new FFlowBuilder(_serviceProvider);
 

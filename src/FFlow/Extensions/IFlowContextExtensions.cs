@@ -14,7 +14,7 @@ public static class IFlowContextExtensions
     /// <returns>The same <see cref="IFlowContext"/> instance.</returns>
     public static IFlowContext LoadEnvironmentVariables(this IFlowContext context)
     {
-        if (context is null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
         {
@@ -29,7 +29,7 @@ public static class IFlowContextExtensions
 
     public static TListener? GetEventListener<TListener>(this IFlowContext context) where TListener : class, IFlowEventListener
     {
-        if (context is null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         var key = Internals.BuildEventListenerKey<TListener>();
         if (context.GetValue<TListener>(key) is TListener listener)
@@ -42,7 +42,7 @@ public static class IFlowContextExtensions
     
     public static Guid GetId(this IFlowContext context)
     {
-        if (context is null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         var id = context.GetValue<Guid>(FlowContextIdKey);
         if (id == default)
@@ -55,7 +55,7 @@ public static class IFlowContextExtensions
     
     public static void SetId(this IFlowContext context, Guid id)
     {
-        if (context is null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         if (id == default)
         {
@@ -67,14 +67,14 @@ public static class IFlowContextExtensions
     
     public static void SetRoot(this IFlowContext context)
     {
-        if (context is null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         context.SetValue(FlowContextRootKey, context);
     }
     
     public static IFlowContext GetRoot(this IFlowContext context)
     {
-        if (context is null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         var root = context.GetValue<IFlowContext>(FlowContextRootKey);
         if (root is null)

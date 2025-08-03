@@ -15,7 +15,7 @@ public abstract class FlowStep : IFlowStep, IRetryableFlowStep, ICompensableStep
     /// <inheritdoc />
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         context.SetInputFor(this, context.GetLastOutput<object>());
         OnBeforeRun.Invoke(this, context);
