@@ -68,7 +68,7 @@ public class DITests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
         var workflow = new FFlowBuilder(serviceProvider)
-            .Finally<DiStep>()
+            .Then<DiStep>()
             .Build();
         
         Assert.DoesNotThrowAsync(async () =>
