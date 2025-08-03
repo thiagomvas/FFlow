@@ -6,7 +6,7 @@ using FFlow.Steps.SFTP;
 using FFlow.Steps.DotNet;
 
 var builder = new FFlowBuilder()
-        .StartWith<HelloStep>().Then<NoOpStep>().Then<GoodByeStep>();
+    .DotnetBuild(".");
 
 Console.WriteLine(builder.Describe().ToDot());
 
