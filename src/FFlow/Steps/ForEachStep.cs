@@ -3,7 +3,7 @@ using FFlow.Core;
 
 namespace FFlow;
 
-public class ForEachStep<TItem, TStepIterator> : FlowStep
+internal class ForEachStep<TItem, TStepIterator> : FlowStep
     where TStepIterator : IFlowStep
 {
     private readonly Func<IFlowContext, IEnumerable<TItem>> _itemsSelector;
@@ -50,7 +50,7 @@ public class ForEachStep<TItem, TStepIterator> : FlowStep
     }
 }
 
-public class ForEachStep<TItem> : ForEachStep<TItem, FlowStep>
+internal class ForEachStep<TItem> : ForEachStep<TItem, FlowStep>
 {
     public ForEachStep(Func<IFlowContext, IEnumerable<TItem>> itemsSelector, Action<TItem> executor)
         : base(itemsSelector, executor)
@@ -64,7 +64,7 @@ public class ForEachStep<TItem> : ForEachStep<TItem, FlowStep>
 }
 
 
-public class ForEachStep : ForEachStep<object, FlowStep>
+internal class ForEachStep : ForEachStep<object, FlowStep>
 {
     public ForEachStep(Func<IFlowContext, IEnumerable<object>> itemsSelector, Action<object> executor)
         : base(context => itemsSelector(context), executor)
