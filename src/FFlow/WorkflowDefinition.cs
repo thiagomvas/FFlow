@@ -24,7 +24,7 @@ public abstract class WorkflowDefinition : IWorkflowDefinition
     /// Configures the workflow steps using the provided builder.
     /// </summary>
     /// <param name="builder">The workflow builder.</param>
-    public abstract void OnConfigure(IWorkflowBuilder builder);
+    public abstract void OnConfigure(WorkflowBuilderBase builder);
 
     /// <summary>
     /// Returns a delegate that configures workflow execution options.
@@ -62,7 +62,7 @@ public abstract class WorkflowDefinition : IWorkflowDefinition
     /// Creates a new workflow builder instance with the configured options.
     /// </summary>
     /// <returns>Creates a configured builder based on this definition.</returns>
-    public IWorkflowBuilder CreateBuilder()
+    public WorkflowBuilderBase CreateBuilder()
     {
         var builder = new FFlowBuilder(_serviceProvider);
         OnConfigure(builder);

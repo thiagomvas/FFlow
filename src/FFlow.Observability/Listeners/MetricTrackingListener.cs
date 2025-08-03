@@ -25,7 +25,7 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
 
     public void OnWorkflowStarted(IWorkflow workflow)
     {
-        if (workflow is null) throw new ArgumentNullException(nameof(workflow));
+        ArgumentNullException.ThrowIfNull(workflow);
 
         workflow.GetContext().SetSingleValue(_metricsSink);
         
@@ -39,7 +39,7 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
 
     public void OnWorkflowCompleted(IWorkflow workflow)
     {
-        if (workflow is null) throw new ArgumentNullException(nameof(workflow));
+        ArgumentNullException.ThrowIfNull(workflow);
 
         if (workflow.MetadataStore.TryGet<DateTime>(WorkflowStartKey, out var start))
         {
@@ -58,8 +58,8 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
 
     public void OnWorkflowFailed(IWorkflow workflow, Exception exception)
     {
-        if (workflow is null) throw new ArgumentNullException(nameof(workflow));
-        if (exception is null) throw new ArgumentNullException(nameof(exception));
+        ArgumentNullException.ThrowIfNull(workflow);
+        ArgumentNullException.ThrowIfNull(exception);
 
         if (workflow.MetadataStore.TryGet<DateTime>(WorkflowStartKey, out var start))
         {
@@ -80,8 +80,8 @@ public class MetricTrackingListener<TSink> : IFlowEventListener where TSink : cl
 
     public void OnStepStarted(IFlowStep step, IFlowContext context)
     {
-        if (step is null) throw new ArgumentNullException(nameof(step));
-        if (context is null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(step);
+        ArgumentNullException.ThrowIfNull(context);
 
         context.SetValue(StepStartKey(step), DateTime.UtcNow);
 

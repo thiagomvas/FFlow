@@ -1,11 +1,12 @@
 using FFlow.Core;
+using FFlow.Extensions;
 
 namespace FFlow;
 
 /// <summary>
 /// Builder for creating switch cases in a workflow.
 /// </summary>
-public class SwitchCaseBuilder : ISwitchCaseBuilder
+public class SwitchCaseBuilder
 {
     private readonly List<SwitchCase> _cases = new List<SwitchCase>();
 
@@ -16,11 +17,11 @@ public class SwitchCaseBuilder : ISwitchCaseBuilder
     /// </summary>
     /// <param name="condition">A predicate that determines when this case is executed.</param>
     /// <returns>An <see cref="IWorkflowBuilder"/> to define the steps for this case.</returns>
-    public IWorkflowBuilder Case(Func<IFlowContext, bool> condition) => Case(string.Empty, condition);
+    public FFlowBuilder Case(Func<IFlowContext, bool> condition) => Case(string.Empty, condition);
 
-    public IWorkflowBuilder Case(string Name, Func<IFlowContext, bool> condition)
+    public FFlowBuilder Case(string Name, Func<IFlowContext, bool> condition)
     {
-        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        ArgumentNullException.ThrowIfNull(condition);
 
         var builder = new FFlowBuilder(_serviceProvider);
         _cases.Add(new SwitchCase(condition, builder, Name));
@@ -34,16 +35,16 @@ public class SwitchCaseBuilder : ISwitchCaseBuilder
     /// <typeparam name="TStep">The type of the step to start the case with.</typeparam>
     /// <param name="condition">A predicate that determines when this case is executed.</param>
     /// <returns>An <see cref="IWorkflowBuilder"/> to further define the case.</returns>
-    public IWorkflowBuilder Case<TStep>(Func<IFlowContext, bool> condition) where TStep : class, IFlowStep =>
+    public FFlowBuilder Case<TStep>(Func<IFlowContext, bool> condition) where TStep : class, IFlowStep =>
         Case<TStep>(string.Empty, condition);
 
-    public IWorkflowBuilder Case<TStep>(string Name, Func<IFlowContext, bool> condition) where TStep : class, IFlowStep
+    public FFlowBuilder Case<TStep>(string Name, Func<IFlowContext, bool> condition) where TStep : class, IFlowStep
     {
-        if (condition == null) throw new ArgumentNullException(nameof(condition));
+        ArgumentNullException.ThrowIfNull(condition);
 
         var builder = new FFlowBuilder(_serviceProvider);
 
-        _cases.Add(new SwitchCase(condition, builder.StartWith<TStep>(), Name));
+        _cases.Add(new SwitchCase(condition, builder.Then<TStep>(), Name));
 
         return builder;
     }

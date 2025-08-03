@@ -15,7 +15,7 @@ public static class IWorkflowBuilderVisualizationExtensions
     /// <param name="flags"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static WorkflowGraph Describe(this IWorkflowBuilder builder, VisualizationFlags flags = VisualizationFlags.IgnoreInputOutputSetters)
+    public static WorkflowGraph Describe(this WorkflowBuilderBase builder, VisualizationFlags flags = VisualizationFlags.IgnoreInputOutputSetters)
     {
         var graph = new WorkflowGraph();
         var visited = new HashSet<IFlowStep>();

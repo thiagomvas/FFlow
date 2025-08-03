@@ -21,7 +21,7 @@ public class IfStep : FlowStep, IDescribableStep
 
     protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         if (_condition == null) throw new InvalidOperationException("Condition must be set.");
         if (_trueStep == null) throw new InvalidOperationException("True step must be set.");
 
@@ -39,7 +39,7 @@ public class IfStep : FlowStep, IDescribableStep
 
     public override Task CompensateAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         if (_trueStep == null) throw new InvalidOperationException("True step must be set for compensation.");
 
         cancellationToken.ThrowIfCancellationRequested();

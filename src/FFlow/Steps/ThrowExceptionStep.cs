@@ -21,9 +21,8 @@ public class ThrowExceptionStep : IFlowStep
     
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context is null)
-            throw new ArgumentNullException(nameof(context));
-        
+        ArgumentNullException.ThrowIfNull(context);
+
         context.SetSingleValue(_exception);
         return Task.FromException(_exception);
     }

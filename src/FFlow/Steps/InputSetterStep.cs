@@ -7,15 +7,15 @@ namespace FFlow;
 [SilentStep]
 internal class InputSetterStep : IFlowStep
 {
-    private readonly IEnumerable<Action<IFlowContext>> _inputSetters;
+    internal readonly List<Action<IFlowContext>> _inputSetters;
     
-    public InputSetterStep(IEnumerable<Action<IFlowContext>> inputSetters)
+    public InputSetterStep(List<Action<IFlowContext>> inputSetters)
     {
         _inputSetters = inputSetters ?? throw new ArgumentNullException(nameof(inputSetters), "Input setters cannot be null.");
     }
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         cancellationToken.ThrowIfCancellationRequested();
 
         foreach (var setter in _inputSetters)

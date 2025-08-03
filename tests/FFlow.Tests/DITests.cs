@@ -16,7 +16,7 @@ public class DITests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
         Assert.Throws<StepCreationException>(() => new FFlowBuilder(serviceProvider)
-            .StartWith<DiStep>()
+            .Then<DiStep>()
             .Build(), "Should throw StepCreationException when no DI resolution or parameterless constructor is available.");
     }
     
@@ -68,7 +68,7 @@ public class DITests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
         var workflow = new FFlowBuilder(serviceProvider)
-            .Finally<DiStep>()
+            .Then<DiStep>()
             .Build();
         
         Assert.DoesNotThrowAsync(async () =>
@@ -90,7 +90,7 @@ public class DITests
             .Build(), "If<TTrue,TFalse> should inject the services");
         
         Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .If<DiStep>(ctx => true, null)
+            .If<DiStep>(ctx => true)
             .Build(), "If<TTrue> should inject the services");
         
         
@@ -114,7 +114,7 @@ public class DITests
             .ForEach<DiStep, int>(_ => [1, 2, 3]));
         
         Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
-            .ForEach(_ => [], () => new FFlowBuilder(serviceProvider).StartWith<DiStep>()));
+            .ForEach<object>(_ => [], () => new FFlowBuilder(serviceProvider).StartWith<DiStep>()));
         
         Assert.DoesNotThrow(() => new FFlowBuilder(serviceProvider)
             .ForEach<int>(_ => [1, 2, 3], () => new FFlowBuilder(serviceProvider).StartWith<DiStep>()));

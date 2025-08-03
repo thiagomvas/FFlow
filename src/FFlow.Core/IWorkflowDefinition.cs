@@ -19,7 +19,7 @@ public interface IWorkflowDefinition
     /// Creates an <see cref="IWorkflowBuilder"/> based off of this definition.
     /// </summary>
     /// <returns>The created <see cref="IWorkflowBuilder"/></returns>
-    IWorkflowBuilder CreateBuilder();
+    WorkflowBuilderBase CreateBuilder();
     
     /// <summary>
     /// The metadata store associated with this workflow definition.

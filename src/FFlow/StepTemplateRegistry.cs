@@ -16,8 +16,7 @@ public class StepTemplateRegistry : IStepTemplateRegistry
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Template name cannot be null or empty.", nameof(name));
 
-        if (configure is null)
-            throw new ArgumentNullException(nameof(configure));
+        ArgumentNullException.ThrowIfNull(configure);
 
         var key = $"{typeof(TStep).FullName}:{name}";
         _templates[key] = WrapForBaseInterface(configure);

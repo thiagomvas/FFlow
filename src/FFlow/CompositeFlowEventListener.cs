@@ -12,22 +12,22 @@ public class CompositeFlowEventListener : IFlowEventListener
     
     public CompositeFlowEventListener(IEnumerable<IFlowEventListener> listeners)
     {
-        if (listeners is null) throw new ArgumentNullException(nameof(listeners));
-        
+        ArgumentNullException.ThrowIfNull(listeners);
+
         _listeners = new List<IFlowEventListener>(listeners);
     }
     
     public void AddListener(IFlowEventListener listener)
     {
-        if (listener is null) throw new ArgumentNullException(nameof(listener));
-        
+        ArgumentNullException.ThrowIfNull(listener);
+
         _listeners.Add(listener);
     }
     
     public void OnWorkflowStarted(IWorkflow workflow)
     {
-        if (workflow is null) throw new ArgumentNullException(nameof(workflow));
-        
+        ArgumentNullException.ThrowIfNull(workflow);
+
         foreach (var listener in _listeners)
         {
             listener.OnWorkflowStarted(workflow);
@@ -37,8 +37,8 @@ public class CompositeFlowEventListener : IFlowEventListener
 
     public void OnWorkflowCompleted(IWorkflow workflow)
     {
-        if (workflow is null) throw new ArgumentNullException(nameof(workflow));
-        
+        ArgumentNullException.ThrowIfNull(workflow);
+
         foreach (var listener in _listeners)
         {
             listener.OnWorkflowCompleted(workflow);
@@ -47,9 +47,9 @@ public class CompositeFlowEventListener : IFlowEventListener
 
     public void OnWorkflowFailed(IWorkflow workflow, Exception exception)
     {
-        if (workflow is null) throw new ArgumentNullException(nameof(workflow));
-        if (exception is null) throw new ArgumentNullException(nameof(exception));
-        
+        ArgumentNullException.ThrowIfNull(workflow);
+        ArgumentNullException.ThrowIfNull(exception);
+
         foreach (var listener in _listeners)
         {
             listener.OnWorkflowFailed(workflow, exception);
@@ -58,9 +58,9 @@ public class CompositeFlowEventListener : IFlowEventListener
 
     public void OnStepStarted(IFlowStep step, IFlowContext context)
     {
-        if (step is null) throw new ArgumentNullException(nameof(step));
-        if (context is null) throw new ArgumentNullException(nameof(context));
-        
+        ArgumentNullException.ThrowIfNull(step);
+        ArgumentNullException.ThrowIfNull(context);
+
         foreach (var listener in _listeners)
         {
             listener.OnStepStarted(step, context);
@@ -69,9 +69,9 @@ public class CompositeFlowEventListener : IFlowEventListener
 
     public void OnStepCompleted(IFlowStep step, IFlowContext context)
     {
-        if (step is null) throw new ArgumentNullException(nameof(step));
-        if (context is null) throw new ArgumentNullException(nameof(context));
-        
+        ArgumentNullException.ThrowIfNull(step);
+        ArgumentNullException.ThrowIfNull(context);
+
         foreach (var listener in _listeners)
         {
             listener.OnStepCompleted(step, context);
@@ -80,10 +80,10 @@ public class CompositeFlowEventListener : IFlowEventListener
 
     public void OnStepFailed(IFlowStep step, IFlowContext context, Exception exception)
     {
-        if (step is null) throw new ArgumentNullException(nameof(step));
-        if (context is null) throw new ArgumentNullException(nameof(context));
-        if (exception is null) throw new ArgumentNullException(nameof(exception));
-        
+        ArgumentNullException.ThrowIfNull(step);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(exception);
+
         foreach (var listener in _listeners)
         {
             listener.OnStepFailed(step, context, exception);
