@@ -21,5 +21,4 @@ public static class WorkflowBuilderExtensions
             configure(step);
         });
     }
-    
 }
