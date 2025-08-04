@@ -93,11 +93,11 @@ public class HttpRequestStep : FlowStep
         var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).ConfigureAwait(false);
         Response = response;
         
-        if (AcceptableStatusCodes != null && !AcceptableStatusCodes.Contains(response.StatusCode))
+        if (AcceptableStatusCodes is not null && !AcceptableStatusCodes.Contains(response.StatusCode))
         {
             throw new HttpRequestException($"Unexpected status code: {response.StatusCode}. Expected one of: {string.Join(", ", AcceptableStatusCodes)}");
         }
-        else if (!response.IsSuccessStatusCode)
+        else if (AcceptableStatusCodes is null && !response.IsSuccessStatusCode)
         {
             throw new HttpRequestException($"Request failed with status code: {response.StatusCode}");
         }
