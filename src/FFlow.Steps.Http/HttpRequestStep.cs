@@ -21,6 +21,11 @@ public class HttpRequestStep : FlowStep
     /// Gets or sets the request URL. This property is required.
     /// </summary>
     public string Url { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the query parameters to append to the request URL.
+    /// </summary>
+    public Dictionary<string, string>? QueryParameters { get; set; }
 
     /// <summary>
     /// Gets or sets the request body.
@@ -87,8 +92,22 @@ public class HttpRequestStep : FlowStep
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cts.CancelAfter(Timeout);
+        
+        var uriBuilder = new UriBuilder(Url);
 
-        var request = new HttpRequestMessage(Method, Url);
+        if (QueryParameters != null && QueryParameters.Count > 0)
+        {
+            var query = System.Web.HttpUtility.ParseQueryString(uriBuilder.Query);
+            foreach (var kvp in QueryParameters)
+            {
+                query[kvp.Key] = kvp.Value;
+            }
+            uriBuilder.Query = query.ToString();
+        }
+
+        var fullUrl = uriBuilder.Uri;
+
+        var request = new HttpRequestMessage(Method, fullUrl);
 
         if (Body != null)
         {
