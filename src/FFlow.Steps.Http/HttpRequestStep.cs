@@ -23,9 +23,16 @@ public class HttpRequestStep : FlowStep
     public string Url { get; set; }
 
     /// <summary>
-    /// Gets or sets the request body. If set, it will be serialized as JSON.
+    /// Gets or sets the request body.
+    /// Can be a string, byte[], or an object to serialize.
     /// </summary>
     public object? Body { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content type of the request body.
+    /// If null, JSON will be used for objects, plain text for strings, and octet-stream for byte arrays.
+    /// </summary>
+    public string? ContentType { get; set; }
 
     /// <summary>
     /// Gets or sets the headers to include in the HTTP request.
@@ -43,6 +50,11 @@ public class HttpRequestStep : FlowStep
     /// </summary>
     public HttpStatusCode[]? AcceptableStatusCodes { get; set; }
 
+    /// <summary>
+    /// Gets or sets the JSON serializer options to use when serializing the request body or deserializing the response.
+    /// </summary>
+    public JsonSerializerOptions? JsonSerializerOptions { get; set; }
+    
     /// <summary>
     /// Gets the raw HTTP response returned from the request.
     /// </summary>
@@ -67,32 +79,60 @@ public class HttpRequestStep : FlowStep
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
+
     protected override async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(Url))
             throw new InvalidOperationException("HttpRequestStep requires a valid URL.");
-        
+
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cts.CancelAfter(Timeout);
-        
+
         var request = new HttpRequestMessage(Method, Url);
-        
+
         if (Body != null)
         {
-            request.Content = new StringContent(JsonSerializer.Serialize(Body), Encoding.UTF8, "application/json");
+            if (Body is string s)
+            {
+                var mediaType = ContentType;
+
+                if (!string.IsNullOrEmpty(mediaType) && mediaType.Contains(";"))
+                {
+                    // Strip charset or parameters from mediaType for StringContent ctor
+                    mediaType = mediaType.Split(';')[0].Trim();
+                }
+
+                mediaType ??= "text/plain"; // default mediaType without charset
+
+                request.Content = new StringContent(s, Encoding.UTF8, mediaType);
+            }
+            else if (Body is byte[] bytes)
+            {
+                request.Content = new ByteArrayContent(bytes);
+                if (!string.IsNullOrEmpty(ContentType))
+                    request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(ContentType);
+            }
+            else
+            {
+                // Default to JSON serialization
+                var json = JsonSerializer.Serialize(Body, JsonSerializerOptions);
+                var mediaType = ContentType ?? "application/json";
+                request.Content = new StringContent(json, Encoding.UTF8, mediaType);
+            }
         }
-        
+
         if (Headers != null)
         {
             foreach (var header in Headers)
             {
+                // TryAddWithoutValidation to allow custom headers like Authorization, etc.
                 request.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
         }
-        
+
         var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).ConfigureAwait(false);
         Response = response;
-        
+
         if (AcceptableStatusCodes is not null && !AcceptableStatusCodes.Contains(response.StatusCode))
         {
             throw new HttpRequestException($"Unexpected status code: {response.StatusCode}. Expected one of: {string.Join(", ", AcceptableStatusCodes)}");
@@ -101,7 +141,7 @@ public class HttpRequestStep : FlowStep
         {
             throw new HttpRequestException($"Request failed with status code: {response.StatusCode}");
         }
-        
+
         context.SetOutputFor<HttpRequestStep, HttpResponseMessage>(Response);
     }
 }
