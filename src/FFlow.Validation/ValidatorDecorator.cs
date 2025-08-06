@@ -38,8 +38,8 @@ public class ValidatorDecorator : BaseStepDecorator
         if (context == null) throw new ArgumentNullException(nameof(context));
         foreach (var validationStep in _validationSteps)
         {
-            await validationStep.RunAsync(context, cancellationToken);
+            await validationStep.RunAsync(context, cancellationToken).ConfigureAwait(false);
         }
-        await base.RunAsync(context, cancellationToken);
+        await base.RunAsync(context, cancellationToken).ConfigureAwait(false);
     }
 }

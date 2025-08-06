@@ -52,13 +52,13 @@ public static class RetryPolicies
             {
                 try
                 {
-                    await action();
+                    await action().ConfigureAwait(false);
                     return;
                 }
                 catch
                 {
                     if (i == _maxRetries - 1) throw;
-                    await Task.Delay(_delay, cancellationToken);
+                    await Task.Delay(_delay, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -83,13 +83,13 @@ public static class RetryPolicies
             {
                 try
                 {
-                    await action();
+                    await action().ConfigureAwait(false);
                     return;
                 }
                 catch (Exception ex) when (Array.Exists(_retryOnExceptions, t => t.IsInstanceOfType(ex)))
                 {
                     if (i == _maxRetries - 1) throw;
-                    await Task.Delay(_delay, cancellationToken);
+                    await Task.Delay(_delay, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -112,14 +112,14 @@ public static class RetryPolicies
             {
                 try
                 {
-                    await action();
+                    await action().ConfigureAwait(false);
                     return;
                 }
                 catch
                 {
                     if (i == _maxRetries - 1) throw;
                     var delay = TimeSpan.FromMilliseconds(_initialDelay.TotalMilliseconds * Math.Pow(2, i));
-                    await Task.Delay(delay, cancellationToken);
+                    await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
                 }
             }
         }

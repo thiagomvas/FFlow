@@ -34,10 +34,10 @@ public class FileFlowScheduleStore : IFlowScheduleStore
             return;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            var json = await File.ReadAllTextAsync(_filePath);
+            var json = await File.ReadAllTextAsync(_filePath).ConfigureAwait(false);
             _scheduledWorkflows = JsonSerializer.Deserialize<List<ScheduledWorkflow>>(json) ??
                                   [];
         }
@@ -52,12 +52,12 @@ public class FileFlowScheduleStore : IFlowScheduleStore
     /// </summary>
     private async Task SaveToFileAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             var json = JsonSerializer.Serialize(_scheduledWorkflows,
                 new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(_filePath, json);
+            await File.WriteAllTextAsync(_filePath, json).ConfigureAwait(false);
         }
         finally
         {
@@ -75,11 +75,11 @@ public class FileFlowScheduleStore : IFlowScheduleStore
     {
         if (workflow == null) throw new ArgumentNullException(nameof(workflow));
 
-        await _semaphore.WaitAsync(cancellationToken);
+        await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             _scheduledWorkflows.Add(workflow);
-            await SaveToFileAsync();
+            await SaveToFileAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -94,7 +94,7 @@ public class FileFlowScheduleStore : IFlowScheduleStore
     /// <returns>A collection of all scheduled workflows.</returns>
     public async Task<IEnumerable<ScheduledWorkflow>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        await _semaphore.WaitAsync(cancellationToken);
+        await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             return _scheduledWorkflows.ToList();
@@ -114,7 +114,7 @@ public class FileFlowScheduleStore : IFlowScheduleStore
     public async Task<IEnumerable<ScheduledWorkflow>> GetDueAsync(DateTimeOffset now,
         CancellationToken cancellationToken = default)
     {
-        await _semaphore.WaitAsync(cancellationToken);
+        await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             return _scheduledWorkflows.Where(w => w.ExecuteAt <= now).ToList();
@@ -135,11 +135,11 @@ public class FileFlowScheduleStore : IFlowScheduleStore
     {
         if (workflow == null) throw new ArgumentNullException(nameof(workflow));
 
-        await _semaphore.WaitAsync(cancellationToken);
+        await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             _scheduledWorkflows.Remove(workflow);
-            await SaveToFileAsync();
+            await SaveToFileAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -154,7 +154,7 @@ public class FileFlowScheduleStore : IFlowScheduleStore
     /// <returns>The next scheduled workflow, or <c>null</c> if no workflows are scheduled.</returns>
     public async Task<ScheduledWorkflow?> GetNextAsync(CancellationToken cancellationToken = default)
     {
-        await _semaphore.WaitAsync(cancellationToken);
+        await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             return _scheduledWorkflows.OrderBy(w => w.ExecuteAt).FirstOrDefault();

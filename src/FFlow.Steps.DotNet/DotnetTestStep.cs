@@ -117,7 +117,7 @@ public class DotnetTestStep : IFlowStep
             throw new InvalidOperationException("Either a solution or a project must be specified for the test step.");
 
         var command = BuildCommand();
-        var (output, error, exitCode) = await Internals.RunDotnetCommandAsync(command, cancellationToken);
+        var (output, error, exitCode) = await Internals.RunDotnetCommandAsync(command, cancellationToken).ConfigureAwait(false);
 
         if (exitCode != 0)
             throw new InvalidOperationException($"Dotnet test failed with exit code {exitCode}.\nOutput: {output}\nError: {error}");

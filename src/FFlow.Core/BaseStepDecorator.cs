@@ -14,6 +14,6 @@ public abstract class BaseStepDecorator : IFlowStep
 
     public virtual async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        await _innerStep.RunAsync(context, cancellationToken);
+        await _innerStep.RunAsync(context, cancellationToken).ConfigureAwait(false);
     }
 }
