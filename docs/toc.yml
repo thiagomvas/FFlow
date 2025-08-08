@@ -37,3 +37,5 @@ items:
         href: extensions/dotnet.md
       - name: SFTP
         href: extensions/sftp.md
+      - name: HTTP
+        href: extensions/http.md

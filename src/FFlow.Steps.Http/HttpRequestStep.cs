@@ -144,7 +144,6 @@ public class HttpRequestStep : FlowStep
         {
             foreach (var header in Headers)
             {
-                // TryAddWithoutValidation to allow custom headers like Authorization, etc.
                 request.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
         }
