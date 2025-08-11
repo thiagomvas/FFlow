@@ -6,6 +6,8 @@ namespace FFlow.Steps.SFTP;
 /// <summary>
 /// Represents a workflow step to rename a file on an SFTP server.
 /// </summary>
+[StepName("Rename File via SFTP")]
+[StepTags("sftp")]
 public class RenameFileViaSftpStep : FlowStep
 {
     /// <summary>

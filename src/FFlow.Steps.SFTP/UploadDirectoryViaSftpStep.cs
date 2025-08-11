@@ -9,6 +9,8 @@ namespace FFlow.Steps.SFTP;
 /// <summary>
 /// Represents a workflow step to upload a local directory to a remote directory on an SFTP server.
 /// </summary>
+[StepName("Upload Directory via SFTP")]
+[StepTags("sftp")]
 public class UploadDirectoryViaSftpStep : FlowStep
 {
     /// <summary>

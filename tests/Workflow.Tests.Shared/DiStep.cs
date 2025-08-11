@@ -13,7 +13,7 @@ public class DiStep : IFlowStep
 
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         if (_service == null) throw new InvalidOperationException("Service must be set.");
         
         cancellationToken.ThrowIfCancellationRequested();

@@ -22,10 +22,10 @@ using System.Reflection;
         /// </remarks>
         public static IServiceCollection AddFFlow(this IServiceCollection services, params Assembly[]? assemblies)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
 
-            if (assemblies == null || assemblies.Length == 0)
+        if (assemblies == null || assemblies.Length == 0)
             {
                 var targetTypes = new[]
                 {

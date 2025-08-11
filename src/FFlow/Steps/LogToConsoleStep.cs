@@ -17,8 +17,7 @@ internal class LogToConsoleStep : FlowStep
     }
     protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
-        if (context is null)
-            throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         Console.WriteLine(Message);
         return Task.CompletedTask;

@@ -5,6 +5,8 @@ namespace FFlow.Steps.SFTP;
 /// <summary>
 /// Represents a workflow step to disconnect from an SFTP server.
 /// </summary>
+[StepName("Disconnect from SFTP Server")]
+[StepTags("sftp")]
 public class DisconnectFromSftpStep : FlowStep
 {
     /// <summary>

@@ -9,7 +9,7 @@ internal class Internals
 
     internal static string BuildInputKey(IFlowStep step, string key)
     {
-        if (step == null) throw new ArgumentNullException(nameof(step));
+        ArgumentNullException.ThrowIfNull(step);
         if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or whitespace.", nameof(key));
 
         var stepName = step.GetType().Name;
@@ -19,7 +19,7 @@ internal class Internals
     
     internal static string BuildOutputKey(IFlowStep step, string key)
     {
-        if (step == null) throw new ArgumentNullException(nameof(step));
+        ArgumentNullException.ThrowIfNull(step);
         if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or whitespace.", nameof(key));
 
         var stepName = step.GetType().Name;

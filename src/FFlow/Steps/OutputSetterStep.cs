@@ -7,7 +7,7 @@ namespace FFlow;
 [SilentStep]
 internal class OutputSetterStep : IFlowStep
 {
-    private readonly List<Action<IFlowContext>> _outputWriters = new();
+    internal readonly List<Action<IFlowContext>> _outputWriters = new();
 
     public OutputSetterStep(IEnumerable<Action<IFlowContext>> outputWriters)
     {
@@ -16,7 +16,7 @@ internal class OutputSetterStep : IFlowStep
 
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         cancellationToken.ThrowIfCancellationRequested();
 
         foreach (var writer in _outputWriters)

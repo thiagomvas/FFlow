@@ -9,6 +9,8 @@ namespace FFlow.Steps.SFTP;
 /// <summary>
 /// Represents a workflow step to create a file on an SFTP server.
 /// </summary>
+[StepName("Create File via SFTP")]
+[StepTags("sftp")]
 public class CreateFileViaSftpStep : FlowStep
 {
     /// <summary>

@@ -21,7 +21,7 @@ internal class NotEmptyStep : IFlowStep
     }
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         cancellationToken.ThrowIfCancellationRequested();
 
         foreach (var key in _keys)

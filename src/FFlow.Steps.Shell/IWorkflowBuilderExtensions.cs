@@ -16,14 +16,15 @@ public static class IWorkflowBuilderExtensions
     /// <param name="configure">Optional configuration action for the <see cref="RunCommandStep"/>.</param>
     /// <returns>A configurable step builder.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="command"/> is null or empty.</exception>
-    public static IConfigurableStepBuilder RunCommand(this IWorkflowBuilder builder, string command, Action<RunCommandStep>? configure = null)
+    public static WorkflowBuilderBase RunCommand(this WorkflowBuilderBase builder, string command, Action<RunCommandStep>? configure = null)
     {
         if (string.IsNullOrEmpty(command))
             throw new ArgumentException("Command cannot be null or empty.", nameof(command));
 
         var step = new RunCommandStep { Command = command };
         configure?.Invoke(step);
-        return builder.AddStep(step);
+        builder.AddStep(step);
+        return builder;
     }
     
     /// <summary>
@@ -34,14 +35,15 @@ public static class IWorkflowBuilderExtensions
     /// <param name="configure">Optional configuration action for the <see cref="RunScriptRawStep"/>.</param>
     /// <returns>A configurable step builder.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="script"/> is null or empty.</exception>
-    public static IConfigurableStepBuilder RunScriptRaw(this IWorkflowBuilder builder, string script, Action<RunScriptRawStep>? configure = null)
+    public static WorkflowBuilderBase RunScriptRaw(this WorkflowBuilderBase builder, string script, Action<RunScriptRawStep>? configure = null)
     {
         if (string.IsNullOrEmpty(script))
             throw new ArgumentException("Script cannot be null or empty.", nameof(script));
 
         var step = new RunScriptRawStep { Script = script };
         configure?.Invoke(step);
-        return builder.AddStep(step);
+        builder.AddStep(step);
+        return builder;
     }
     
     /// <summary>
@@ -53,7 +55,7 @@ public static class IWorkflowBuilderExtensions
     /// <returns>A configurable step builder.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="scriptFilePath"/> is null or empty.</exception>
     /// <exception cref="FileNotFoundException">Thrown if the script file does not exist.</exception>
-    public static IConfigurableStepBuilder RunScriptFile(this IWorkflowBuilder builder, string scriptFilePath, Action<RunScriptRawStep>? configure = null)
+    public static WorkflowBuilderBase RunScriptFile(this WorkflowBuilderBase builder, string scriptFilePath, Action<RunScriptRawStep>? configure = null)
     {
         if (string.IsNullOrEmpty(scriptFilePath))
             throw new ArgumentException("Script file path cannot be null or empty.", nameof(scriptFilePath));

@@ -35,7 +35,7 @@ public class ValidatorDecorator : BaseStepDecorator
 
     public override async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         foreach (var validationStep in _validationSteps)
         {
             await validationStep.RunAsync(context, cancellationToken).ConfigureAwait(false);

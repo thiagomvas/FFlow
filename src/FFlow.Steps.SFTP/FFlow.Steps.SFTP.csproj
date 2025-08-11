@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
+      <ProjectReference Include="..\FFlow\FFlow.csproj" />
     </ItemGroup>
 
 </Project>

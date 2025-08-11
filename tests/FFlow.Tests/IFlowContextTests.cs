@@ -14,7 +14,7 @@ public class IFlowContextTests
         
         var ctx = await workflow.RunAsync("");
         Assert.That(ctx.GetLastOutput<string>(), Is.EqualTo("Hello World"));
-    }
+     }
     
     [Test]
     public async Task Output_ShouldBePassed_ToNextStepAsInput()
@@ -23,7 +23,7 @@ public class IFlowContextTests
             .StartWith<OutputStep>()
                 .Input<OutputStep>(step => step.Output = "Hello World")
             .Then<OutputStep>()
-                .Input<OutputStep, object>(step => step.Output, ctx => ctx.GetLastOutput<string>() + "!")
+                .Input<OutputStep>((step, ctx) => step.Output = ctx.GetLastOutput<string>() + "!")
             .Build();
         
         var ctx = await workflow.RunAsync("");

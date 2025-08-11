@@ -5,18 +5,19 @@ namespace FFlow;
 [StepName("Builder")]
 [StepTags("built-in")]
 [SilentStep]
-public class BuilderStep : ForwardingWorkflowBuilder, IFlowStep
+public class BuilderStep : FlowStep
 {
-    private readonly IWorkflowBuilder _workflowBuilder;
+    private readonly WorkflowBuilderBase _workflowBuilder;
     private readonly IServiceProvider? _serviceProvider;
 
-    public BuilderStep(IWorkflowBuilder workflowBuilder, IServiceProvider? provider = null)
+    public BuilderStep(WorkflowBuilderBase workflowBuilder, IServiceProvider? provider = null)
     {
         _workflowBuilder = workflowBuilder;
         _serviceProvider = provider;
     }
 
-    protected override IWorkflowBuilder Delegate => _workflowBuilder;
-    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
-        => _workflowBuilder.Build().SetContext(context).RunAsync(context.GetLastOutput<object>(), cancellationToken);
+    protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
+    {
+        return _workflowBuilder.Build().SetContext(context).RunAsync(context.GetLastOutput<object>(), cancellationToken);
+    }
 }

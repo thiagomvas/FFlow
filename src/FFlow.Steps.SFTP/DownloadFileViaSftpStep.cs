@@ -6,6 +6,8 @@ namespace FFlow.Steps.SFTP;
 /// <summary>
 /// Represents a workflow step to download a file from an SFTP server to a local file path.
 /// </summary>
+[StepName("Download File via SFTP")]
+[StepTags("sftp")]
 public class DownloadFileViaSftpStep : FlowStep
 {
     /// <summary>

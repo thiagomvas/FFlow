@@ -1,5 +1,6 @@
 using FFlow.Core;
 using FFlow.Extensions;
+using FFlow.Visualization;
 
 namespace FFlow;
 
@@ -16,6 +17,7 @@ public class Workflow : IWorkflow
     private IFlowStep? _finalizer;
     private readonly WorkflowOptions? _options;
     private readonly IWorkflowMetadataStore? _metadataStore;
+    public WorkflowGraph Graph { get; internal set; }
     private bool _isStopped;
     public IWorkflowMetadataStore? MetadataStore { get; internal set; }
 
