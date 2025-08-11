@@ -39,7 +39,7 @@ public class DotnetCleanStep : IFlowStep
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
         var command = BuildCommand();
-        var (output, error, exitCode) = await Internals.RunDotnetCommandAsync(command, cancellationToken);
+        var (output, error, exitCode) = await Internals.RunDotnetCommandAsync(command, cancellationToken).ConfigureAwait(false);
 
         if (exitCode != 0)
             throw new InvalidOperationException($"Dotnet clean failed with exit code {exitCode}.\nOutput: {output}\nError: {error}");

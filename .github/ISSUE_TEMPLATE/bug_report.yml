@@ -1,0 +1,74 @@
+name: 🐞 Bug Report
+description: Report an unexpected error or behavior in FFlow or one of its extensions.
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please ensure your report is detailed and reproducible.
+
+  - type: input
+    id: affected-package
+    attributes:
+      label: 📦 Affected Package
+      description: What package(s) does this affect? (e.g., FFlow.Core, FFlow.Steps.SFTP, unsure, etc.)
+      placeholder: FFlow.Core, FFlow.Steps.Shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 🧠 Bug Summary
+      description: Clearly describe the bug and what’s going wrong.
+      placeholder: >
+        When I run a workflow with parallel steps, only one completes...
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 🔁 Reproduction Snippet
+      description: Provide a minimal reproducible code snippet (preferably a single .cs file).
+      render: csharp
+      placeholder: >
+        ```csharp
+        var flow = new FFlowBuilder()
+            .StartWith<MyStep>()
+            .Fork(...);
+        await flow.RunAsync();
+        ```
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: ✅ Expected Behavior
+      description: What did you expect to happen?
+      placeholder: >
+        Both branches should complete before continuing...
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: ❌ Actual Behavior
+      description: What actually happened instead?
+      placeholder: >
+        One of the branches is skipped silently...
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 💻 Environment Details
+      description: Include package versions and custom steps if relevant.
+      placeholder: >
+        - FFlow: 1.2.0
+        - FFlow.Steps.SFTP: 1.0.3
+
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: ✅ Checklist
+      options:
+        - label: I have verified this bug happens on the latest version.
+          required: true
+        - label: I have checked for existing issues that match this bug.
+          required: true

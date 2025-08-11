@@ -1,0 +1,31 @@
+name: ❓ Question / Help
+description: Ask a question or request support related to usage, patterns, or integration.
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form is for general usage questions, best practices, or clarification on how FFlow works.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: 🙋 What is your question?
+      description: Provide a clear and concise question or description of what you’re trying to do.
+      placeholder: >
+        How can I share a variable across parallel branches and then combine the results?
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 📎 Additional context
+      description: If helpful, provide code snippets or describe your use case.
+      render: csharp
+
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: ✅ Checklist
+      options:
+        - label: I have read the documentation and couldn't find an answer.
+        - label: I have checked existing issues and discussions.

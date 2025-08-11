@@ -45,7 +45,7 @@ public class ForkStep : IFlowStep, IDescribableStep
                 _ = Task.WhenAll(tasks);
                 break;
             case ForkStrategy.WaitForAll:
-                await Task.WhenAll(tasks);
+                await Task.WhenAll(tasks).ConfigureAwait(false);
                 break;
         }
     }

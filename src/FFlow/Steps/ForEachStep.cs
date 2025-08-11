@@ -74,5 +74,22 @@ internal class ForEachStep : ForEachStep<object, FlowStep>
     public ForEachStep(Func<IFlowContext, IEnumerable<object>> itemsSelector, Action<object, FlowStep> configurator)
         : base(context => itemsSelector(context), null, configurator)
     {
+<<<<<<< HEAD
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (_itemsSelector == null) throw new InvalidOperationException("Items selector must be set.");
+        if (_itemAction == null) throw new InvalidOperationException("Item action must be set.");
+
+        var items = _itemsSelector(context);
+        if (items == null) return;
+
+        foreach (var item in items)
+        {
+            context.SetInputFor(_itemAction, item);
+            await _itemAction.RunAsync(context, cancellationToken).ConfigureAwait(false);
+        }
+=======
+>>>>>>> dev
     }
 }

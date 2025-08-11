@@ -90,7 +90,7 @@ public class DotnetNugetPushStep : IFlowStep
 
         var command = BuildCommand(context);
 
-        var (output, error, exitCode) = await Internals.RunDotnetCommandAsync(command, cancellationToken);
+        var (output, error, exitCode) = await Internals.RunDotnetCommandAsync(command, cancellationToken).ConfigureAwait(false);
 
         if (exitCode != 0)
             throw new InvalidOperationException($"Dotnet nuget push failed with exit code {exitCode}.\nOutput: {output}\nError: {error}");

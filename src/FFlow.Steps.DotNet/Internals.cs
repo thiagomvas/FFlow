@@ -34,7 +34,7 @@ internal static class Internals
         var outputTask = process.StandardOutput.ReadToEndAsync();
         var errorTask = process.StandardError.ReadToEndAsync();
 
-        await Task.WhenAll(outputTask, errorTask);
+        await Task.WhenAll(outputTask, errorTask).ConfigureAwait(false);
 
         process.WaitForExit();
 
