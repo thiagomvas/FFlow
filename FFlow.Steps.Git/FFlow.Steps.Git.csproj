@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>FFlow.Steps.Git</PackageId>
+        <Description>Git integration steps and abstractions for FFlow workflows, including repository operations and pluggable authentication providers.</Description>
+        <Authors>thiagomvas</Authors>
+        <Version>1.1.2</Version>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn>
+        <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
+    </PropertyGroup>
+
+
+</Project>
