@@ -16,9 +16,6 @@ public class GitCloneStep : GitStepBase
         if (string.IsNullOrWhiteSpace(RepositoryUrl))
             throw new InvalidOperationException("Repository URL must be set.");
 
-        if (string.IsNullOrWhiteSpace(LocalPath))
-            throw new InvalidOperationException("Local path must be set.");
-
         cancellationToken.ThrowIfCancellationRequested();
 
         List<string> args = [..AdditionalArgs ?? []];

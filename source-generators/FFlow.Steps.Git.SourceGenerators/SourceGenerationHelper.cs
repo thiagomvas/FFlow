@@ -10,7 +10,7 @@ namespace FFlow.Steps.Git
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public sealed class GitStepAttribute : Attribute
     {
-        public DotnetStepAttribute(string? paramName = null, string? propertyName = null)
+        public GitStepAttribute(string? paramName = null, string? propertyName = null)
         {
             ParamName = paramName;
             PropertyName = propertyName;

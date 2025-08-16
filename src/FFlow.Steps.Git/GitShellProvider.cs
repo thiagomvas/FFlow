@@ -7,7 +7,11 @@ public class GitShellProvider : IGitProvider
     public Task GitCloneAsync(string repositoryUrl, string localPath, CancellationToken cancellation,
         params string[]? additionalArgs)
     {
-        var args = $"clone {repositoryUrl} \"{localPath}\"";
+        var args = $"clone {repositoryUrl}";
+        if (!string.IsNullOrWhiteSpace(localPath))
+        {
+            args += $" \"{localPath}\"";
+        }
         if (additionalArgs != null && additionalArgs.Length > 0)
         {
             args += " " + string.Join(" ", additionalArgs);
