@@ -1153,11 +1153,16 @@ public static class FFlowBuilderExtensions
         StepConfigurator<TStep>? configure = null)
         where TStep : class, IFlowStep
     {
-        if (builder is FFlowBuilder flowBuilder && flowBuilder.TryResolveStep(out TStep? step))
+        if (builder is FFlowBuilder flowBuilder && flowBuilder.TryResolveStep(out TStep? step) && step is not null)
+        {
+            configure?.Invoke(step, builder.FlowContext);
             return step;
+        }
         try
         {
-            return Activator.CreateInstance<TStep>();
+            var instance = Activator.CreateInstance<TStep>();
+            configure?.Invoke(instance, builder.FlowContext);
+            return instance;
         }
         catch (Exception e)
         {
