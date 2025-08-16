@@ -16,20 +16,41 @@ public class GitShellProvider : IGitProvider
         return RunGitCommandAsync(args, Directory.GetCurrentDirectory(), cancellation);
     }
 
-    public Task GitCommitAsync(string localPath, string commitMessage, CancellationToken cancellation,
-        params string[]? additionalArgs)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task GitAddAsync(string path, CancellationToken cancellation, params string[]? additionalArgs)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Path must be set", nameof(path));
+
+        // Build git add command
+        var args = new List<string> { "add", path };
+        if (additionalArgs != null && additionalArgs.Length > 0)
+            args.AddRange(additionalArgs);
+
+        return RunGitCommandAsync(string.Join(" ", args), Directory.GetCurrentDirectory(), cancellation);
+    }
+
+    public Task GitCommitAsync(string commitMessage, CancellationToken cancellation, params string[]? additionalArgs)
+    {
+        if (string.IsNullOrWhiteSpace(commitMessage))
+            throw new ArgumentException("Commit message must be set", nameof(commitMessage));
+        
+        var args = new List<string> { "commit", "-m", $"\"{commitMessage}\"" };
+        if (additionalArgs != null && additionalArgs.Length > 0)
+            args.AddRange(additionalArgs);
+
+        return RunGitCommandAsync(string.Join(" ", args), Directory.GetCurrentDirectory(), cancellation);
     }
 
     public Task GitInitializeAsync(string localPath, CancellationToken cancellation, params string[]? additionalArgs)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(localPath))
+            throw new ArgumentException("Local path must be set", nameof(localPath));
+
+        var args = new List<string> { "init", $"\"{localPath}\"" };
+        if (additionalArgs != null && additionalArgs.Length > 0)
+            args.AddRange(additionalArgs);
+
+        return RunGitCommandAsync(string.Join(" ", args), Directory.GetCurrentDirectory(), cancellation);
     }
     
     private static async Task<(string Output, string Error, int ExitCode)> RunGitCommandAsync(string arguments, string workingDirectory, CancellationToken cancellationToken)
