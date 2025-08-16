@@ -2,25 +2,14 @@ using FFlow.Core;
 
 namespace FFlow.Steps.Git;
 
-public class GitCloneStep : FlowStep
+public class GitCloneStep : GitStepBase
 {
-    private readonly IGitProvider _provider;
     
     public string RepositoryUrl { get; set; } = string.Empty;
     public string LocalPath { get; set; } = string.Empty;
     
     public string? Branch { get; set; }
     public string[]? AdditionalArgs { get; set; }
-
-    public GitCloneStep(IGitProvider provider)
-    {
-        _provider = provider ?? throw new ArgumentNullException(nameof(provider), "Git provider cannot be null.");
-    }
-
-    public GitCloneStep()
-    {
-        _provider = new GitShellProvider();
-    }
     protected override async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(RepositoryUrl))
@@ -38,7 +27,7 @@ public class GitCloneStep : FlowStep
             args.Add(Branch);
         }
 
-        await _provider.GitCloneAsync(RepositoryUrl, LocalPath, cancellationToken, args.ToArray())
+        await GitProvider.GitCloneAsync(RepositoryUrl, LocalPath, cancellationToken, args.ToArray())
             .ConfigureAwait(false);
     }
 }
