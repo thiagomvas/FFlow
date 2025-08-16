@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\FFlow.Steps.Git\FFlow.Steps.Git.csproj" />
       <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
       <ProjectReference Include="..\FFlow.Extensions.Microsoft.DependencyInjection\FFlow.Extensions.Microsoft.DependencyInjection.csproj" />
       <ProjectReference Include="..\FFlow.Observability\FFlow.Observability.csproj" />

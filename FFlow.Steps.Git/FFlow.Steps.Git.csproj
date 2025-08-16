@@ -15,5 +15,9 @@
         <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\src\FFlow\FFlow.csproj" />
+    </ItemGroup>
+
 
 </Project>
