@@ -2,6 +2,7 @@ using FFlow.Core;
 
 namespace FFlow.Steps.Git;
 
+[GitStep("commitMessage", "CommitMessage")]
 public class GitCommitStep : GitStepBase
 {
     public string CommitMessage { get; set; } = string.Empty;
