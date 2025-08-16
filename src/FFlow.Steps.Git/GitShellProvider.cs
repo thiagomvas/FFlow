@@ -56,7 +56,42 @@ public class GitShellProvider : IGitProvider
 
         return RunGitCommandAsync(string.Join(" ", args), Directory.GetCurrentDirectory(), cancellation);
     }
-    
+
+    public Task GitCheckoutAsync(string branchName, CancellationToken cancellation, params string[]? additionalArgs)
+    {
+        if (string.IsNullOrWhiteSpace(branchName))
+            throw new ArgumentException("Branch name must be set", nameof(branchName));
+
+        // Build git checkout command
+        var args = new List<string> { "checkout", branchName };
+        if (additionalArgs != null && additionalArgs.Length > 0)
+            args.AddRange(additionalArgs);
+
+        return RunGitCommandAsync(string.Join(" ", args), Directory.GetCurrentDirectory(), cancellation);
+    }
+
+    public Task GitPushAsync(string remoteName, string branchName, CancellationToken cancellation,
+        params string[]? additionalArgs)
+    {
+        // Build git push command
+        var args = new List<string> { "push", remoteName, branchName };
+        if (additionalArgs != null && additionalArgs.Length > 0)
+            args.AddRange(additionalArgs);
+
+        return RunGitCommandAsync(string.Join(" ", args), Directory.GetCurrentDirectory(), cancellation);
+    }
+
+    public Task GitPullAsync(string remoteName, string branchName, CancellationToken cancellation,
+        params string[]? additionalArgs)
+    {
+        // Build git pull command
+        var args = new List<string> { "pull", remoteName, branchName };
+        if (additionalArgs != null && additionalArgs.Length > 0)
+            args.AddRange(additionalArgs);
+
+        return RunGitCommandAsync(string.Join(" ", args), Directory.GetCurrentDirectory(), cancellation);
+    }
+
     private static async Task<(string Output, string Error, int ExitCode)> RunGitCommandAsync(string arguments, string workingDirectory, CancellationToken cancellationToken)
     {
         var processStartInfo = new ProcessStartInfo

@@ -3,6 +3,7 @@ using FFlow.Core;
 namespace FFlow.Steps.Git;
 
 [GitStep]
+[GitStep("directoryPath", "DirectoryPath")]
 public class GitInitStep : GitStepBase
 {
     public string DirectoryPath { get; set; } = string.Empty;
