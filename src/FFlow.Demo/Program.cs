@@ -8,9 +8,17 @@ using FFlow.Steps.DotNet;
 using FFlow.Steps.Git;
 using FFlow.Steps.Http;
 
-var tempPath = Path.Combine(Path.GetTempPath(), "fflow-demo");
 var builder = new FFlowBuilder()
-    .GitClone("https://github.com/thiagomvas/fflow.git");
+    .GitClone("https://github.com/thiagomvas/fflow.git", "/home/thiagomv/testfflow/")
+    .Then(() =>
+    {
+        var generatedFolder = Path.Combine(Directory.GetCurrentDirectory(), "fflow"); 
+        if (Directory.Exists(generatedFolder))
+        {
+            Directory.Delete(generatedFolder, recursive: true);
+            Console.WriteLine($"Deleted folder: {generatedFolder}");
+        }
+    });
 
 await builder.Build().RunAsync();
 

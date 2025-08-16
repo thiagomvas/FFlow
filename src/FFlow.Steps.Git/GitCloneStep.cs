@@ -3,6 +3,7 @@ using FFlow.Core;
 namespace FFlow.Steps.Git;
 
 [GitStep("repositoryUrl", "RepositoryUrl")]
+[GitStep("repositoryUrl", "RepositoryUrl", "localPath", "LocalPath")]
 public class GitCloneStep : GitStepBase
 {
     

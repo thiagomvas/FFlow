@@ -11,7 +11,8 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(ctx =>
-            ctx.AddSource("GitStepAttribute.g.cs", SourceText.From(SourceGenerationHelper.MarkerAttribute, Encoding.UTF8)));
+            ctx.AddSource("GitStepAttribute.g.cs",
+                SourceText.From(SourceGenerationHelper.MarkerAttribute, Encoding.UTF8)));
 
         var stepClasses = context.SyntaxProvider
             .CreateSyntaxProvider(
@@ -22,7 +23,8 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(stepClasses, static (spc, stepType) =>
         {
             var source = GenerateExtensions((GitStepType)stepType!);
-            spc.AddSource($"{((GitStepType)stepType!).StepName}Extensions.g.cs", SourceText.From(source, Encoding.UTF8));
+            spc.AddSource($"{((GitStepType)stepType!).StepName}Extensions.g.cs",
+                SourceText.From(source, Encoding.UTF8));
         });
     }
 
@@ -37,23 +39,37 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
 
         var name = classDecl.Identifier.Text;
 
-        var attr = classDecl.AttributeLists.SelectMany(al => al.Attributes)
-            .FirstOrDefault(a => a.Name.ToString() == "GitStep");
+        var attrs = classDecl.AttributeLists
+            .SelectMany(al => al.Attributes)
+            .Where(a => a.Name.ToString() == "GitStep");
 
-        if (attr == null) return null;
+        var allPairs = new List<(string Param, string Property)[]>();
 
-        // Retrieve parameter/property name from attribute args if any
-        string? stringParam = null;
-        string? stringProperty = null;
-
-        if (attr.ArgumentList is { Arguments.Count: >= 2 })
+        foreach (var attr in attrs)
         {
-            stringParam = attr.ArgumentList.Arguments[0].ToString().Trim('"');
-            stringProperty = attr.ArgumentList.Arguments[1].ToString().Trim('"');
+            var paramPropertyPairs = new List<(string Param, string Property)>();
+
+            if (attr.ArgumentList != null && attr.ArgumentList.Arguments.Count >= 2)
+            {
+                var args = attr.ArgumentList.Arguments;
+                for (int i = 0; i < args.Count; i += 2)
+                {
+                    var param = args[i].ToString().Trim('"');
+                    var prop = (i + 1 < args.Count) ? args[i + 1].ToString().Trim('"') : null;
+                    if (prop != null)
+                        paramPropertyPairs.Add((param, prop));
+                }
+            }
+
+            if (paramPropertyPairs.Count > 0)
+                allPairs.Add(paramPropertyPairs.ToArray());
         }
 
-        return new GitStepType(name, stringParam, stringProperty);
+        return new GitStepType(name, allPairs.ToArray());
     }
+
+
+
 
     private static string GenerateExtensions(GitStepType step)
     {
@@ -67,10 +83,12 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
         sb.AppendLine("{");
 
         sb.AppendLine("/// <summary>");
-        sb.AppendLine($"/// Adds a <see cref=\"{step.StepClass}\"/> to the workflow and allows configuration via delegate.");
+        sb.AppendLine(
+            $"/// Adds a <see cref=\"{step.StepClass}\"/> to the workflow and allows configuration via delegate.");
         sb.AppendLine("/// </summary>");
         sb.AppendLine("/// <param name=\"builder\">The workflow builder.</param>");
-        sb.AppendLine($"/// <param name=\"configure\">An action to configure the <see cref=\"{step.StepClass}\"/>.</param>");
+        sb.AppendLine(
+            $"/// <param name=\"configure\">An action to configure the <see cref=\"{step.StepClass}\"/>.</param>");
         sb.AppendLine("/// <returns>The step builder for further configuration.</returns>");
         sb.AppendLine($"public static WorkflowBuilderBase {step.MethodName}(this WorkflowBuilderBase builder,");
         sb.AppendLine($"    Action<{step.StepClass}> configure)");
@@ -82,29 +100,63 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
         sb.AppendLine("}");
 
 
-        if (!string.IsNullOrEmpty(step.StringParam) && !string.IsNullOrEmpty(step.StringProperty))
+        foreach (var pair in step.ParamPropertyPairsByAttribute)
         {
             sb.AppendLine("/// <summary>");
-            sb.AppendLine($"/// Adds a <see cref=\"{step.StepClass}\"/> to the workflow for the specified <paramref name=\"{step.StringParam}\"/>,");
+            sb.AppendLine($"/// Adds a <see cref=\"{step.StepClass}\"/> to the workflow for the specified parameters,");
             sb.AppendLine("/// and allows optional configuration via delegate.");
             sb.AppendLine("/// </summary>");
             sb.AppendLine("/// <param name=\"builder\">The workflow builder.</param>");
-            sb.AppendLine($"/// <param name=\"{step.StringParam}\">The {step.StringParam} value.</param>");
-            sb.AppendLine($"/// <param name=\"configure\">An optional action to configure the <see cref=\"{step.StepClass}\"/>.</param>");
+
+            foreach (var (param, _) in pair)
+            {
+                sb.AppendLine($"/// <param name=\"{param}\">The {param} value.</param>");
+            }
+
+            sb.AppendLine("/// <param name=\"configure\">An optional action to configure the step.</param>");
             sb.AppendLine("/// <returns>The step builder for further configuration.</returns>");
-            sb.AppendLine($"/// <exception cref=\"ArgumentException\">Thrown if <paramref name=\"{step.StringParam}\"/> is null or empty.</exception>");
-            sb.AppendLine($"public static WorkflowBuilderBase {step.MethodName}(this WorkflowBuilderBase builder, string {step.StringParam},");
-            sb.AppendLine($"    Action<{step.StepClass}>? configure = null)");
+
+            foreach (var (param, _) in pair)
+            {
+                sb.AppendLine(
+                    $"/// <exception cref=\"ArgumentException\">Thrown if <paramref name=\"{param}\"/> is null or empty.</exception>");
+            }
+
+            // Method signature
+            sb.Append("public static WorkflowBuilderBase ");
+            sb.Append(step.MethodName);
+            sb.Append("(this WorkflowBuilderBase builder");
+
+            foreach (var (param, _) in pair)
+            {
+                sb.Append($", string {param}");
+            }
+
+            sb.AppendLine($", Action<{step.StepClass}>? configure = null)");
             sb.AppendLine("{");
-            sb.AppendLine($"    if (string.IsNullOrEmpty({step.StringParam}))");
-            sb.AppendLine($"        throw new ArgumentException(\"Value cannot be null or empty.\", nameof({step.StringParam}));");
-            sb.AppendLine();
-            sb.AppendLine($"    var step = new {step.StepClass} {{ {step.StringProperty} = {step.StringParam} }};");
+
+            foreach (var (param, _) in pair)
+            {
+                sb.AppendLine($"    if (string.IsNullOrEmpty({param}))");
+                sb.AppendLine($"        throw new ArgumentException(\"Value cannot be null or empty.\", nameof({param}));");
+                sb.AppendLine();
+            }
+
+            // Instantiate step and assign properties
+            sb.AppendLine($"    var step = new {step.StepClass} {{");
+            foreach (var (param, prop) in pair)
+            {
+                sb.AppendLine($"        {prop} = {param},");
+            }
+
+            sb.AppendLine("    };");
+
             sb.AppendLine("    configure?.Invoke(step);");
             sb.AppendLine("    builder.AddStep(step);");
             sb.AppendLine("    return builder;");
             sb.AppendLine("}");
         }
+
 
         sb.AppendLine("}");
         return sb.ToString();
