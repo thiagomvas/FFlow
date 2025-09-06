@@ -146,7 +146,7 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
-    
+
     /// <summary>
     /// Touches a file at the configured path, creating it if it doesn't exist or updating its timestamps if it does and configured to do so.
     /// </summary>
@@ -160,7 +160,7 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
-    
+
     /// <summary>
     /// Touches a file at the specified path, creating it if it doesn't exist or updating its timestamps if it does and configured to do so.
     /// </summary>
@@ -179,21 +179,22 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
-    
+
     /// <summary>
     /// Creates a directory at the configured path if it doesn't already exist.
     /// </summary>
     /// <param name="builder">The workflow builder instance.</param>
     /// <param name="configure">Optional action to configure the step.</param>
     /// <returns>The same workflow builder instance for chaining.</returns>
-    public static WorkflowBuilderBase CreateDirectory(this WorkflowBuilderBase builder, Action<CreateDirectoryStep> configure)
+    public static WorkflowBuilderBase CreateDirectory(this WorkflowBuilderBase builder,
+        Action<CreateDirectoryStep> configure)
     {
         var step = new CreateDirectoryStep();
         configure(step);
         builder.AddStep(step);
         return builder;
     }
-    
+
     /// <summary>
     /// Creates a directory at the specified path if it doesn't already exist.
     /// </summary>
@@ -212,21 +213,22 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
-    
+
     /// <summary>
     /// Adds a step to write text to a file at the specified path.
     /// </summary>
     /// <param name="builder">The workflow builder instance.</param>
     /// <param name="configure">Optional action to configure the step.</param>
     /// <returns>The same workflow builder instance for chaining.</returns>
-    public static WorkflowBuilderBase FileWriteText(this WorkflowBuilderBase builder, Action<FileWriteTextStep> configure)
+    public static WorkflowBuilderBase FileWriteText(this WorkflowBuilderBase builder,
+        Action<FileWriteTextStep> configure)
     {
         var step = new FileWriteTextStep();
         configure(step);
         builder.AddStep(step);
         return builder;
     }
-    
+
     /// <summary>
     /// Adds a step to write text to a file at the specified path, using content from a context key.
     /// </summary>
@@ -247,7 +249,7 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
-    
+
     /// <summary>
     /// Adds a step to write text to a file at the specified path, using content from a context key.
     /// </summary>
@@ -257,7 +259,8 @@ public static class WorkflowBuilderExtensions
     /// <param name="builder">The workflow builder instance.</param>
     /// <param name="configure">Optional action to configure the step.</param>
     /// <returns>The same workflow builder instance for chaining.</returns>
-    public static WorkflowBuilderBase FileWriteText(this WorkflowBuilderBase builder, string path, string contextKey, bool append,
+    public static WorkflowBuilderBase FileWriteText(this WorkflowBuilderBase builder, string path, string contextKey,
+        bool append,
         Action<FileWriteTextStep>? configure = null)
     {
         var step = new FileWriteTextStep
@@ -270,7 +273,7 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
-    
+
     /// <summary>
     /// Adds a step to append text to a file at the specified path, using content from a context key.
     /// </summary>
@@ -292,6 +295,87 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
-    
-    
+
+    /// <summary>
+    /// Adds a step to write bytes to a file at the specified path.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileWriteBytes(this WorkflowBuilderBase builder,
+        Action<FileWriteBytesStep> configure)
+    {
+        var step = new FileWriteBytesStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds a step to write bytes to a file at the specified path, using content from a context key.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="path">The path of the file to write the bytes to.</param>
+    /// <param name="contextKey">The key to get the byte content from an <see cref="IFlowContext"/>.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileWriteBytes(this WorkflowBuilderBase builder, string path, string contextKey,
+        Action<FileWriteBytesStep>? configure = null)
+    {
+        var step = new FileWriteBytesStep
+        {
+            Path = path,
+            ContextSourceKey = contextKey
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds a step to write bytes to a file at the specified path, using content from a context key,
+    /// with an option to append instead of overwriting.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="path">The path of the file to write the bytes to.</param>
+    /// <param name="contextKey">The key to get the byte content from an <see cref="IFlowContext"/>.</param>
+    /// <param name="append">Whether to append to the file instead of overwriting. Default is <see langword="false"/>.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileWriteBytes(this WorkflowBuilderBase builder, string path, string contextKey,
+        bool append,
+        Action<FileWriteBytesStep>? configure = null)
+    {
+        var step = new FileWriteBytesStep
+        {
+            Path = path,
+            ContextSourceKey = contextKey,
+            Append = append
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds a step to append bytes to a file at the specified path, using content from a context key.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="path">The path of the file to append the bytes to.</param>
+    /// <param name="contextKey">The key to get the byte content from an <see cref="IFlowContext"/>.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileAppendBytes(this WorkflowBuilderBase builder, string path, string contextKey,
+        Action<FileWriteBytesStep>? configure = null)
+    {
+        var step = new FileWriteBytesStep
+        {
+            Path = path,
+            ContextSourceKey = contextKey,
+            Append = true
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
 }
