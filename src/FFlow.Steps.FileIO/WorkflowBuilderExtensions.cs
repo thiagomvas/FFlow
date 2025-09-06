@@ -146,4 +146,37 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    /// <summary>
+    /// Touches a file at the configured path, creating it if it doesn't exist or updating its timestamps if it does and configured to do so.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase TouchFile(this WorkflowBuilderBase builder, Action<TouchFileStep> configure)
+    {
+        var step = new TouchFileStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Touches a file at the specified path, creating it if it doesn't exist or updating its timestamps if it does and configured to do so.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="path">The path of the file to touch.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase TouchFile(this WorkflowBuilderBase builder, string path,
+        Action<TouchFileStep>? configure = null)
+    {
+        var step = new TouchFileStep
+        {
+            Path = path
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
 }
