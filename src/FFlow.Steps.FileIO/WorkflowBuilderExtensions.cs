@@ -212,4 +212,86 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    /// <summary>
+    /// Adds a step to write text to a file at the specified path.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileWriteText(this WorkflowBuilderBase builder, Action<FileWriteTextStep> configure)
+    {
+        var step = new FileWriteTextStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to write text to a file at the specified path, using content from a context key.
+    /// </summary>
+    /// <param name="path">The path of the file to write the text to.</param>
+    /// <param name="contextKey">The key to get the contents to write from an <see cref="IFlowContext"/></param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileWriteText(this WorkflowBuilderBase builder, string path, string contextKey,
+        Action<FileWriteTextStep>? configure = null)
+    {
+        var step = new FileWriteTextStep
+        {
+            Path = path,
+            ContextSourceKey = contextKey
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to write text to a file at the specified path, using content from a context key.
+    /// </summary>
+    /// <param name="path">The path of the file to write the text to.</param>
+    /// <param name="contextKey">The key to get the contents to write from an <see cref="IFlowContext"/></param>
+    /// <param name="append">Whether to append instead of overriding file contents. Default is <see langword="false"/> .</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileWriteText(this WorkflowBuilderBase builder, string path, string contextKey, bool append,
+        Action<FileWriteTextStep>? configure = null)
+    {
+        var step = new FileWriteTextStep
+        {
+            Path = path,
+            ContextSourceKey = contextKey,
+            Append = append
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to append text to a file at the specified path, using content from a context key.
+    /// </summary>
+    /// <param name="path">The path of the file to append the text to.</param>
+    /// <param name="contextKey">The key to get the contents to append from an <see cref="IFlowContext"/></param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileAppendText(this WorkflowBuilderBase builder, string path, string contextKey,
+        Action<FileWriteTextStep>? configure = null)
+    {
+        var step = new FileWriteTextStep
+        {
+            Path = path,
+            ContextSourceKey = contextKey,
+            Append = true
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    
 }
