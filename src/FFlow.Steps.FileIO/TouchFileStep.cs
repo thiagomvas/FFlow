@@ -5,6 +5,8 @@ namespace FFlow.Steps.FileIO;
 /// <summary>
 /// Step that creates a new file or updates the timestamp of an existing file at the specified path.
 /// </summary>
+[StepName("Touch File")]
+[StepTags("file", "io")]
 public class TouchFileStep : FlowStep
 {
     public string Path { get; set; } = string.Empty;

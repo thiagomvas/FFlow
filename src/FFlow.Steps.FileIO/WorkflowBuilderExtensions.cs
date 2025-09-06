@@ -179,4 +179,37 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    /// <summary>
+    /// Creates a directory at the configured path if it doesn't already exist.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase CreateDirectory(this WorkflowBuilderBase builder, Action<CreateDirectoryStep> configure)
+    {
+        var step = new CreateDirectoryStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Creates a directory at the specified path if it doesn't already exist.
+    /// </summary>
+    /// <param name="path">The path of the directory to create.</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase CreateDirectory(this WorkflowBuilderBase builder, string path,
+        Action<CreateDirectoryStep>? configure = null)
+    {
+        var step = new CreateDirectoryStep
+        {
+            Path = path
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
 }

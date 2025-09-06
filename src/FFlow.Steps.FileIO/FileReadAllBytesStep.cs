@@ -2,6 +2,8 @@ using FFlow.Core;
 
 namespace FFlow.Steps.FileIO;
 
+[StepName("File Read All Bytes")]
+[StepTags("file", "io")]
 public class FileReadAllBytesStep : FlowStep
 {
     public string Path { get; set; } = string.Empty;
