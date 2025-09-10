@@ -484,4 +484,85 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    /// <summary>
+    /// Adds a step to compute the checksum of a file at the specified path.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileChecksum(this WorkflowBuilderBase builder,
+        Action<ChecksumStep> configure)
+    {
+        var step = new ChecksumStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to compute the checksum of a file at the specified path and save it to a context key.
+    /// </summary>
+    /// <param name="path">The path of the file to compute the checksum of.</param>
+    /// <param name="saveToKey">The key to save the checksum in a <see cref="IFlowContext"/></param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileChecksum(this WorkflowBuilderBase builder, string path, string saveToKey,
+        Action<ChecksumStep>? configure = null)
+    {
+        var step = new ChecksumStep
+        {
+            Path = path,
+            SaveToKey = saveToKey
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to compute the checksum of a file at the specified path.
+    /// </summary>
+    /// <param name="path">The path of the file to compute the checksum of.</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileChecksum(this WorkflowBuilderBase builder, string path,
+        Action<ChecksumStep>? configure = null)
+    {
+        var step = new ChecksumStep
+        {
+            Path = path
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to compute the checksum of a file at the specified path and compare it with an expected value.
+    /// </summary>
+    /// <param name="path">The path of the file to compute the checksum of.</param>
+    /// <param name="algorithm">The algorithm to use to compute the checksum.</param>
+    /// <param name="expect">The expected checksum.</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase FileChecksum(this WorkflowBuilderBase builder, 
+        string path, 
+        ChecksumStep.ChecksumAlgorithm algorithm, 
+        string expect,
+        Action<ChecksumStep>? configure = null)
+    {
+        var step = new ChecksumStep
+        {
+            Path = path,
+            Algorithm = algorithm,
+            CompareWith = expect
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
 }

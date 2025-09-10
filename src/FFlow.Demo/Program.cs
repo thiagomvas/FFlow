@@ -5,17 +5,12 @@ using FFlow.Demo;
 using FFlow.Extensions;
 using FFlow.Steps.SFTP;
 using FFlow.Steps.DotNet;
+using FFlow.Steps.FileIO;
 using FFlow.Steps.Http;
 
-var builder = new FFlowBuilder()
-     .HttpGet(step =>
-     {
-         step.Url = "https://jsonplaceholder.typicode.com/posts/1";
-         step.AcceptableStatusCodes = new[] { System.Net.HttpStatusCode.OK };
-         step.Timeout = TimeSpan.FromSeconds(10);
-     })
-     .Then(async (context, ct) =>  Console.WriteLine(await context.GetLastOutput<HttpResponseMessage>().Content.ReadAsStringAsync()));
-
-await builder.Build().RunAsync();
+await new FFlowBuilder()
+    .FileChecksum("/home/thiagomv/Src/fflow/README.md", ChecksumStep.ChecksumAlgorithm.SHA256, 
+        "7346eea0c4e5fc63bb120d49768be219b05ed096dbe070717e23ad854c35e6cb")
+    .Build().RunAsync();
 
 
