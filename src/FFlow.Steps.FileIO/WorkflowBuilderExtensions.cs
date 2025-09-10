@@ -450,4 +450,38 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    /// <summary>
+    /// Adds a step to delete a file at the specified path.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase DeleteFile(this WorkflowBuilderBase builder,
+        Action<DeleteFileStep> configure)
+    {
+        var step = new DeleteFileStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to delete a file at the specified path.
+    /// </summary>
+    /// <param name="path">The path of the file to delete.</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase DeleteFile(this WorkflowBuilderBase builder, string path,
+        Action<DeleteFileStep>? configure = null)
+    {
+        var step = new DeleteFileStep
+        {
+            Path = path
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
 }
