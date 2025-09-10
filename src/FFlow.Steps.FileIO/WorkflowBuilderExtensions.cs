@@ -601,4 +601,61 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    /// <summary>
+    /// Adds a step to delete a directory at the specified path.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase DeleteDirectory(this WorkflowBuilderBase builder,
+        Action<DeleteDirectoryStep> configure)
+    {
+        var step = new DeleteDirectoryStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to delete a directory at the specified path.
+    /// </summary>
+    /// <param name="path">The path of the directory to delete.</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase DeleteDirectory(this WorkflowBuilderBase builder, string path,
+        Action<DeleteDirectoryStep>? configure = null)
+    {
+        var step = new DeleteDirectoryStep
+        {
+            Path = path
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to delete a directory at the specified path, with an option to delete recursively.
+    /// </summary>
+    /// <param name="path">The path of the directory to delete.</param>
+    /// <param name="recursive">Whether or not to delete recursively.</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase DeleteDirectory(this WorkflowBuilderBase builder, string path, bool recursive,
+        Action<DeleteDirectoryStep>? configure = null)
+    {
+        var step = new DeleteDirectoryStep
+        {
+            Path = path,
+            Recursive = recursive
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    
 }
