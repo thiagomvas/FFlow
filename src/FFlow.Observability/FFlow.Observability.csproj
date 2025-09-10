@@ -10,7 +10,7 @@
             Observability extension for FFlow, providing telemetry and logging capabilities to enhance workflow monitoring and diagnostics.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.2.1</Version>
+        <Version>1.2.2</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>

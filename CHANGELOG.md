@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.2"></a>
+## [1.2.2](https://www.github.com/thiagomvas/fflow/releases/tag/v1.2.2) (2025-09-10)
+
+### Bug Fixes
+
+* Fix FFlow.Steps.Http version ([f184b93](https://www.github.com/thiagomvas/fflow/commit/f184b933e3e9dac80b3d1bd4033dbaab7acc66eb))
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://www.github.com/thiagomvas/fflow/releases/tag/v1.2.1) (2025-09-10)
 
