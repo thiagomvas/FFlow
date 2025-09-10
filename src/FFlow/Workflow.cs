@@ -1,5 +1,6 @@
 using FFlow.Core;
 using FFlow.Extensions;
+using FFlow.Visualization;
 
 namespace FFlow;
 
@@ -16,6 +17,7 @@ public class Workflow : IWorkflow
     private IFlowStep? _finalizer;
     private readonly WorkflowOptions? _options;
     private readonly IWorkflowMetadataStore? _metadataStore;
+    public WorkflowGraph Graph { get; internal set; }
     private bool _isStopped;
     public IWorkflowMetadataStore? MetadataStore { get; internal set; }
 
@@ -108,11 +110,11 @@ public class Workflow : IWorkflow
                 {
                     using var stepCts = CancellationTokenSource.CreateLinkedTokenSource(effectiveToken);
                     stepCts.CancelAfter(_options.StepTimeout.Value);
-                    await step.RunAsync(_context, stepCts.Token);
+                    await step.RunAsync(_context, stepCts.Token).ConfigureAwait(false);
                 }
                 else
                 {
-                    await step.RunAsync(_context, effectiveToken);
+                    await step.RunAsync(_context, effectiveToken).ConfigureAwait(false);
                 }
 
                 eventListener?.OnStepCompleted(step, _context);
@@ -127,11 +129,11 @@ public class Workflow : IWorkflow
             {
                 using var stepCts = CancellationTokenSource.CreateLinkedTokenSource(effectiveToken);
                 stepCts.CancelAfter(_options.StepTimeout.Value);
-                await ParallelStepTracker.Instance.WaitForAllTasksAsync(Id, stepCts.Token);
+                await ParallelStepTracker.Instance.WaitForAllTasksAsync(Id, stepCts.Token).ConfigureAwait(false);
             }
             else
             {
-                await ParallelStepTracker.Instance.WaitForAllTasksAsync(Id, effectiveToken);
+                await ParallelStepTracker.Instance.WaitForAllTasksAsync(Id, effectiveToken).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -139,12 +141,12 @@ public class Workflow : IWorkflow
             while (_steps.TryBacktrack(out IFlowStep step))
             {
                 if(step is ICompensableStep compensable)
-                    await compensable.CompensateAsync(_context, cancellationToken);
+                    await compensable.CompensateAsync(_context, cancellationToken).ConfigureAwait(false);
             }
             
             if (_finalizer != null)
             {
-                await _finalizer.RunAsync(_context, cancellationToken);
+                await _finalizer.RunAsync(_context, cancellationToken).ConfigureAwait(false);
             }
 
             if (current is not null)
@@ -155,7 +157,7 @@ public class Workflow : IWorkflow
             if (_globalErrorHandler != null)
             {
                 _context.SetSingleValue(ex);
-                await _globalErrorHandler.RunAsync(_context);
+                await _globalErrorHandler.RunAsync(_context).ConfigureAwait(false);
             }
             else
             {
@@ -165,7 +167,7 @@ public class Workflow : IWorkflow
 
         if (_finalizer != null)
         {
-            await _finalizer.RunAsync(_context, cancellationToken);
+            await _finalizer.RunAsync(_context, cancellationToken).ConfigureAwait(false);
         }
 
         eventListener?.OnWorkflowCompleted(this);
@@ -181,7 +183,7 @@ public class Workflow : IWorkflow
             {
                 try
                 {
-                    await compensable.CompensateAsync(_context, cancellationToken);
+                    await compensable.CompensateAsync(_context, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

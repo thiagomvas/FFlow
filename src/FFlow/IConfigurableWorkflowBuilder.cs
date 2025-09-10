@@ -12,5 +12,5 @@ public interface IConfigurableWorkflowBuilder
     /// </summary>
     /// <param name="configure">An action to configure the <see cref="WorkflowOptions"/>.</param>
     /// <returns>An instance of <see cref="IWorkflowBuilder"/> with the applied options.</returns>
-    IWorkflowBuilder WithOptions(Action<WorkflowOptions> configure);
+    WorkflowBuilderBase WithOptions(Action<WorkflowOptions> configure);
 }

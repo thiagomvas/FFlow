@@ -63,7 +63,7 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
         sb.AppendLine("using FFlow.Core;");
         sb.AppendLine("namespace FFlow.Steps.DotNet;");
         sb.AppendLine();
-        sb.AppendLine("public static partial class IWorkflowBuilderExtensions");
+        sb.AppendLine("public static partial class WorkflowBuilderBaseExtensions");
         sb.AppendLine("{");
 
         sb.AppendLine("/// <summary>");
@@ -72,12 +72,13 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
         sb.AppendLine("/// <param name=\"builder\">The workflow builder.</param>");
         sb.AppendLine($"/// <param name=\"configure\">An action to configure the <see cref=\"{step.StepClass}\"/>.</param>");
         sb.AppendLine("/// <returns>The step builder for further configuration.</returns>");
-        sb.AppendLine($"public static IConfigurableStepBuilder {step.MethodName}(this IWorkflowBuilder builder,");
+        sb.AppendLine($"public static WorkflowBuilderBase {step.MethodName}(this WorkflowBuilderBase builder,");
         sb.AppendLine($"    Action<{step.StepClass}> configure)");
         sb.AppendLine("{");
         sb.AppendLine($"    var step = new {step.StepClass}();");
         sb.AppendLine("    configure?.Invoke(step);");
-        sb.AppendLine("    return builder.AddStep(step);");
+        sb.AppendLine("    builder.AddStep(step);");
+        sb.AppendLine("    return builder;");
         sb.AppendLine("}");
 
 
@@ -92,7 +93,7 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
             sb.AppendLine($"/// <param name=\"configure\">An optional action to configure the <see cref=\"{step.StepClass}\"/>.</param>");
             sb.AppendLine("/// <returns>The step builder for further configuration.</returns>");
             sb.AppendLine($"/// <exception cref=\"ArgumentException\">Thrown if <paramref name=\"{step.StringParam}\"/> is null or empty.</exception>");
-            sb.AppendLine($"public static IConfigurableStepBuilder {step.MethodName}(this IWorkflowBuilder builder, string {step.StringParam},");
+            sb.AppendLine($"public static WorkflowBuilderBase {step.MethodName}(this WorkflowBuilderBase builder, string {step.StringParam},");
             sb.AppendLine($"    Action<{step.StepClass}>? configure = null)");
             sb.AppendLine("{");
             sb.AppendLine($"    if (string.IsNullOrEmpty({step.StringParam}))");
@@ -100,7 +101,8 @@ public class WorkflowBuilderExtensionGenerator : IIncrementalGenerator
             sb.AppendLine();
             sb.AppendLine($"    var step = new {step.StepClass} {{ {step.StringProperty} = {step.StringParam} }};");
             sb.AppendLine("    configure?.Invoke(step);");
-            sb.AppendLine("    return builder.AddStep(step);");
+            sb.AppendLine("    builder.AddStep(step);");
+            sb.AppendLine("    return builder;");
             sb.AppendLine("}");
         }
 

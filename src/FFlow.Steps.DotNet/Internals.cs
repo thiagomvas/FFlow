@@ -34,7 +34,7 @@ internal static class Internals
         var outputTask = process.StandardOutput.ReadToEndAsync();
         var errorTask = process.StandardError.ReadToEndAsync();
 
-        await Task.WhenAll(outputTask, errorTask);
+        await Task.WhenAll(outputTask, errorTask).ConfigureAwait(false);
 
         process.WaitForExit();
 
@@ -43,7 +43,7 @@ internal static class Internals
     
     public static string InjectContext(string original, IFlowContext context)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         if (string.IsNullOrEmpty(original)) return original;
 
         var result = new System.Text.StringBuilder(original);

@@ -1,4 +1,5 @@
 using FFlow.Core;
+using FFlow.Extensions;
 using FFlow.Observability.Listeners;
 using FFlow.Observability.Metrics;
 
@@ -12,7 +13,7 @@ public class TestWorkflow : WorkflowDefinition
     {
         _metrics = metrics;
     }
-    public override void OnConfigure(IWorkflowBuilder builder)
+    public override void OnConfigure(WorkflowBuilderBase builder)
     {
         builder
             .StartWith((ctx, _) => ctx.SetValue("now", DateTimeOffset.UtcNow))

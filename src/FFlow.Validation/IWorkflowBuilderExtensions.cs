@@ -7,8 +7,8 @@ public static class ValidationExtensions
     /// Registers the validation decorators in the workflow builder.
     /// </summary>
     /// <param name="builder">The builder responsible for creating the steps</param>
-    /// <returns>The same <see cref="IWorkflowBuilder"/> instance.</returns>
-    public static IWorkflowBuilder UseValidators(this IWorkflowBuilder builder)
+    /// <returns>The same <see cref="WorkflowBuilderBase"/> instance.</returns>
+    public static FFlowBuilder UseValidators(this FFlowBuilder builder)
     {
         builder.WithDecorator(step => new ValidatorDecorator(step));
         return builder;
@@ -18,8 +18,8 @@ public static class ValidationExtensions
     /// </summary>
     /// <param name="builder">The workflow builder to attach the validation step into.</param>
     /// <param name="key">The key to check for.</param>
-    /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-    public static IWorkflowBuilder RequireKey(this IWorkflowBuilder builder, string key)
+    /// <returns>The current instance of <see cref="WorkflowBuilderBase"/>.</returns>
+    public static WorkflowBuilderBase RequireKey(this WorkflowBuilderBase builder, string key)
     {
         return builder.RequireKeys(key);
     }
@@ -29,8 +29,8 @@ public static class ValidationExtensions
     /// </summary>
     /// <param name="builder">The workflow builder to attach the validation step into.</param>
     /// <param name="keys">The keys to check for.</param>
-    /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-    public static IWorkflowBuilder RequireKeys(this IWorkflowBuilder builder, params string[] keys)
+    /// <returns>The current instance of <see cref="WorkflowBuilderBase"/>.</returns>
+    public static WorkflowBuilderBase RequireKeys(this WorkflowBuilderBase builder, params string[] keys)
     {
         if (keys == null || keys.Length == 0) throw new ArgumentException("Keys cannot be null or empty.", nameof(keys));
         
@@ -50,8 +50,8 @@ public static class ValidationExtensions
     /// <param name="builder">The workflow builder to attach the validation step into.</param>
     /// <param name="key">The key to check for.</param>
     /// <param name="pattern">The regex pattern to check for.</param>
-    /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
-    public static IWorkflowBuilder RequireRegex(this IWorkflowBuilder builder, string key, string pattern)
+    /// <returns>The current instance of <see cref="WorkflowBuilderBase"/>.</returns>
+    public static WorkflowBuilderBase RequireRegex(this WorkflowBuilderBase builder, string key, string pattern)
     {
         if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
         if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentException("Pattern cannot be null or empty.", nameof(pattern));
@@ -66,9 +66,9 @@ public static class ValidationExtensions
     /// </summary>
     /// <param name="builder">The workflow builder to attach the validation step into.</param>
     /// <param name="keys">The keys in which to check the values are not null</param>
-    /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+    /// <returns>The current instance of <see cref="WorkflowBuilderBase"/>.</returns>
     /// <exception cref="ArgumentException">Thrown when any of the keys passed are null or empty.</exception>
-    public static IWorkflowBuilder RequireNotNull(this IWorkflowBuilder builder, params string[] keys)
+    public static WorkflowBuilderBase RequireNotNull(this WorkflowBuilderBase builder, params string[] keys)
     {
         if (keys == null || keys.Length == 0) throw new ArgumentException("Keys cannot be null or empty.", nameof(keys));
         
@@ -87,11 +87,11 @@ public static class ValidationExtensions
     /// </summary>
     /// <param name="builder">The workflow builder to attach the validation step into.</param>
     /// <param name="keys">The keys in which to check the values are not null</param>
-    /// <returns>The current instance of <see cref="IWorkflowBuilder"/>.</returns>
+    /// <returns>The current instance of <see cref="WorkflowBuilderBase"/>.</returns>
     /// <remarks>
     /// This only works for <see cref="string"/> and <see cref="ICollection{T}"/> types.
     /// </remarks>
-    public static IWorkflowBuilder RequireNotEmpty(this IWorkflowBuilder builder, params string[] keys)
+    public static WorkflowBuilderBase RequireNotEmpty(this WorkflowBuilderBase builder, params string[] keys)
     {
         if (keys == null || keys.Length == 0) throw new ArgumentException("Keys cannot be null or empty.", nameof(keys));
         

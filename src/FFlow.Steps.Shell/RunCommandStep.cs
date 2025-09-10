@@ -66,7 +66,7 @@ public class RunCommandStep : FlowStep
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
 
-        await process.WaitForExitAsync(cancellationToken);
+        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
         var exitCode = process.ExitCode;
         context.SetOutputFor<RunCommandStep, int>(exitCode);

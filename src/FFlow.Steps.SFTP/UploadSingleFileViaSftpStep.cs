@@ -6,6 +6,8 @@ namespace FFlow.Steps.SFTP;
 /// <summary>
 /// Represents a workflow step to upload a single local file to a remote file path on an SFTP server.
 /// </summary>
+[StepName("Upload Single File via SFTP")]
+[StepTags("sftp")]
 public class UploadSingleFileViaSftpStep : FlowStep
 {
     /// <summary>

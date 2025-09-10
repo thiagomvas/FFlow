@@ -1,37 +1,45 @@
 items:
-  - name: Overview
-    items:
-      - name: Introduction
-        href: overview/introduction.md
-      - name: Getting Started
-        href: overview/getting-started.md
-      - name: Github Actions
-        href: overview/github-actions.md
-  - name: Features
-    items:
-      - name: Steps
-        href: features/steps.md
-      - name: Passing data around
-        href: features/passing-data.md
-      - name: Event Handling
-        href: features/events.md
-      - name: Dependency Injection
-        href: features/dependency-injection.md
-      - name: Workflow Definitions
-        href: features/workflow-definitions.md
-      - name: Validation
-        href: features/validation.md
-      - name: Compensation
-        href: features/compensation.md
-  - name: Extensions
-    items:
-      - name: Observability
-        href: extensions/observability.md
-      - name: Scheduling
-        href: extensions/scheduling.md
-      - name: Shell
-        href: extensions/shell.md
-      - name: .NET CLI
-        href: extensions/dotnet.md
-      - name: SFTP
-        href: extensions/sftp.md
+- name: Overview
+  items:
+  - name: Introduction
+    href: overview/introduction.md
+  - name: Getting Started
+    href: overview/getting-started.md
+  - name: Github Actions
+    href: overview/github-actions.md
+  - name: FFlow CLI
+    href: overview/fflow-cli.md
+- name: Features
+  items:
+  - name: Steps
+    href: features/steps.md
+  - name: Passing data around
+    href: features/passing-data.md
+  - name: Event Handling
+    href: features/events.md
+  - name: Dependency Injection
+    href: features/dependency-injection.md
+  - name: Workflow Definitions
+    href: features/workflow-definitions.md
+  - name: Validation
+    href: features/validation.md
+  - name: Compensation
+    href: features/compensation.md
+  - name: Visualization
+    href: features/visualization.md
+- name: Extensions
+  items:
+  - name: Observability
+    href: extensions/observability.md
+  - name: Scheduling
+    href: extensions/scheduling.md
+  - name: Shell
+    href: extensions/shell.md
+  - name: .NET CLI
+    href: extensions/dotnet.md
+  - name: SFTP
+    href: extensions/sftp.md
+  - name: HTTP
+    href: extensions/http.md
+  - name: File IO
+    href: extensions/fileio.md

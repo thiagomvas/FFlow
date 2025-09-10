@@ -5,8 +5,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PublishAot>true</PublishAot>
         <InvariantGlobalization>true</InvariantGlobalization>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,6 +15,8 @@
       <ProjectReference Include="..\FFlow.Observability\FFlow.Observability.csproj" />
       <ProjectReference Include="..\FFlow.Scheduling\FFlow.Scheduling.csproj" />
       <ProjectReference Include="..\FFlow.Steps.DotNet\FFlow.Steps.DotNet.csproj" />
+      <ProjectReference Include="..\FFlow.Steps.FileIO\FFlow.Steps.FileIO.csproj" />
+      <ProjectReference Include="..\FFlow.Steps.Http\FFlow.Steps.Http.csproj" />
       <ProjectReference Include="..\FFlow.Steps.SFTP\FFlow.Steps.SFTP.csproj" />
       <ProjectReference Include="..\FFlow.Steps.Shell\FFlow.Steps.Shell.csproj" />
       <ProjectReference Include="..\FFlow.Validation\FFlow.Validation.csproj" />

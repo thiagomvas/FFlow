@@ -6,4 +6,4 @@ namespace FFlow.Core;
 /// <param name="context">The workflow context in which the action is executed.</param>
 /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
 /// <returns>A task that represents the asynchronous operation.</returns>
-public delegate Task AsyncFlowAction(IFlowContext context, CancellationToken cancellationToken = default);
+public delegate void AsyncFlowAction(IFlowContext context, CancellationToken cancellationToken = default);

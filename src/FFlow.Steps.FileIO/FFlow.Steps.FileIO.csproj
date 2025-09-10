@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>FFlow.Steps.FileIO</PackageId>
+        <Description>
+            Provides file I/O-related steps and configuration for FFlow workflows, enabling reading, writing, copying, deleting, and managing files and directories safely within workflow contexts.
+        </Description>
+        <Authors>thiagomvas</Authors>
+        <Version>1.2.0</Version>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn>
+        <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
+    </ItemGroup>
+
+</Project>

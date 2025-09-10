@@ -26,7 +26,7 @@ public class RunScriptRawStep : FlowStep
         Script = Internals.InjectContext(Script, context);
 
         _tempScriptPath = Path.GetTempFileName();
-        await File.WriteAllTextAsync(_tempScriptPath, Script, cancellationToken);
+        await File.WriteAllTextAsync(_tempScriptPath, Script, cancellationToken).ConfigureAwait(false);
 
         // Set executable bit on Unix-like systems
         if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
@@ -43,7 +43,7 @@ public class RunScriptRawStep : FlowStep
                 }
             };
             chmod.Start();
-            await chmod.WaitForExitAsync(cancellationToken);
+            await chmod.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
         }
 
         var processStartInfo = new ProcessStartInfo
@@ -83,7 +83,7 @@ public class RunScriptRawStep : FlowStep
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
 
-        await process.WaitForExitAsync(cancellationToken);
+        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
         var exitCode = process.ExitCode;
 

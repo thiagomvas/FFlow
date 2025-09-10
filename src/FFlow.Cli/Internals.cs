@@ -6,6 +6,9 @@ public static class Internals
     {
         { ".NET SDK", "FFlow.Steps.DotNet" },
         { "Shell Commands", "FFlow.Steps.Shell" },
+        { "SFTP", "FFlow.Steps.SFTP" },
+        { "File IO", "FFlow.Steps.FileIO" },
+        { "HTTP Requests", "FFlow.Steps.Http" },
     };
     
     public const string DockerImage = "mcr.microsoft.com/dotnet/sdk:10.0-preview";

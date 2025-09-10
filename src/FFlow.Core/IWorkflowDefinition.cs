@@ -16,6 +16,12 @@ public interface IWorkflowDefinition
     IWorkflow Build();
     
     /// <summary>
+    /// Creates an <see cref="IWorkflowBuilder"/> based off of this definition.
+    /// </summary>
+    /// <returns>The created <see cref="IWorkflowBuilder"/></returns>
+    WorkflowBuilderBase CreateBuilder();
+    
+    /// <summary>
     /// The metadata store associated with this workflow definition.
     /// </summary>
     IWorkflowMetadataStore MetadataStore { get; }

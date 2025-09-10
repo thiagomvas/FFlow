@@ -4,21 +4,35 @@ using FFlow.Extensions;
 
 namespace Workflow.Tests.Shared;
 
-public class TestWorkflowDefinition : IWorkflowDefinition
+public class TestWorkflowDefinition : WorkflowDefinition
 {
     public TestWorkflowDefinition()
     {
         MetadataStore.SetName("Test Workflow")
             .SetDescription("A workflow for testing purposes.");
     }
-    public IWorkflow Build()
+
+    public override void OnConfigure(WorkflowBuilderBase builder)
     {
-        return new FFlowBuilder()
+        builder
             .StartWith<TestStep>()
             .Then<DelayedStep>()
-            .Then<TestStep>()
+            .Then<TestStep>();
+    }
+
+    public override Action<WorkflowOptions> OnConfigureOptions()
+    {
+        return options =>
+        {
+        };
+    }
+
+    public IWorkflow Build()
+    {
+        return CreateBuilder()
             .Build();
     }
+
 
     public IWorkflowMetadataStore MetadataStore { get; } = new InMemoryMetadataStore();
 }

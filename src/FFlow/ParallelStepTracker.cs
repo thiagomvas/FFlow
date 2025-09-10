@@ -41,17 +41,17 @@ internal class ParallelStepTracker
             if (cancellationToken.CanBeCanceled)
             {
                 var cancellationTask = Task.Delay(Timeout.Infinite, cancellationToken);
-                var completedTask = await Task.WhenAny(allTasks, cancellationTask);
+                var completedTask = await Task.WhenAny(allTasks, cancellationTask).ConfigureAwait(false);
                 if (completedTask == cancellationTask)
                 {
                     throw new OperationCanceledException(cancellationToken);
                 }
 
-                await allTasks;
+                await allTasks.ConfigureAwait(false);
             }
             else
             {
-                await allTasks;
+                await allTasks.ConfigureAwait(false);
             }
         }
     }

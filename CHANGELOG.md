@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.0"></a>
+## [1.2.0](https://www.github.com/thiagomvas/fflow/releases/tag/v1.2.0) (2025-09-10)
+
+### Features
+
+* Add a way to set where to continue from in the graph ([431a1ab](https://www.github.com/thiagomvas/fflow/commit/431a1ab0a4b5f17851735773fd9bce37e5217080))
+* Add base http request step ([83ed3ca](https://www.github.com/thiagomvas/fflow/commit/83ed3ca388ba968428565a2d92f0504cdb253a62))
+* Add basic graph building ([f9419b4](https://www.github.com/thiagomvas/fflow/commit/f9419b4621a38587d8632524f2e84ea19064d912))
+* Add basic visualization graph structure ([a4495a5](https://www.github.com/thiagomvas/fflow/commit/a4495a57cda5e241df345f7b1d37499d97cd0529))
+* Add ConfigureAwait(false) to all await statements in library code ([b24a592](https://www.github.com/thiagomvas/fflow/commit/b24a59218831d3fcb5c4da528fbd786adc861209))
+* Add ContentType configuration support ([d7f887b](https://www.github.com/thiagomvas/fflow/commit/d7f887b904c3fe4f5d672f4cc85e69f01e4c261c))
+* Add ContinueFromLabel to set a custom label for the exiting edge ([0af17fa](https://www.github.com/thiagomvas/fflow/commit/0af17fa144a109e6319afb779226047c6f1545ab))
+* Add custom graph for foreach step ([da49b3e](https://www.github.com/thiagomvas/fflow/commit/da49b3ef2e480efe1b71307f23871f1b888ff091))
+* Add custom graph for Fork step ([fd11a3a](https://www.github.com/thiagomvas/fflow/commit/fd11a3a00c1c673f20b76b4a613f8c889ad2bb3d))
+* Add custom graph for If node ([990b565](https://www.github.com/thiagomvas/fflow/commit/990b5656d0442129618562f1f512fdb780eb8340))
+* Add describable steps support so steps can generate their own graphs ([97c7e75](https://www.github.com/thiagomvas/fflow/commit/97c7e75944d2f5cae5c5deb1f6d2e1ffde41e707))
+* Add Describe() to base WorkflowDefinition to support describing definitions ([71f1599](https://www.github.com/thiagomvas/fflow/commit/71f1599686ca89684815e69f1d701f80fe3cbb37))
+* Add DOT Graph support for visualization ([6bbaed5](https://www.github.com/thiagomvas/fflow/commit/6bbaed5ee2c46b2192bd1711b1d81d3cc098dbfe))
+* Add extension methods for sending http requests with all methods ([12eef3e](https://www.github.com/thiagomvas/fflow/commit/12eef3ecc99a8d895ad209e597c39423713e6fc0))
+* Add File Exists Step ([bd1f3c8](https://www.github.com/thiagomvas/fflow/commit/bd1f3c80aa3e916c6898a670bcdcf475f2bc652c))
+* Add IWorkflowDefinition.CreateBuilder to create configured builders for that definition ([26d70f3](https://www.github.com/thiagomvas/fflow/commit/26d70f30b867a47af9bc9599b97f3ba86f84662b))
+* Add new ForEachStep implementation ([60f5287](https://www.github.com/thiagomvas/fflow/commit/60f5287af090b0d42afbf38b1ec3c13fdd7d5c7c))
+* Add step metadata registry to get and store metadata for certain steps ([49b00bf](https://www.github.com/thiagomvas/fflow/commit/49b00bf06b8eb9d99195b9418dc7c69d273a1964))
+* Add switch case graph builder ([6d858b5](https://www.github.com/thiagomvas/fflow/commit/6d858b5c4b7f28e682ae7686702581614c79c305))
+* Add workflow definition name to continuation node ([08904dd](https://www.github.com/thiagomvas/fflow/commit/08904dd40e38805f17f5cdb0bab4c179b2d37888))
+* Create new base workflow builder ([96011fe](https://www.github.com/thiagomvas/fflow/commit/96011fee31d81bd0ac0c6f297e4a256b3bb57bce))
+* **cli:** Add missing packages into the cli ([463ff7d](https://www.github.com/thiagomvas/fflow/commit/463ff7df14f13da3ac3f1495e0c8633441d754d9))
+* **fileio:** Add Copy File step ([f522457](https://www.github.com/thiagomvas/fflow/commit/f5224573ef68e59e1338c75419a01280e8c9d33e))
+* **fileio:** Add Create Directory Step ([a1904a8](https://www.github.com/thiagomvas/fflow/commit/a1904a8a4fabcee385bd02e6c6a3da4246f28350))
+* **fileio:** Add Delete Directory Step ([5c153b6](https://www.github.com/thiagomvas/fflow/commit/5c153b613393df74f5402153573b6ef65ccc461d))
+* **fileio:** Add Delete File Step ([8f53861](https://www.github.com/thiagomvas/fflow/commit/8f5386139a471941caf9070cf10aa5bd1d781827))
+* **fileio:** Add File Checksum step with support for comparing checksums ([4206061](https://www.github.com/thiagomvas/fflow/commit/4206061abee8d3290294e711862bff58e28ffccc))
+* **fileio:** Add File Read All Bytes ([38db7bf](https://www.github.com/thiagomvas/fflow/commit/38db7bf9ef1e9fb1b69f1a615dd05c860f536544))
+* **fileio:** Add File Read All Text Step ([7964982](https://www.github.com/thiagomvas/fflow/commit/7964982fb8402f857cd933e083f99be6b187e79d))
+* **fileio:** Add File Write Text Step with append support ([d1ca713](https://www.github.com/thiagomvas/fflow/commit/d1ca713308573527ea69273d07ca9fc52f39d9ff))
+* **fileio:** Add File Write/Append Bytes Step ([bf3ea6e](https://www.github.com/thiagomvas/fflow/commit/bf3ea6e3e6a286586116e5db6f418080bee97bc1))
+* **fileio:** Add Move File Step ([03c0b4c](https://www.github.com/thiagomvas/fflow/commit/03c0b4c14947b7752b5c552e505169aa66064747))
+* **fileio:** Add Rename File Step ([dcb8030](https://www.github.com/thiagomvas/fflow/commit/dcb8030dda993bbf27428535a86d45ef1cb9026b))
+* **fileio:** Add Touch File Step ([93bde14](https://www.github.com/thiagomvas/fflow/commit/93bde14ce4b125d238f2c3dee864eefd62f3a8aa))
+* **http:** Add HttpMethod(string Url) extension methods ([b96a6ca](https://www.github.com/thiagomvas/fflow/commit/b96a6ca7cd8ee2d7fc21b0a2344dcaea55b389d3))
+* **http:** Add query parameters support ([7bb458d](https://www.github.com/thiagomvas/fflow/commit/7bb458d3315c1d205df6f5bd053af20b15f4e58f))
+
+### Bug Fixes
+
+* Acceptable Status Codes filter correctly apply on http request step ([855e3de](https://www.github.com/thiagomvas/fflow/commit/855e3de988036ff8eb7e5e5d56ffb42249083470))
+* Fix mergeIntoId not actually merging connected into the target node ([9555fbc](https://www.github.com/thiagomvas/fflow/commit/9555fbc3ac84175ffa30e90b23fc505151d283a0))
+* fix package namespaces ([257eb5f](https://www.github.com/thiagomvas/fflow/commit/257eb5f6eaa753c911fa3dc00cf91174c3d4535c))
+* Input setters now work with multiple Input calls ([89ac27b](https://www.github.com/thiagomvas/fflow/commit/89ac27b4cb285bb36bbd2e0356cf58bafb66e180))
+* Use generic type definition for generic steps ([467b272](https://www.github.com/thiagomvas/fflow/commit/467b27210a1f5c90502e2cc62db213dad795df08))
+* **sftp:** Added missing metadata to sftp steps (closes [#31](https://www.github.com/thiagomvas/fflow/issues/31)) ([356e919](https://www.github.com/thiagomvas/fflow/commit/356e9191f76e034a1b80c9dd07755c09ba78b921))
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://www.github.com/thiagomvas/fflow/releases/tag/v1.1.2) (2025-07-21)
 

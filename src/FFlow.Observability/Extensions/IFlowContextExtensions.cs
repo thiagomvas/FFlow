@@ -21,8 +21,8 @@ public static class IFlowContextExtensions
     public static TMetricSink GetMetricsSink<TMetricSink>(this IFlowContext context)
         where TMetricSink : class, IMetricsSink
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
-        
+        ArgumentNullException.ThrowIfNull(context);
+
         var key = Internals.BuildMetricsSinkKey<TMetricSink>();
         if (context.GetValue<TMetricSink>(key) is TMetricSink sink)
         {

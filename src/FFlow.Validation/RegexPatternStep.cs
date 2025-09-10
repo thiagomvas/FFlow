@@ -19,7 +19,7 @@ internal class RegexPatternStep : IFlowStep
 
     public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
         cancellationToken.ThrowIfCancellationRequested();
 
         if (context.GetValue<object>(_key) is not string value)

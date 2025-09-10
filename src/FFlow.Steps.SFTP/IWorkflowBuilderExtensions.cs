@@ -19,19 +19,20 @@ public static class IWorkflowBuilderExtensions
     /// <remarks>
     /// This step is required before performing any SFTP operations.
     /// </remarks>
-    public static IConfigurableStepBuilder ConnectToSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase ConnectToSftp(
+        this WorkflowBuilderBase builder,
         string host,
         int port = 22,
         string username = "",
         string password = "")
     {
-        return builder
+        builder
             .Then<ConnectToSftpStep>()
-            .Input<ConnectToSftpStep, string>(step => step.Host, host)
-            .Input<ConnectToSftpStep, int>(step => step.Port, port)
-            .Input<ConnectToSftpStep, string>(step => step.Username, username)
-            .Input<ConnectToSftpStep, string>(step => step.Password, password);
+            .Input<ConnectToSftpStep>(step => step.Host = host)
+            .Input<ConnectToSftpStep>(step => step.Port = port)
+            .Input<ConnectToSftpStep>(step => step.Username = username)
+            .Input<ConnectToSftpStep>(step => step.Password = password);
+        return builder;
     }
 
     /// <summary>
@@ -41,15 +42,15 @@ public static class IWorkflowBuilderExtensions
     /// <param name="localFilePath">The local file path.</param>
     /// <param name="remoteFilePath">The remote file path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder UploadFileViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase UploadFileViaSftp(
+        this WorkflowBuilderBase builder,
         string localFilePath,
         string remoteFilePath)
     {
         return builder
             .Then<UploadSingleFileViaSftpStep>()
-            .Input<UploadSingleFileViaSftpStep, string>(step => step.LocalFilePath, localFilePath)
-            .Input<UploadSingleFileViaSftpStep, string>(step => step.RemoteFilePath, remoteFilePath);
+            .Input<UploadSingleFileViaSftpStep>(step => step.LocalFilePath = localFilePath)
+            .Input<UploadSingleFileViaSftpStep>(step => step.RemoteFilePath = remoteFilePath);
     }
 
     /// <summary>
@@ -59,15 +60,15 @@ public static class IWorkflowBuilderExtensions
     /// <param name="localDirectoryPath">The local directory path.</param>
     /// <param name="remoteDirectoryPath">The remote directory path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder UploadDirectoryViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase UploadDirectoryViaSftp(
+        this WorkflowBuilderBase builder,
         string localDirectoryPath,
         string remoteDirectoryPath)
     {
         return builder
             .Then<UploadDirectoryViaSftpStep>()
-            .Input<UploadDirectoryViaSftpStep, string>(step => step.LocalDirectoryPath, localDirectoryPath)
-            .Input<UploadDirectoryViaSftpStep, string>(step => step.RemoteDirectoryPath, remoteDirectoryPath);
+            .Input<UploadDirectoryViaSftpStep>(step => step.LocalDirectoryPath = localDirectoryPath)
+            .Input<UploadDirectoryViaSftpStep>(step => step.RemoteDirectoryPath = remoteDirectoryPath);
     }
 
     /// <summary>
@@ -75,7 +76,7 @@ public static class IWorkflowBuilderExtensions
     /// </summary>
     /// <param name="builder">The workflow builder.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder DisconnectFromSftp(this IWorkflowBuilder builder)
+    public static WorkflowBuilderBase DisconnectFromSftp(this WorkflowBuilderBase builder)
     {
         return builder.Then<DisconnectFromSftpStep>();
     }
@@ -87,15 +88,15 @@ public static class IWorkflowBuilderExtensions
     /// <param name="remoteFilePath">The remote file path.</param>
     /// <param name="localFilePath">The local file path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder DownloadFileViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase DownloadFileViaSftp(
+        this WorkflowBuilderBase builder,
         string remoteFilePath,
         string localFilePath)
     {
         return builder
             .Then<DownloadFileViaSftpStep>()
-            .Input<DownloadFileViaSftpStep, string>(step => step.RemoteFilePath, remoteFilePath)
-            .Input<DownloadFileViaSftpStep, string>(step => step.LocalFilePath, localFilePath);
+            .Input<DownloadFileViaSftpStep>(step => step.RemoteFilePath = remoteFilePath)
+            .Input<DownloadFileViaSftpStep>(step => step.LocalFilePath = localFilePath);
     }
 
     /// <summary>
@@ -105,15 +106,15 @@ public static class IWorkflowBuilderExtensions
     /// <param name="remoteDirectoryPath">The remote directory path.</param>
     /// <param name="localDirectoryPath">The local directory path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder DownloadDirectoryViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase DownloadDirectoryViaSftp(
+        this WorkflowBuilderBase builder,
         string remoteDirectoryPath,
         string localDirectoryPath)
     {
         return builder
             .Then<DownloadDirectoryViaSftp>()
-            .Input<DownloadDirectoryViaSftp, string>(step => step.RemoteDirectory, remoteDirectoryPath)
-            .Input<DownloadDirectoryViaSftp, string>(step => step.LocalDirectory, localDirectoryPath);
+            .Input<DownloadDirectoryViaSftp>(step => step.RemoteDirectory = remoteDirectoryPath)
+            .Input<DownloadDirectoryViaSftp>(step => step.LocalDirectory = localDirectoryPath);
     }
 
     /// <summary>
@@ -122,13 +123,13 @@ public static class IWorkflowBuilderExtensions
     /// <param name="builder">The workflow builder.</param>
     /// <param name="remoteFilePath">The remote file path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder DeleteFileViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase DeleteFileViaSftp(
+        this WorkflowBuilderBase builder,
         string remoteFilePath)
     {
         return builder
             .Then<DeleteFileViaSftpStep>()
-            .Input<DeleteFileViaSftpStep, string>(step => step.RemoteFilePath, remoteFilePath);
+            .Input<DeleteFileViaSftpStep>(step => step.RemoteFilePath = remoteFilePath);
     }
 
     /// <summary>
@@ -137,13 +138,13 @@ public static class IWorkflowBuilderExtensions
     /// <param name="builder">The workflow builder.</param>
     /// <param name="remoteDirectoryPath">The remote directory path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder DeleteDirectoryViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase DeleteDirectoryViaSftp(
+        this WorkflowBuilderBase builder,
         string remoteDirectoryPath)
     {
         return builder
             .Then<DeleteDirectoryViaSftpStep>()
-            .Input<DeleteDirectoryViaSftpStep, string>(step => step.RemoteDirectoryPath, remoteDirectoryPath);
+            .Input<DeleteDirectoryViaSftpStep>(step => step.RemoteDirectoryPath = remoteDirectoryPath);
     }
 
     /// <summary>
@@ -152,13 +153,13 @@ public static class IWorkflowBuilderExtensions
     /// <param name="builder">The workflow builder.</param>
     /// <param name="remoteDirectoryPath">The remote directory path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder CreateDirectoryViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase CreateDirectoryViaSftp(
+        this WorkflowBuilderBase builder,
         string remoteDirectoryPath)
     {
         return builder
             .Then<CreateDirectoryViaSftpStep>()
-            .Input<CreateDirectoryViaSftpStep, string>(step => step.RemoteDirectoryPath, remoteDirectoryPath);
+            .Input<CreateDirectoryViaSftpStep>(step => step.RemoteDirectoryPath = remoteDirectoryPath);
     }
 
     /// <summary>
@@ -167,13 +168,13 @@ public static class IWorkflowBuilderExtensions
     /// <param name="builder">The workflow builder.</param>
     /// <param name="remoteFilePath">The remote file path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder CreateFileViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase CreateFileViaSftp(
+        this WorkflowBuilderBase builder,
         string remoteFilePath)
     {
         return builder
             .Then<CreateFileViaSftpStep>()
-            .Input<CreateFileViaSftpStep, string>(step => step.RemoteFilePath, remoteFilePath);
+            .Input<CreateFileViaSftpStep>(step => step.RemoteFilePath = remoteFilePath);
     }
 
     /// <summary>
@@ -183,14 +184,14 @@ public static class IWorkflowBuilderExtensions
     /// <param name="remoteFilePath">The current remote file path.</param>
     /// <param name="newRemoteFilePath">The new remote file path.</param>
     /// <returns>A configurable step builder.</returns>
-    public static IConfigurableStepBuilder RenameFileViaSftp(
-        this IWorkflowBuilder builder,
+    public static WorkflowBuilderBase RenameFileViaSftp(
+        this WorkflowBuilderBase builder,
         string remoteFilePath,
         string newRemoteFilePath)
     {
         return builder
             .Then<RenameFileViaSftpStep>()
-            .Input<RenameFileViaSftpStep, string>(step => step.RemoteFilePath, remoteFilePath)
-            .Input<RenameFileViaSftpStep, string>(step => step.NewRemoteFilePath, newRemoteFilePath);
+            .Input<RenameFileViaSftpStep>(step => step.RemoteFilePath = remoteFilePath)
+            .Input<RenameFileViaSftpStep>(step => step.NewRemoteFilePath = newRemoteFilePath);
     }
 }

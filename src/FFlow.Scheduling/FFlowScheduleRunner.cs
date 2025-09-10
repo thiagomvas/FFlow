@@ -33,11 +33,11 @@ public class FFlowScheduleRunner : BackgroundService
             
             try
             {
-                var dueWorkflows = await _flowScheduleStore.GetDueAsync(now, stoppingToken);
+                var dueWorkflows = await _flowScheduleStore.GetDueAsync(now, stoppingToken).ConfigureAwait(false);
 
                 foreach (var workflow in dueWorkflows)
                 {
-                    await workflow.Workflow.Build().RunAsync("", stoppingToken);
+                    await workflow.Workflow.Build().RunAsync("", stoppingToken).ConfigureAwait(false);
                     if (_options.EnableLogging)
                         _logger?.LogInformation("Executed scheduled workflow: {WorkflowName} at {ExecutionTime}",
                             workflow.Workflow.GetType().Name, now);
@@ -45,7 +45,7 @@ public class FFlowScheduleRunner : BackgroundService
                     if (workflow.Recurring)
                         workflow.UpdateNextExecution(now);
                     else
-                        await _flowScheduleStore.RemoveAsync(workflow, stoppingToken);
+                        await _flowScheduleStore.RemoveAsync(workflow, stoppingToken).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -54,7 +54,7 @@ public class FFlowScheduleRunner : BackgroundService
                     _logger?.LogError(ex, "An error occurred while executing scheduled workflows.");
             }
 
-            var timeUntilNext = await _flowScheduleStore.GetNextAsync(stoppingToken);
+            var timeUntilNext = await _flowScheduleStore.GetNextAsync(stoppingToken).ConfigureAwait(false);
             var delay = timeUntilNext?.ExecuteAt - now;
             
             TimeSpan delayToWait;
@@ -72,7 +72,7 @@ public class FFlowScheduleRunner : BackgroundService
             }
             
             
-            await Task.Delay(delayToWait, stoppingToken);
+            await Task.Delay(delayToWait, stoppingToken).ConfigureAwait(false);
         }
     }
 }
