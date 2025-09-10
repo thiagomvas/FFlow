@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.1"></a>
+## [1.2.1](https://www.github.com/thiagomvas/fflow/releases/tag/v1.2.1) (2025-09-10)
+
+### Bug Fixes
+
+* Fix CLI version ([69a2b7e](https://www.github.com/thiagomvas/fflow/commit/69a2b7e9da15149a9db07ac93caf3fae624eb1ec))
+
 <a name="1.2.0"></a>
 ## [1.2.0](https://www.github.com/thiagomvas/fflow/releases/tag/v1.2.0) (2025-09-10)
 

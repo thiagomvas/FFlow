@@ -14,12 +14,11 @@
         <PackageId>fflow.cli</PackageId>
         <AssemblyName>fflow.cli</AssemblyName>
         <Authors>thiagomvas</Authors>
-        <Version>1.2.0</Version>
+        <Version>1.2.1</Version>
         <Description>Command-line interface for FFlow workflows</Description>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
-        <Version>1.1.0</Version>
     </PropertyGroup>
 
     <PropertyGroup>

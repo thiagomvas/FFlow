@@ -10,7 +10,7 @@
             Provides SFTP-related steps and configuration for FFlow workflows, enabling secure file transfers and remote server interactions via SSH.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.2.0</Version>
+        <Version>1.2.1</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
