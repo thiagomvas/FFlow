@@ -10,7 +10,7 @@
       Provides steps and configuration methods for interacting with shell commands within FFlow workflows. Supports running shell commands, scripts, and more.
     </Description>
     <Authors>thiagomvas</Authors>
-    <Version>1.1.2</Version>
+    <Version>1.2.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
     <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
