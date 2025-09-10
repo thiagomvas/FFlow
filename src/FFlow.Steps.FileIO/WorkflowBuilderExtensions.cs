@@ -414,4 +414,40 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    /// <summary>
+    /// Adds a step to move a file from a source path to a destination path.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase MoveFile(this WorkflowBuilderBase builder,
+        Action<MoveFileStep> configure)
+    {
+        var step = new MoveFileStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to move a file from a source path to a destination path.
+    /// </summary>
+    /// <param name="sourcePath">The path of the source file that will be moved.</param>
+    /// <param name="destinationPath">The destination path that the file will be moved to.</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase MoveFile(this WorkflowBuilderBase builder, string sourcePath, string destinationPath,
+        Action<MoveFileStep>? configure = null)
+    {
+        var step = new MoveFileStep
+        {
+            SourcePath = sourcePath,
+            DestinationPath = destinationPath
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
 }
