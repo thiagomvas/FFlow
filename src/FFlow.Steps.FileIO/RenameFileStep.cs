@@ -2,11 +2,22 @@ using FFlow.Core;
 
 namespace FFlow.Steps.FileIO;
 
+/// <summary>
+/// A workflow step that renames a file within its current directory.
+/// The new name must not conflict with an existing file.
+/// </summary>
 [StepName("Rename File")]
 [StepTags("file", "io")]
 public class RenameFileStep : FlowStep
 {
+    /// <summary>
+    /// Gets or sets the path of the file to rename.
+    /// </summary>
     public string SourcePath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the new file name.
+    /// </summary>
     public string NewName { get; set; } = string.Empty;
     
     protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)

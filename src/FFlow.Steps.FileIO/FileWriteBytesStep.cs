@@ -1,14 +1,34 @@
 using FFlow.Core;
 
 namespace FFlow.Steps.FileIO;
-
+/// <summary>
+/// A workflow step that writes or appends binary content to a file.
+/// Content can be provided directly or retrieved from the workflow context.
+/// </summary>
 [StepName("File Write/Append Bytes")]
 [StepTags("file", "io")]
 public class FileWriteBytesStep : FlowStep
 {
+    /// <summary>
+    /// Gets or sets the path of the file to write to.
+    /// </summary>
     public string Path { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the binary content to be written to the file.
+    /// </summary>
     public byte[] Content { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the key used to fetch the binary content from the workflow context.
+    /// If provided and found, this value will overwrite <see cref="Content"/>.
+    /// </summary>
     public string ContextSourceKey { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to append to the file if it already exists.
+    /// If <c>false</c>, the file will be overwritten.
+    /// </summary>
     public bool Append { get; set; } = false;
     
     protected override async Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)

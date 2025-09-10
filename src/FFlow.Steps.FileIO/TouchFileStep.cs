@@ -3,14 +3,28 @@ using FFlow.Core;
 namespace FFlow.Steps.FileIO;
 
 /// <summary>
-/// Step that creates a new file or updates the timestamp of an existing file at the specified path.
+/// A workflow step that creates a new file if it does not exist,
+/// or updates the last access and/or modification timestamps of an existing file.
 /// </summary>
 [StepName("Touch File")]
 [StepTags("file", "io")]
 public class TouchFileStep : FlowStep
 {
+    /// <summary>
+    /// Gets or sets the path of the file to touch.
+    /// </summary>
     public string Path { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets an optional access time to apply to the file.
+    /// If not provided, the access time remains unchanged.
+    /// </summary>
     public DateTime? AccessTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional modification time to apply to the file.
+    /// If not provided, the modification time remains unchanged.
+    /// </summary>
     public DateTime? ModificationTime { get; set; }
     
     
