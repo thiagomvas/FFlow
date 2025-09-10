@@ -565,4 +565,40 @@ public static class WorkflowBuilderExtensions
         builder.AddStep(step);
         return builder;
     }
+    
+    /// <summary>
+    /// Adds a step to rename a file at the specified source path to a new name.
+    /// </summary>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase RenameFile(this WorkflowBuilderBase builder,
+        Action<RenameFileStep> configure)
+    {
+        var step = new RenameFileStep();
+        configure(step);
+        builder.AddStep(step);
+        return builder;
+    }
+    
+    /// <summary>
+    /// Adds a step to rename a file at the specified source path to a new name.
+    /// </summary>
+    /// <param name="sourcePath">The path of the source file to be renamed.</param>
+    /// <param name="newName">The new name of the file including file extension.</param>
+    /// <param name="builder">The workflow builder instance.</param>
+    /// <param name="configure">Optional action to configure the step.</param>
+    /// <returns>The same workflow builder instance for chaining.</returns>
+    public static WorkflowBuilderBase RenameFile(this WorkflowBuilderBase builder, string sourcePath, string newName,
+        Action<RenameFileStep>? configure = null)
+    {
+        var step = new RenameFileStep
+        {
+            SourcePath = sourcePath,
+            NewName = newName
+        };
+        configure?.Invoke(step);
+        builder.AddStep(step);
+        return builder;
+    }
 }
