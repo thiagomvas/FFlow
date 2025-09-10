@@ -19,7 +19,6 @@
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
-        <Version>1.1.0</Version>
     </PropertyGroup>
 
     <PropertyGroup>
