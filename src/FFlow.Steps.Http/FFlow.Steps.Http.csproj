@@ -1,9 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>FFlow.Steps.Http</PackageId>
+        <Description>
+            Provides HTTP steps for the FFlow workflow engine, enabling seamless integration with web services and APIs.
+        </Description>
+        <Authors>thiagomvas</Authors>
+        <Version>1.2.2</Version>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn>
+        <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/thiagomvas/FFlow</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>

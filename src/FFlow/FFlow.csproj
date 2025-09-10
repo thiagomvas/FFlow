@@ -8,7 +8,7 @@
         <PackageId>FFlow</PackageId>
         <Description>Fluent workflow engine for orchestrating conditional logic, parallelism, and automation in .NET.</Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.2.1</Version>
+        <Version>1.2.2</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
