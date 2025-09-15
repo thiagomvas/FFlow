@@ -1,9 +1,10 @@
 using System.Collections;
 using FFlow.Core;
+using FFlow.Visualization;
 
 namespace FFlow;
 
-internal class ForEachStep<TItem, TStepIterator> : FlowStep
+internal class ForEachStep<TItem, TStepIterator> : FlowStep, IDescribableStep
     where TStepIterator : IFlowStep
 {
     private readonly Func<IFlowContext, IEnumerable<TItem>> _itemsSelector;
@@ -48,6 +49,62 @@ internal class ForEachStep<TItem, TStepIterator> : FlowStep
             }
         }
     }
+
+
+    public WorkflowGraph Describe(string? rootId = null)
+    {
+        var graph = new WorkflowGraph();
+        var metadata = StepMetadataRegistry.Instance.Value.GetMetadata(this.GetType());
+
+        var genericType = typeof(TItem).Name;
+        var displayLabel = $"ForEach<{genericType}>";
+
+        rootId ??= metadata.Id;
+
+        var rootNode = new WorkflowNode(rootId, displayLabel);
+        graph.Nodes.Add(rootNode);
+
+        var iteratorNode = rootNode;
+
+        if (_configurator != null && _stepFactory != null)
+        {
+            // Create a prototype step from the factory to describe it
+            var prototypeStep = _stepFactory();
+            if (prototypeStep is IDescribableStep describable)
+            {
+                var subgraph = describable.Describe();
+                var (entryId, exitIds) = graph.Merge(subgraph, $"{rootId}_item");
+
+                graph.Edges.Add(new WorkflowEdge(iteratorNode.Id, entryId, "Each item"));
+
+                foreach (var exitId in exitIds)
+                {
+                    // Loop back to iterator
+                    graph.Edges.Add(new WorkflowEdge(exitId, iteratorNode.Id, "Next"));
+                }
+            }
+            else
+            {
+                var actionNodeId = $"{rootId}_item_action";
+                graph.Nodes.Add(new WorkflowNode(actionNodeId, prototypeStep.GetType().Name));
+                graph.Edges.Add(new WorkflowEdge(iteratorNode.Id, actionNodeId, "Each item"));
+                graph.Edges.Add(new WorkflowEdge(actionNodeId, iteratorNode.Id, "Next"));
+            }
+        }
+        else if (_executor != null)
+        {
+            // No describable step; represent the executor as a single node
+            var actionNodeId = $"{rootId}_item_action";
+            graph.Nodes.Add(new WorkflowNode(actionNodeId, _executor.GetType().Name));
+            graph.Edges.Add(new WorkflowEdge(iteratorNode.Id, actionNodeId, "Each item"));
+            graph.Edges.Add(new WorkflowEdge(actionNodeId, iteratorNode.Id, "Next"));
+        }
+
+        graph.ContinueFromId = rootId;
+        graph.ExitEdgeLabel = "Done";
+
+        return graph;
+    }
 }
 
 internal class ForEachStep<TItem> : ForEachStep<TItem, FlowStep>
@@ -62,7 +119,6 @@ internal class ForEachStep<TItem> : ForEachStep<TItem, FlowStep>
     {
     }
 }
-
 
 internal class ForEachStep : ForEachStep<object, FlowStep>
 {
