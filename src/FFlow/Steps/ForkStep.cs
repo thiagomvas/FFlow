@@ -85,7 +85,7 @@ public class ForkStep : IFlowStep, IDescribableStep
             for (int idx = 0; idx < _forks.Length; idx++)
             {
                 var workflow = (Workflow) _forks[idx]();
-                if (workflow is null) continue;
+                if (workflow is null || workflow.Graph is null) continue;
                 var subgraph = workflow.Graph;
                 var (entryId, exitIds) = graph.Merge(subgraph, $"{rootId}_branch{idx}");
 
