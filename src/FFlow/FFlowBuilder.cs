@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using FFlow.Core;
+using FFlow.Extensions;
 
 namespace FFlow;
 
@@ -107,6 +108,8 @@ public class FFlowBuilder : WorkflowBuilderBase
         }
         
         var result = new Workflow(Steps, context!, _options);
+
+        result.Graph = this.Describe();
         
         if (_errorHandler != null)
         {

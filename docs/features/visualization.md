@@ -36,16 +36,26 @@ public WorkflowGraph Describe(string? rootId = null)
 Which results in the following mermaid graph. 
 
 ```mermaid
-graph LR
+graph TD
     FFlow.Demo.HelloStep0[HelloStep]
-    FFlow.Demo.NoOpStep1[My Step Root Name]
-    FFlow.Demo.NoOpStep1_someNode[Some other node]
-    FFlow.Demo.NoOpStep1_someOtherNode[Some other node]
-    FFlow.Demo.GoodByeStep2[GoodByeStep]
-    FFlow.Demo.NoOpStep1 -->|Some Label| FFlow.Demo.NoOpStep1_someNode
-    FFlow.Demo.NoOpStep1 -->|Some other label| FFlow.Demo.NoOpStep1_someOtherNode
-    FFlow.Demo.HelloStep0 --> FFlow.Demo.NoOpStep1
-    FFlow.Demo.NoOpStep1 -->|Continue from here!| FFlow.Demo.GoodByeStep2
+    FFlow.Steps.Shell.RunCommandStep1[Shell Command Execution]
+    FFlow.ForkStep2[Fork - FireAndForget]
+    FFlow.ForkStep2_branch0_FFlow.Steps.DotNet.DotnetTestStep0[.NET Test]
+    FFlow.ForkStep2_branch1_FFlow.Steps.Http.HttpRequestStep0[HttpRequestStep]
+    FFlow.ForEachStep`23[ForEach<String>]
+    FFlow.ForEachStep`23_done[Done]
+    FFlow.ForEachStep`23_item_action[HelloStep]
+    FFlow.Demo.GoodByeStep4[GoodByeStep]
+    FFlow.Demo.HelloStep0 --> FFlow.Steps.Shell.RunCommandStep1
+    FFlow.ForkStep2 -->|Branch 1| FFlow.ForkStep2_branch0_FFlow.Steps.DotNet.DotnetTestStep0
+    FFlow.ForkStep2 -->|Branch 2| FFlow.ForkStep2_branch1_FFlow.Steps.Http.HttpRequestStep0
+    FFlow.Steps.Shell.RunCommandStep1 --> FFlow.ForkStep2
+    FFlow.ForEachStep`23 -->|Each item| FFlow.ForEachStep`23_item_action
+    FFlow.ForEachStep`23_item_action -->|Next| FFlow.ForEachStep`23
+    FFlow.ForkStep2 -->|Main Thread| FFlow.ForEachStep`23
+    FFlow.ForEachStep`23 -->|Done| FFlow.Demo.GoodByeStep4
+
+
 ```
 
 > [!NOTE]
