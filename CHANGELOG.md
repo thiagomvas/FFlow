@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.3"></a>
+## [1.2.3](https://www.github.com/thiagomvas/fflow/releases/tag/v1.2.3) (2025-09-15)
+
+### Bug Fixes
+
+* Fork step no longer crashes when visualizing a broken graph ([e431667](https://www.github.com/thiagomvas/fflow/commit/e431667df8f66ee4d8edde0b81c42f30cab1983f))
+* Graphs are included when building a Workflow ([ec904b9](https://www.github.com/thiagomvas/fflow/commit/ec904b9ffd91e38385af9fd2e0d3df7b8b6f94a7))
+* Missing foreach step visualization ([cf2641c](https://www.github.com/thiagomvas/fflow/commit/cf2641c61ba88bc3481f7e61cf32ed8e3e957793))
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://www.github.com/thiagomvas/fflow/releases/tag/v1.2.2) (2025-09-10)
 

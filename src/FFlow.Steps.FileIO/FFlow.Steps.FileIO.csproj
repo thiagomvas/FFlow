@@ -10,7 +10,7 @@
             Provides file I/O-related steps and configuration for FFlow workflows, enabling reading, writing, copying, deleting, and managing files and directories safely within workflow contexts.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.2.2</Version>
+        <Version>1.2.3</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>

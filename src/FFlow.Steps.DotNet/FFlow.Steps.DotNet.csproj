@@ -10,7 +10,7 @@
             Provides steps and configuration methods for interacting with the .NET CLI within FFlow workflows. Supports dotnet run, build, test, etc.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.2.2</Version>
+        <Version>1.2.3</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeXmlDocumentation>true</IncludeXmlDocumentation>
         <NoWarn>1591</NoWarn>

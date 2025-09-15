@@ -10,7 +10,7 @@
             Provides HTTP steps for the FFlow workflow engine, enabling seamless integration with web services and APIs.
         </Description>
         <Authors>thiagomvas</Authors>
-        <Version>1.2.2</Version>
+        <Version>1.2.3</Version>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn>
         <PackageProjectUrl>https://github.com/thiagomvas/FFlow</PackageProjectUrl>
