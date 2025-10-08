@@ -10,12 +10,8 @@ using FFlow.Steps.FileIO;
 using FFlow.Steps.Http;
 
 var lexer = new Lexer(@"
-pipeline ""BuildAndPublish"":
-dotnet.build(""."")
-dotnet.test(""."", noBuild=true)
-dotnet.publish(""."", configuration=""Release"")
-dotnet.pack(""."", configuration=""Release"", output=""nupkgs"")
-dotnet.nugetPush(""nupkgs"", apiKey=ctx.NUGET_API_KEY)
+pipeline ""Hello World"":
+demo.hello(name=""World"")
 ");
 
 var parser = new Parser(lexer.Tokenize());
@@ -23,4 +19,7 @@ var pipelineNode = parser.ParsePipeline();
 
 Console.WriteLine(JsonSerializer.Serialize(pipelineNode, new JsonSerializerOptions { WriteIndented = true }));
 
+var container = new StepContainer();
+container.LoadAllRegistries();
+await container.GetStep("demo.hello").RunAsync(new InMemoryFFLowContext());
 

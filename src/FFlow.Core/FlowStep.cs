@@ -12,6 +12,11 @@ public abstract class FlowStep : IFlowStep, IRetryableFlowStep, ICompensableStep
     public Action<FlowStep, IFlowContext> OnBeforeRun { get; set; } = (_, _) => { };
     public Action<FlowStep, IFlowContext> OnAfterRun { get; set; } = (_, _) => { };
 
+    public FlowStep()
+    {
+        
+    }
+
     /// <inheritdoc />
     public async Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
     {

@@ -6,16 +6,14 @@ namespace FFlow.Demo;
 [RequireKey("name")]
 [RequireNotNull("name")]
 [RequireRegex("name", @"^[A-Za-z\s]+$")]
-public class HelloStep : IFlowStep
+public class HelloStep : FlowStep
 {
     public string Name { get; set; }
-    public Task RunAsync(IFlowContext context, CancellationToken cancellationToken = default)
+    protected override Task ExecuteAsync(IFlowContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         ArgumentNullException.ThrowIfNull(context);
-
-        var input = context.GetValue<string>("name") ?? context.GetLastOutput<string>();
         
         return Task.Run(() =>
         {
