@@ -17,9 +17,8 @@ demo.hello(name=""World"")
 var parser = new Parser(lexer.Tokenize());
 var pipelineNode = parser.ParsePipeline();
 
-Console.WriteLine(JsonSerializer.Serialize(pipelineNode, new JsonSerializerOptions { WriteIndented = true }));
+var interpreter = new Interpreter();
+var workflow = interpreter.Interpret(pipelineNode);
 
-var container = new StepContainer();
-container.LoadAllRegistries();
-await container.GetStep("demo.hello").RunAsync(new InMemoryFFLowContext());
+await workflow.RunAsync();
 

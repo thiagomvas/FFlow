@@ -1,3 +1,4 @@
+using System.Reflection;
 using FFlow.Core;
 
 namespace FFlow.DSL;
@@ -36,6 +37,21 @@ public class StepContainer : IStepContainer
             return (FlowStep)Activator.CreateInstance(type)!;
         }
         throw new Exception($"Step with identifier '{identifier}' not found.");
+    }
+
+    public FlowStep GetStep(string identifier, Dictionary<string, object> parameters)
+    {
+        var step = GetStep(identifier);
+        foreach (var param in parameters)
+        {
+            var property = step.GetType().GetProperty(param.Key, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            if (property != null && property.CanWrite)
+            {
+                property.SetValue(step, Convert.ChangeType(param.Value, property.PropertyType));
+            }
+        }
+        return step;
+        
     }
 
     public void AddStep<T>(string identifier) where T : FlowStep, new()
