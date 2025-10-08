@@ -13,7 +13,6 @@ var lexer = new Lexer(@"
 pipeline ""BuildAndPublish"":
 dotnet.build(""."")
 dotnet.test(""."", noBuild=true)
-throwIf dotnet.test.failed > 0, ""Tests have failed""
 dotnet.publish(""."", configuration=""Release"")
 dotnet.pack(""."", configuration=""Release"", output=""nupkgs"")
 dotnet.nugetPush(""nupkgs"", apiKey=ctx.NUGET_API_KEY)
