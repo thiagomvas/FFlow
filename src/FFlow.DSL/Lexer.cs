@@ -13,7 +13,7 @@ public class Lexer
     
     public Lexer(string input)
     {
-        _input = input;
+        _input = input.Trim();
     }
     
     public IEnumerable<Token> Tokenize()
