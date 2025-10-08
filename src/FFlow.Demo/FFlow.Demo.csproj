@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FFlow.Core\FFlow.Core.csproj" />
+      <ProjectReference Include="..\FFlow.DSL\FFlow.DSL.csproj" />
       <ProjectReference Include="..\FFlow.Extensions.Microsoft.DependencyInjection\FFlow.Extensions.Microsoft.DependencyInjection.csproj" />
       <ProjectReference Include="..\FFlow.Observability\FFlow.Observability.csproj" />
       <ProjectReference Include="..\FFlow.Scheduling\FFlow.Scheduling.csproj" />
